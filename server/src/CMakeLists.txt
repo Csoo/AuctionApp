@@ -1,6 +1,11 @@
 ADD_SUBDIRECTORY(server)
 INCLUDE_DIRECTORIES(server)
 
-ADD_EXECUTABLE(auction_server main.cpp)
+ADD_SUBDIRECTORY(db_server)
+INCLUDE_DIRECTORIES(db_server)
 
-TARGET_LINK_LIBRARIES(auction_server server pthread)
+INCLUDE(3rdparty)
+
+ADD_EXECUTABLE(auctionapp main.cpp)
+
+TARGET_LINK_LIBRARIES(auctionapp auction_server auction_db_server pthread)

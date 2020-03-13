@@ -1,3 +1,10 @@
-SET (SOURCES server.cpp)
+INCLUDE(qt_module)
+INCLUDE(3rdparty)
 
-ADD_LIBRARY(server ${SOURCES})
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/db_server)
+
+SET (SOURCES auction_server.cpp)
+
+ADD_LIBRARY(auction_server ${SOURCES})
+
+TARGET_LINK_LIBRARIES(auction_server Qt5::Core)
