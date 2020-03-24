@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+
 #include <auction_server.h>
 
 int main (int argc, char* argv[]) {
@@ -19,13 +20,13 @@ int main (int argc, char* argv[]) {
         ip = "0.0.0.0";
     }
 
-    std::cout << "Please enter the listening port for the server (to default: 7373 type -1)" << std::endl;
+    std::cout << "Please enter the listening port for the server (to default: 3000 type -1)" << std::endl;
 
     int port;
     std::cin >> port;
 
     if (port == -1) {
-        port = 7373;
+        port = 3000;
     }
 
     Auction_server a_server(ip,port);
