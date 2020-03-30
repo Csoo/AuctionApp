@@ -11,15 +11,24 @@
 #include <QList>
 #include <QThread>
 #include <QString>
+#include <QDebug>
 
 class db_server: public QThread {
 public:
 
-    QString check_login(const QString &user, const QString &passw);
+    db_server(const QString& driver, QString connectionName, QString dbName);
+
+    bool init();
+
+public slots:
+
+    void check_login(const QString &user, const QString &passw, bool* ok, bool* hasError);
 
 protected:
 
     QSqlDatabase db;
     QString connectionName;
     QString dbName;
+
+    QSqlQuery getLoginQuery;
 };
