@@ -3,3 +3,9 @@
 //
 
 #include "db_server.h"
+
+QString db_server::check_login(const QString &user, const QString &passw) {
+
+
+    return "false";
+}
