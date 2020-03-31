@@ -22,7 +22,7 @@ public:
 
 public slots:
 
-    void check_login(const QString &user, const QString &passw, bool* ok, bool* hasError);
+    void check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError);
 
 protected:
 

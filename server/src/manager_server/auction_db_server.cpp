@@ -45,7 +45,7 @@ void Auction_db_server::login(const Request &request, Response &response) {
 
     bool ok, hasError;
 
-    db->check_login(user,passw, &ok, &hasError);
+    emit check_login(user,passw, &ok, &hasError);
 
     if (hasError)
     {
@@ -68,7 +68,7 @@ void Auction_db_server::login(const Request &request, Response &response) {
 Auction_db_server::Auction_db_server() {
     db = new db_server("QSQLITE", "Auction", "../database.db");
 
-    QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login);
+    QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
 }

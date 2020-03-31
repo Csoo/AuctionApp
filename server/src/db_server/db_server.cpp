@@ -23,15 +23,18 @@ bool db_server::init() {
     }
 
     getLoginQuery.clear();
-    getLoginQuery.prepare("Query for get users & passwords");
 
-    return true;
+    return getLoginQuery.prepare("SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw");
+
 }
 
-void db_server::check_login(const QString &user, const QString &passw, bool* ok, bool* hasError) {
+void db_server::check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError) {
 
     *hasError = false;
     *ok = false;
+
+    getLoginQuery.bindValue(":un",user);
+    getLoginQuery.bindValue(":pw",passw);
 
     if(!getLoginQuery.exec()) {
         qWarning() << "[Database::getUsers]  Error: " << getLoginQuery.lastError().text();
@@ -39,7 +42,18 @@ void db_server::check_login(const QString &user, const QString &passw, bool* ok,
         return;
     }
 
-    while(getLoginQuery.next()) {
-        //TODO: check functionality
+    getLoginQuery.next();
+
+    if (getLoginQuery.value(0).toInt() == 1)
+    {
+        *ok = true;
+        return;
     }
+    if (!getLoginQuery.value(0).toInt())
+    {
+        return;
+    }
+    qWarning() << "[Database::getUsers]  Error: count > 1";
+    qWarning() << "SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw";
+    *hasError = true;
 }
