@@ -5,22 +5,28 @@ using json = nlohmann::json;
 
 APIrequest::APIrequest(QObject *parent) :
     QObject(parent),
-    manager(new QNetworkAccessManager(this))
+    manager(new QNetworkAccessManager(this)),
+    url(QUrl("http://localhost:8080"))
 {
-    request.setUrl(QUrl("localhost"));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
 }
 
 bool APIrequest::loginRequest(const QString &name, const QString &pw)
 {
-    json jsonData = {
-        { "username", name.toStdString()},
-        { "password", pw.toStdString()}
-    };
+    url.setPath("/login");
+    request.setUrl(url);
 
-    QString data = QString::fromStdString(jsonData.dump(4));
+    request.setRawHeader("user", name.toUtf8());
+    request.setRawHeader("password", pw.toUtf8());
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
 
-    reply = manager->post(request, data.toUtf8());
+    qDebug() << url.toString() << " / " << name.toUtf8() << pw.toUtf8() << endl;
 
-    return true;
+    reply = manager->get(request);
+    loop.exec();
+
+     qDebug() << reply->errorString() << endl;
+
+    return reply->readAll() == "true";
 }

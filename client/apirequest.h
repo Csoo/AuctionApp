@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include <3rdparty/nlohmann/json.hpp>
 #include <QObject>
+#include <QEventLoop>
 
 class APIrequest : public QObject
 {
@@ -13,6 +14,8 @@ class APIrequest : public QObject
     QNetworkAccessManager *manager;
     QNetworkReply *reply;
     QNetworkRequest request;
+
+    QUrl url;
 
 public:
     explicit APIrequest(QObject *parent = nullptr);
