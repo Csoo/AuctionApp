@@ -8,7 +8,7 @@
 
 int main (int argc, char* argv[]) {
 
-    std::cout << "---Welcome in Auctionapp server CLI---" << std::endl << std::endl;
+    std::cout << "---Welcome to Auctionapp server CLI---" << std::endl << std::endl;
 
     std::cout << "Please enter the listening ip for the server (to default: 0.0.0.0 type -1)" << std::endl;
 
@@ -17,7 +17,7 @@ int main (int argc, char* argv[]) {
 
     if (ip == "-1")
     {
-        ip = "0.0.0.0";
+        ip = "localhost";
     }
 
     std::cout << "Please enter the listening port for the server (to default: 3000 type -1)" << std::endl;
@@ -26,7 +26,7 @@ int main (int argc, char* argv[]) {
     std::cin >> port;
 
     if (port == -1) {
-        port = 3000;
+        port = 8080;
     }
 
     Auction_server a_server(ip,port);

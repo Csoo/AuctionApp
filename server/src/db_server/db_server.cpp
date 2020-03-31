@@ -29,6 +29,12 @@ bool db_server::init() {
 }
 
 void db_server::check_login(const QString &user, const QString &passw, bool* ok, bool* hasError) {
+    
+    *hasError = false;
+    passw == "admin" ? *ok = true : *ok = false;
+    return;
+
+    //Temporary solution TODO: use database to check login authentication !! 
 
     *hasError = false;
     *ok = false;

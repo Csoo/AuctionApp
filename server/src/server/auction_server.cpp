@@ -5,7 +5,7 @@
 #include "auction_server.h"
 
 Auction_server::Auction_server(const std::string &ip, int port) {
-    server.Get(R"(/login)",[this](const Request& req, Response& res) {db.login(req,res);});
+    server.Get(R"(/login)",[this](const Request& req, Response& res) {  db.login(req,res); });
     /*server.Post(R"()",[this](const Request& req, Response& res) {db.temp(req,res);});
     server.Put(R"()",[this](const Request& req, Response& res) {db.temp(req,res);});
     server.Delete(R"()",[this](const Request& req, Response& res) {db.temp(req,res);});*/
