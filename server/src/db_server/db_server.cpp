@@ -57,3 +57,11 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
     qWarning() << "SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw";
     *hasError = true;
 }
+
+void db_server::check_reg_slot(const QString &user, const QString &email, bool *ok, bool *hasError) {
+
+}
+
+void db_server::add_user_slot(const QString &user, const QString &email, const QString &passw, bool *ok, bool *hasError) {
+
+}

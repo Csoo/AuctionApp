@@ -13,7 +13,9 @@ void Auction_db_server::temp(const Request &request, Response &response) {
 Auction_db_server::Auction_db_server() {
     db = new db_server("QSQLITE", "Auction", "../database.db");
 
-    QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(this, &Auction_db_server::check_reg, db, &db_server::check_reg_slot, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(this, &Auction_db_server::add_user, db, &db_server::add_user_slot, Qt::ConnectionType::QueuedConnection);
 
     db->start();
 }
@@ -21,7 +23,7 @@ Auction_db_server::Auction_db_server() {
 void Auction_db_server::userReg(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    QString user = "", passw = "";
+    QString user = "", passw = "", email = "";
 
     for (const auto &h: request.headers) {
         if (h.first == "user")
@@ -51,9 +53,34 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
         return;
     }
 
+    for (const auto &h: request.headers) {
+        if (h.first == "email")
+        {
+            email = h.second.data();
+            break;
+        }
+    }
+
+    if (email == "")
+    {
+        response.status = 400;
+        return;
+    }
+
     bool ok, hasError;
 
-    //todo sql query
+    emit check_reg(user, email, &ok, &hasError);
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    if (!ok)
+    {
+        emit add_user(user, email, passw, &ok, &hasError);
+    }
 
     response.status = 200;
 }
@@ -120,7 +147,7 @@ void Auction_db_server::auction(const Request &request, Response &response) {
 
     bool ok, hasError;
 
-    //todo: sql query
+    //todo: signal emit
 
     if (hasError)
     {
@@ -136,7 +163,7 @@ void Auction_db_server::auction(const Request &request, Response &response) {
 void Auction_db_server::getSelf(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    QString user = "", passw = "";
+    QString user = "";
 
     for (const auto &h: request.headers) {
         if (h.first == "user")
@@ -152,23 +179,9 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
         return;
     }
 
-    for (const auto &h: request.headers) {
-        if (h.first == "password")
-        {
-            passw = h.second.data();
-            break;
-        }
-    }
-
-    if (passw == "")
-    {
-        response.status = 400;
-        return;
-    }
-
     bool ok, hasError;
 
-    //todo: sql query
+    //todo: signal emit
 
     if (hasError)
     {
@@ -188,7 +201,7 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
 
     bool ok, hasError;
 
-    //todo: sql query
+    //todo: signal emit
 
     if (hasError)
     {
