@@ -20,7 +20,10 @@ public:
 
     void login(const Request &request, Response &response);
     void userReg(const Request &request, Response &response);
+
+    void search(const Request &request, Response &response);
     void auction(const Request &request, Response &response);
+
     void getSelf(const Request &request, Response &response);
     void getOther(const Request &request, Response &response);
 
@@ -29,9 +32,10 @@ public:
 signals:
 
     void check_login(const QString &user, const QString &passw, bool* ok, bool* hasError);
-    void check_reg(const QString &user, const QString &email, bool* ok, bool* hasError);
+    void check_reg(const QString &email, const QString &user, int* ok, bool* hasError);
+    //void get_search(QList<int> ints, QList<QString> strings);
 
-    void add_user(const QString &user, const QString &email, const QString &passw, bool* ok, bool* hasError);
+    void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
 
 private:
     db_server* db;

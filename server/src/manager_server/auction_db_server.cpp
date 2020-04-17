@@ -2,13 +2,15 @@
 // Created by petras on 2020. 03. 13..
 //
 
-#include <QtCore/QString>
+#include <QString>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #include "auction_db_server.h"
 
-void Auction_db_server::temp(const Request &request, Response &response) {
-
-}
+//void Auction_db_server::temp(const Request &request, Response &response) {
+//
+//}
 
 Auction_db_server::Auction_db_server() {
     db = new db_server("QSQLITE", "Auction", "../database.db");
@@ -18,71 +20,6 @@ Auction_db_server::Auction_db_server() {
     QObject::connect(this, &Auction_db_server::add_user, db, &db_server::add_user_slot, Qt::ConnectionType::QueuedConnection);
 
     db->start();
-}
-
-void Auction_db_server::userReg(const Request &request, Response &response) {
-    response.headers = request.headers;
-
-    QString user = "", passw = "", email = "";
-
-    for (const auto &h: request.headers) {
-        if (h.first == "user")
-        {
-            user = h.second.data();
-            break;
-        }
-    }
-
-    if (user == "")
-    {
-        response.status = 400;
-        return;
-    }
-
-    for (const auto &h: request.headers) {
-        if (h.first == "password")
-        {
-            passw = h.second.data();
-            break;
-        }
-    }
-
-    if (passw == "")
-    {
-        response.status = 400;
-        return;
-    }
-
-    for (const auto &h: request.headers) {
-        if (h.first == "email")
-        {
-            email = h.second.data();
-            break;
-        }
-    }
-
-    if (email == "")
-    {
-        response.status = 400;
-        return;
-    }
-
-    bool ok, hasError;
-
-    emit check_reg(user, email, &ok, &hasError);
-
-    if (hasError)
-    {
-        response.status = 500;
-        return;
-    }
-
-    if (!ok)
-    {
-        emit add_user(user, email, passw, &ok, &hasError);
-    }
-
-    response.status = 200;
 }
 
 void Auction_db_server::login(const Request &request, Response &response) {
@@ -136,6 +73,107 @@ void Auction_db_server::login(const Request &request, Response &response) {
     {
         response.set_content("false","application/json");
     }
+
+    response.status = 200;
+}
+
+void Auction_db_server::userReg(const Request &request, Response &response) {
+    response.headers = request.headers;
+
+    if (request.headers.find("content_type") == request.headers.end())
+    {
+        response.status = 400;
+        return;
+    }
+
+    QString email, user, fullName, passw, add, phone;
+
+    QJsonDocument body = QJsonDocument::fromJson(request.body.c_str());
+
+    try
+    {
+        email = body["email"].toString();
+        user = body["user"].toString();
+        fullName = body["fullName"].toString();
+        passw = body["password"].toString();
+        add = body["address"].toString();
+    }
+    catch (...)
+    {
+        response.status = 400;
+        return;
+    }
+
+    if (body["phone"] != "")
+    {
+        phone = body["phone"].toString();
+    }
+
+    bool hasError;
+    int ok = 0;
+
+    emit check_reg(email, user, &ok, &hasError);
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    if (!ok)
+    {
+        emit add_user(email, user, fullName, passw, add, phone, &hasError);
+    }
+
+    if (ok == 1)
+    {
+        response.set_content("bad username","application/json");
+        response.status = 400;
+        return;
+    }
+
+    if (ok == 2)
+    {
+        response.set_content("bad email","application/json");
+        response.status = 400;
+        return;
+    }
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    response.status = 200;
+}
+
+void Auction_db_server::search(const Request &request, Response &response) {
+    response.headers = request.headers;
+
+    if (request.headers.find("content_type") == request.headers.end())
+    {
+        response.status = 400;
+        return;
+    }
+
+    QString text;
+    QJsonArray filters;
+
+    QJsonDocument body = QJsonDocument::fromJson(request.body.c_str());
+
+    try
+    {
+        text = body["text"].toString();
+        filters = body["filters"].toArray();
+    }
+    catch (...)
+    {
+        response.status = 400;
+        return;
+    }
+
+    //todo: logic for parameterize qsl query
 
     response.status = 200;
 }

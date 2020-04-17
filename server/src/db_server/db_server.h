@@ -23,9 +23,9 @@ public:
 public slots:
 
     void check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError);
-    void check_reg_slot(const QString &user, const QString &email, bool* ok, bool* hasError);
+    void check_reg_slot(const QString &email, const QString &user, int* ok, bool* hasError);
 
-    void add_user_slot(const QString &user, const QString &email, const QString &passw, bool* ok, bool* hasError);
+    void add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
 
 protected:
 
