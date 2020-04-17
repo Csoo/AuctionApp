@@ -65,3 +65,11 @@ void db_server::check_reg_slot(const QString &email, const QString &user, int* o
 void db_server::add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool *hasError) {
 
 }
+
+void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool *hasError) {
+
+}
+
+void db_server::get_other_slot(int id, QMap<QString, QString> *data, bool *hasError) {
+
+}

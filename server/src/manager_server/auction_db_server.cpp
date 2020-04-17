@@ -14,10 +14,13 @@
 
 Auction_db_server::Auction_db_server() {
     db = new db_server("QSQLITE", "Auction", "../database.db");
+    db->init();
 
     QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::QueuedConnection);
     QObject::connect(this, &Auction_db_server::check_reg, db, &db_server::check_reg_slot, Qt::ConnectionType::QueuedConnection);
     QObject::connect(this, &Auction_db_server::add_user, db, &db_server::add_user_slot, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_self, db, &db_server::get_self_slot, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_other, db, &db_server::get_other_slot, Qt::ConnectionType::QueuedConnection);
 
     db->start();
 }
@@ -109,8 +112,7 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
         phone = body["phone"].toString();
     }
 
-    bool hasError;
-    int ok = 0;
+    bool ok, hasError;
 
     emit check_reg(email, user, &ok, &hasError);
 
@@ -199,27 +201,14 @@ void Auction_db_server::auction(const Request &request, Response &response) {
 }
 
 void Auction_db_server::getSelf(const Request &request, Response &response) {
-    response.headers = request.headers;
+    QString auId = QString::fromStdString(request.matches[1].str());
 
-    QString user = "";
+    int id = auId.toInt();
 
-    for (const auto &h: request.headers) {
-        if (h.first == "user")
-        {
-            user = h.second.data();
-            break;
-        }
-    }
+    bool hasError;
+    QMap<QString,QString> data;
 
-    if (user == "")
-    {
-        response.status = 400;
-        return;
-    }
-
-    bool ok, hasError;
-
-    //todo: signal emit
+    emit get_self(id, &data, &hasError);
 
     if (hasError)
     {
@@ -227,7 +216,15 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
         return;
     }
 
-    //todo: normal response
+    QString body = R"({"email":")" + data["email"]
+                + R"(","user":")" + data["user"]
+                + R"(","fullName":")" + data["fullName"]
+                + R"(","address":")" + data["address"]
+                + R"(","phone":")" + data["phone"]
+                + R"(","reg":")" + data["reg"];
+
+
+        response.set_content(body.toStdString(),"application/json");
 
     response.status = 200;
 }
@@ -237,9 +234,10 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
 
     int id = auId.toInt();
 
-    bool ok, hasError;
+    bool hasError;
+    QMap<QString,QString> data;
 
-    //todo: signal emit
+    emit get_other(id, &data, &hasError);
 
     if (hasError)
     {
@@ -247,7 +245,13 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
         return;
     }
 
-    //todo: normal response
+    QString body = R"(","user":")" + data["user"]
+                   + R"(","fullName":")" + data["fullName"]
+                   + R"(","reg":")" + data["reg"];
+    + R"(","last":")" + data["last"];
+
+
+    response.set_content(body.toStdString(),"application/json");
 
     response.status = 200;
 }
