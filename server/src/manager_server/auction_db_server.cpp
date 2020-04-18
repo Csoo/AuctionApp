@@ -13,7 +13,7 @@
 //}
 
 Auction_db_server::Auction_db_server() {
-    db = new db_server("QSQLITE", "Auction", "../database.db");
+    db = new db_server("QSQLITE", "Auction", "./database.db");
     db->init();
 
     QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::QueuedConnection);
