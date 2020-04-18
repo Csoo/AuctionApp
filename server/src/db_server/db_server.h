@@ -11,6 +11,7 @@
 #include <QList>
 #include <QThread>
 #include <QString>
+#include <QDateTime>
 #include <QDebug>
 
 class db_server: public QThread {
@@ -41,4 +42,6 @@ protected:
     QSqlQuery getOtherQuery;
 
     QSqlQuery addUserQuery;
+
+    QDateTime now;
 };

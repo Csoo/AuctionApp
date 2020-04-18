@@ -48,12 +48,9 @@ bool db_server::init() {
     {
         return false;
     }
-    if (!addUserQuery.prepare(""))
-    {
-        return false;
-    }
+    return addUserQuery.prepare("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date) VALUES (:userP, :userN, :passw, :fullN, :email, :add, :phone, :date, :login)");
+    //'YYYY-MM-DD HH:MM' - date format in string
 
-    return true;
 }
 
 void db_server::check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError) {
@@ -95,7 +92,7 @@ void db_server::check_reg_slot(const QString &email, const QString &user, bool* 
     checkRegQuery.bindValue(":em",email);
 
     if(!checkRegQuery.exec()) {
-        qWarning() << "[Database::getUsers]  Error: " << checkRegQuery.lastError().text();
+        qWarning() << "[Database::getReg]  Error: " << checkRegQuery.lastError().text();
         *hasError = true;
         return;
     }
@@ -111,13 +108,36 @@ void db_server::check_reg_slot(const QString &email, const QString &user, bool* 
     {
         return;
     }
-    qWarning() << "[Database::getUsers]  Error: count > 1";
+    qWarning() << "[Database::getReg]  Error: count > 1";
     qWarning() << "SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND e-mail LIKE :em";
     *hasError = true;
 }
 
 void db_server::add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool *hasError) {
+    *hasError = false;
 
+    //'YYYY-MM-DD HH:MM' - date format in string
+    now = QDateTime::currentDateTime();
+
+    QString temp_date = now.toString("YYYY-MM-DD HH:MM");
+
+    //:userP, :userN, :passw, :fullN, :email, :add, :phone, :date, :login)
+    addUserQuery.bindValue(":userP", 1);
+    addUserQuery.bindValue(":userN", user);
+    addUserQuery.bindValue(":passw", passw);
+    addUserQuery.bindValue(":fullN", fullName);
+    addUserQuery.bindValue(":email", email);
+    addUserQuery.bindValue(":add", add);
+    addUserQuery.bindValue(":phone", phone);
+    addUserQuery.bindValue(":date", temp_date);
+    addUserQuery.bindValue(":login", "inalid");
+
+    if(!checkRegQuery.exec()) {
+        qWarning() << "[Database::addUser]  Error: " << checkRegQuery.lastError().text();
+        qWarning() << "INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date) VALUES (:userP, :userN, :passw, :fullN, :email, :add, :phone, :date)";
+        *hasError = true;
+        return;
+    }
 }
 
 void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool *hasError) {
