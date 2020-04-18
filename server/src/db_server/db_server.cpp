@@ -8,7 +8,11 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     db(QSqlDatabase::addDatabase(driver, connectionName)),
     connectionName(std::move(connectionName)),
     dbName(std::move(dbName)),
-    getLoginQuery(db)
+    getLoginQuery(db),
+    checkRegQuery(db),
+    getSelfQuery(db),
+    getOtherQuery(db),
+    addUserQuery(db)
 {
     moveToThread(this);
 }
@@ -23,9 +27,33 @@ bool db_server::init() {
     }
 
     getLoginQuery.clear();
+    checkRegQuery.clear();
+    getSelfQuery.clear();
+    getOtherQuery.clear();
+    addUserQuery.clear();
 
-    return getLoginQuery.prepare("SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw");
+    if (!getLoginQuery.prepare("SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw"))
+    {
+        return false;
+    }
+    if (!checkRegQuery.prepare("SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND e-mail LIKE :em"))
+    {
+        return false;
+    }
+    if (!getSelfQuery.prepare(""))
+    {
+        return false;
+    }
+    if (!getOtherQuery.prepare(""))
+    {
+        return false;
+    }
+    if (!addUserQuery.prepare(""))
+    {
+        return false;
+    }
 
+    return true;
 }
 
 void db_server::check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError) {
@@ -58,8 +86,34 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
     *hasError = true;
 }
 
-void db_server::check_reg_slot(const QString &email, const QString &user, int* ok, bool *hasError) {
+void db_server::check_reg_slot(const QString &email, const QString &user, bool* ok, bool *hasError) {
 
+    *hasError = false;
+    *ok = false;
+
+    checkRegQuery.bindValue(":un",user);
+    checkRegQuery.bindValue(":em",email);
+
+    if(!checkRegQuery.exec()) {
+        qWarning() << "[Database::getUsers]  Error: " << checkRegQuery.lastError().text();
+        *hasError = true;
+        return;
+    }
+
+    checkRegQuery.next();
+
+    if (checkRegQuery.value(0).toInt() == 1)
+    {
+        *ok = true;
+        return;
+    }
+    if (!checkRegQuery.value(0).toInt())
+    {
+        return;
+    }
+    qWarning() << "[Database::getUsers]  Error: count > 1";
+    qWarning() << "SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND e-mail LIKE :em";
+    *hasError = true;
 }
 
 void db_server::add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool *hasError) {
