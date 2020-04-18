@@ -153,7 +153,7 @@ ApplicationWindow {
                     id: signInButton
                     width: 90
                     height: userContainer.height
-                    text: qsTr("Sing In")
+                    text: qsTr("Sign In")
                     anchors.verticalCenterOffset: 0
                     display: AbstractButton.TextOnly
                     anchors.verticalCenter: userContainer.verticalCenter
