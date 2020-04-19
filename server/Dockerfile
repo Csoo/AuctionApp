@@ -1,5 +1,7 @@
 FROM ubuntu:19.10
 
+EXPOSE 3000
+
 RUN apt update && apt upgrade -y
 RUN apt install -y build-essential cmake qt5-default libqt5sql5-sqlite
 
