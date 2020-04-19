@@ -198,14 +198,20 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
 
     int id = auId.toInt();
 
-    bool hasError;
+    bool ok, hasError;
     QMap<QString,QString> data;
 
-    emit get_self(id, &data, &hasError);
+    emit get_self(id, &data, &ok, &hasError);
 
     if (hasError)
     {
         response.status = 500;
+        return;
+    }
+
+    if (!ok)
+    {
+        response.status = 404;
         return;
     }
 

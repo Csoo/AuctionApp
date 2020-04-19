@@ -13,7 +13,8 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     getSelfQuery(db),
     getOtherQuery(db),
     addUserQuery(db),
-    updateLastQuery(db)
+    updateLastQuery(db),
+    checkIdQuery(db)
 {
     moveToThread(this);
 }
@@ -33,6 +34,7 @@ bool db_server::init() {
     getOtherQuery.clear();
     addUserQuery.clear();
     updateLastQuery.clear();
+    checkIdQuery.clear();
 
     if (!getLoginQuery.prepare("SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw"))
     {
@@ -42,7 +44,11 @@ bool db_server::init() {
     {
         return false;
     }
-    if (!getSelfQuery.prepare(""))
+    if (!checkIdQuery.prepare("SELECT COUNT(*) FROM user WHERE id LIKE :id"))
+    {
+        return false;
+    }
+    if (!getSelfQuery.prepare("SELECT e-mail, user_name, full_name, address, phone, registration_date FROM user WHERE id LIKE :id"))
     {
         return false;
     }
@@ -67,7 +73,8 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
     getLoginQuery.bindValue(":un",user);
     getLoginQuery.bindValue(":pw",passw);
 
-    if(!getLoginQuery.exec()) {
+    if(!getLoginQuery.exec())
+    {
         qWarning() << "[Database::getUsers]  Error: " << getLoginQuery.lastError().text();
         *hasError = true;
         return;
@@ -108,7 +115,8 @@ void db_server::check_reg_slot(const QString &email, const QString &user, bool* 
     checkRegQuery.bindValue(":un",user);
     checkRegQuery.bindValue(":em",email);
 
-    if(!checkRegQuery.exec()) {
+    if(!checkRegQuery.exec())
+    {
         qWarning() << "[Database::getReg]  Error: " << checkRegQuery.lastError().text();
         *hasError = true;
         return;
@@ -157,8 +165,51 @@ void db_server::add_user_slot(const QString &email, const QString &user, const Q
     }
 }
 
-void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool *hasError) {
+void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, bool *hasError) {
+    *hasError = false;
+    *ok = false;
 
+    checkIdQuery.bindValue(":id", id);
+
+    if (!checkIdQuery.exec())
+    {
+        qWarning() << "[Database::getReg]  Error: " << checkRegQuery.lastError().text();
+        *hasError = true;
+        return;
+    }
+
+    checkIdQuery.next();
+    if (checkIdQuery.value(0).toInt() == 1)
+    {
+        getSelfQuery.bindValue(":id", id);
+
+        if (!getSelfQuery.exec())
+        {
+            qWarning() << "[Database::getReg]  Error: " << checkRegQuery.lastError().text();
+            *hasError = true;
+            return;
+        }
+
+        getSelfQuery.next();
+
+        data->clear();
+        data->insert("email",getSelfQuery.value(0).toString());
+        data->insert("user",getSelfQuery.value(1).toString());
+        data->insert("fullName",getSelfQuery.value(2).toString());
+        data->insert("address",getSelfQuery.value(3).toString());
+        data->insert("phone",getSelfQuery.value(4).toString());
+        data->insert("reg",getSelfQuery.value(5).toString());
+
+        *ok = true;
+        return;
+    }
+    if (!checkRegQuery.value(0).toInt())
+    {
+        return;
+    }
+    qWarning() << "[Database::getReg]  Error: count > 1";
+    qWarning() << "SELECT COUNT(*) FROM user WHERE id LIKE :id";
+    *hasError = true;
 }
 
 void db_server::get_other_slot(int id, QMap<QString, QString> *data, bool *hasError) {
