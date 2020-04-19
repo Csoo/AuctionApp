@@ -129,14 +129,7 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
 
     if (ok == 1)
     {
-        response.set_content("bad username","application/json");
-        response.status = 400;
-        return;
-    }
-
-    if (ok == 2)
-    {
-        response.set_content("bad email","application/json");
+        response.set_content("bad username or bad email","application/json");
         response.status = 400;
         return;
     }

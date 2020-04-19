@@ -43,5 +43,7 @@ protected:
 
     QSqlQuery addUserQuery;
 
+    QSqlQuery updateLastQuery;
+
     QDateTime now;
 };

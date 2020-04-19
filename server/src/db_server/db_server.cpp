@@ -12,7 +12,8 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     checkRegQuery(db),
     getSelfQuery(db),
     getOtherQuery(db),
-    addUserQuery(db)
+    addUserQuery(db),
+    updateLastQuery(db)
 {
     moveToThread(this);
 }
@@ -31,6 +32,7 @@ bool db_server::init() {
     getSelfQuery.clear();
     getOtherQuery.clear();
     addUserQuery.clear();
+    updateLastQuery.clear();
 
     if (!getLoginQuery.prepare("SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw"))
     {
@@ -48,7 +50,11 @@ bool db_server::init() {
     {
         return false;
     }
-    return addUserQuery.prepare("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date) VALUES (:userP, :userN, :passw, :fullN, :email, :add, :phone, :date, :login)");
+    if (!addUserQuery.prepare("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date) VALUES (:userP, :userN, :passw, :fullN, :email, :add, :phone, :date, :login)"))
+    {
+        return false;
+    }
+    return updateLastQuery.prepare("UPDATE user SET last_login_date = :ll WHERE user_name LIKE :un");
     //'YYYY-MM-DD HH:MM' - date format in string
 
 }
@@ -72,6 +78,17 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
     if (getLoginQuery.value(0).toInt() == 1)
     {
         *ok = true;
+
+        //'YYYY-MM-DD HH:MM' - date format in string
+        now = QDateTime::currentDateTime();
+
+        QString temp_date = now.toString("YYYY-MM-DD HH:MM");
+
+        updateLastQuery.bindValue(":ll", now);
+        updateLastQuery.bindValue(":un", user);
+
+        updateLastQuery.exec();
+
         return;
     }
     if (!getLoginQuery.value(0).toInt())
