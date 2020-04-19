@@ -34,7 +34,7 @@ signals:
     void check_login(const QString &user, const QString &passw, bool* ok, bool* hasError);
     void check_reg(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
-    void get_other(int id, QMap<QString,QString>* data, bool* hasError);
+    void get_other(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     //void get_search(QList<int> ints, QList<QString> strings);
 
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);

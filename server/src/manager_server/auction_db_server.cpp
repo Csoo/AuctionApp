@@ -246,8 +246,8 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
 
     QString body = R"(","user":")" + data["user"]
                    + R"(","fullName":")" + data["fullName"]
-                   + R"(","reg":")" + data["reg"];
-    + R"(","last":")" + data["last"];
+                   + R"(","reg":")" + data["reg"]
+                   + R"(","last":")" + data["last"];
 
 
     response.set_content(body.toStdString(),"application/json");
