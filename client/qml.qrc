@@ -1,6 +1,13 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>profile.qml</file>
+        <file>SideBar.qml</file>
+        <file>img/profil.png</file>
+        <file>img/search.png</file>
+        <file>img/setting.png</file>
+        <file>RegistrationForm.qml</file>
+        <file>LoginForm.qml</file>
+        <file>OptionForm.qml</file>
+        <file>ProfileView.qml</file>
     </qresource>
 </RCC>
