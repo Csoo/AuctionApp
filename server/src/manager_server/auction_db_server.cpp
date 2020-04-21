@@ -233,10 +233,10 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
 
     int id = auId.toInt();
 
-    bool hasError;
+    bool ok, hasError;
     QMap<QString,QString> data;
 
-    emit get_other(id, &data, &hasError);
+    emit get_other(id, &data, &ok, &hasError);
 
     if (hasError)
     {
