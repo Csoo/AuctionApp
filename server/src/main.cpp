@@ -3,10 +3,13 @@
 //
 
 #include <iostream>
+#include <QCoreApplication>
 
 #include <auction_server.h>
 
 int main (int argc, char* argv[]) {
+
+    QCoreApplication app(argc, argv);
 
     std::cout << "---Welcome in Auctionapp server CLI---" << std::endl << std::endl;
 
@@ -31,5 +34,5 @@ int main (int argc, char* argv[]) {
 
     Auction_server a_server(ip,port);
 
-    return 0;
+    return QCoreApplication::exec();
 }
