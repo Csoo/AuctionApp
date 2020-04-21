@@ -16,11 +16,11 @@ Auction_db_server::Auction_db_server() {
     db = new db_server("QSQLITE", "Auction", "./database.db");
     db->init();
 
-    QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::QueuedConnection);
-    QObject::connect(this, &Auction_db_server::check_reg, db, &db_server::check_reg_slot, Qt::ConnectionType::QueuedConnection);
-    QObject::connect(this, &Auction_db_server::add_user, db, &db_server::add_user_slot, Qt::ConnectionType::QueuedConnection);
-    QObject::connect(this, &Auction_db_server::get_self, db, &db_server::get_self_slot, Qt::ConnectionType::QueuedConnection);
-    QObject::connect(this, &Auction_db_server::get_other, db, &db_server::get_other_slot, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::check_reg, db, &db_server::check_reg_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::add_user, db, &db_server::add_user_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_self, db, &db_server::get_self_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_other, db, &db_server::get_other_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
 }
