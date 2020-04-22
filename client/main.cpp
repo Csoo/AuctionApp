@@ -3,6 +3,7 @@
 #include <QQuickStyle>
 #include <QQmlContext>
 #include <apirequest.h>
+#include <auctionimages.h>
 
 int main(int argc, char *argv[])
 {
@@ -14,7 +15,9 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     APIrequest req;
+    AuctionImages imgs;
     engine.rootContext()->setContextProperty("httpRequest", &req);
+    engine.rootContext()->setContextProperty("images", &imgs);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

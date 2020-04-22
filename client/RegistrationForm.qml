@@ -11,6 +11,100 @@ Item {
     anchors.fill: parent
     visible: true
 
+    function registering(userName, password, email, fullName, address, phone) {
+        backButton.enabled = false;
+        var error = false;
+        if (userName === "") {
+            userNameTextReg.color = "red";
+            error = true;
+        } else{
+            userNameTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (password === "") {
+            passwordTextReg.color = "red";
+            error = true;
+        } else{
+            passwordTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (password === "" || password !== passwordConfReg.text) {
+            passwordConfTextReg.color = "red";
+            error = true;
+        } else{
+            passwordConfTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (email === "") {
+            emailTextReg.color = "red";
+            error = true;
+        } else{
+            emailTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (fullName === "") {
+            fullNameTextReg.color = "red";
+            error = true;
+        } else{
+            fullNameTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (address === "") {
+            addressTextReg.color = "red";
+            error = true;
+        } else{
+            addressTextReg.color = applicationWindow.highlightTextColor;
+        }
+
+        if (error) {
+            backButton.enabled = true;
+            return;
+        }
+
+        if ( httpRequest.registerRequest(userName, password, email, fullName, address, phone) ) {
+            okRegistration.open()
+        } else {
+            wrongRegistration.open();
+        }
+        backButton.enabled = true;
+    }
+
+    Popup {
+        id: okRegistration
+        x: parent.width/2-100
+        y: parent.height*0.85
+        width: 200
+        height: 24
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: okRegistrationText
+            color: "#dfdfdf"
+            text: qsTr("Successfull registration!.")
+            styleColor: "#209a14"
+            wrapMode: Text.WordWrap
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+
+    Popup {
+        id: wrongRegistration
+        x: parent.width/2-120
+        y: parent.height*0.85
+        width: 240
+        height: 32
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: wrongRegistrationText
+            color: "#dfdfdf"
+            text: qsTr("This username or e-mail address is already used. Please check if you registerd before.")
+            wrapMode: Text.WordWrap
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+
     Item {
         id: container
         width: 289
@@ -134,7 +228,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             visible: true
             Label {
-                id: nameTextReg
+                id: emailTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("E-Mail")
@@ -146,7 +240,7 @@ Item {
             }
 
             TextField {
-                id: nameReg
+                id: emailReg
                 width: 200
                 height: parent.height
                 placeholderText: qsTr("e-mail")
@@ -176,8 +270,8 @@ Item {
             height: 40
             text: qsTr("Register")
             highlighted: true
+            onClicked: register.registering(userNameReg.text, passwordReg.text, emailReg.text, fullNameReg.text, addressReg.text, phoneReg.text)
         }
-
 
     }
 
@@ -193,7 +287,7 @@ Item {
             width: 289
             height: 40
             Label {
-                id: userNameTextReg1
+                id: addressTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("Address")
@@ -204,7 +298,7 @@ Item {
             }
 
             TextField {
-                id: userNameReg1
+                id: addressReg
                 width: 200
                 height: parent.height
                 anchors.right: parent.right
@@ -225,7 +319,7 @@ Item {
             width: 289
             height: 40
             Label {
-                id: passwordTextReg1
+                id: phoneTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("Tel.")
@@ -236,7 +330,7 @@ Item {
             }
 
             TextField {
-                id: passwordReg1
+                id: phoneReg
                 x: 96
                 y: 0
                 width: 200
@@ -276,7 +370,7 @@ Item {
             height: 40
             anchors.horizontalCenterOffset: 1
             Label {
-                id: nameTextReg1
+                id: fullNameTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("Full Name")
@@ -288,7 +382,7 @@ Item {
             }
 
             TextField {
-                id: nameReg1
+                id: fullNameReg
                 width: 200
                 height: parent.height
                 anchors.right: parent.right

@@ -24,7 +24,7 @@ bool db_server::init() {
 
     if (!db.open())
     {
-        std::cout << "ERROR [Database - init]" << db.lastError().text().toStdString() << std::endl;
+        std::cout << "ERROR [Database - init] " << db.lastError().text().toStdString() << std::endl;
         return false;
     }
     return true;
@@ -37,7 +37,7 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
 
     getLoginQuery.clear();
 
-    if(!getLoginQuery.exec("SELECT COUNT(*) FROM user WHERE user_name = " + user + " AND password = " + passw))
+    if(!getLoginQuery.exec("SELECT COUNT(*) FROM user WHERE user_name = '" + user + "' AND password = '" + passw + "'"))
     {
         std::cout << "[Database::getUsers]  Error: " << getLoginQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -49,16 +49,16 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
     if (getLoginQuery.value(0).toInt() == 1)
     {
         *ok = true;
-        std::cout << "ok -> true\n";
+        //std::cout << "ok -> true\n";
 
-        //'YYYY-MM-DD HH:MM' - date format in string
+        //'YYYY-MM-DD HH:MM' - date format in string -- Qt::ISODate (0-10) + Qt::ISODate (0-5)
         now = QDateTime::currentDateTime();
 
-        QString temp_date = now.toString("YYYY-MM-DD HH:MM");
+        QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
 
         updateLastQuery.clear();
 
-        updateLastQuery.exec("UPDATE user SET last_login_date = " + temp_date + " WHERE user_name = " + user);
+        updateLastQuery.exec("UPDATE user SET last_login_date = '" + temp_date + "' WHERE user_name = '" + user + "'");
 
         return;
     }
@@ -78,7 +78,7 @@ void db_server::check_reg_slot(const QString &email, const QString &user, bool* 
 
     checkRegQuery.clear();
 
-    if(!checkRegQuery.exec("SELECT COUNT(*) FROM user WHERE user_name = " + user + " AND e-mail = " + email))
+    if(!checkRegQuery.exec("SELECT COUNT(*) FROM user WHERE user_name = '" + user + "' OR \"e-mail\" = '" + email + "'"))
     {
         std::cout << "[Database::getReg]  Error: " << checkRegQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -90,7 +90,7 @@ void db_server::check_reg_slot(const QString &email, const QString &user, bool* 
     if (checkRegQuery.value(0).toInt() == 1)
     {
         *ok = true;
-        std::cout << "ok -> true\n";
+        //std::cout << "ok -> true\n";
         return;
     }
     if (!checkRegQuery.value(0).toInt())
@@ -108,14 +108,14 @@ void db_server::add_user_slot(const QString &email, const QString &user, const Q
     //'YYYY-MM-DD HH:MM' - date format in string
     now = QDateTime::currentDateTime();
 
-    QString temp_date = now.toString("YYYY-MM-DD HH:MM");
+    QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
 
     //:userP, :userN, :passw, :fullN, :email, :add, :phone, :date, :login)
     addUserQuery.clear();
-
-    if(!addUserQuery.exec("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date) VALUES (1," + user + ", " + passw + ", " + fullName + ", " + email + ", " + add + ", " + phone + ", " + temp_date + ", invalid")) {
+    std::cout << email.toStdString() << std::endl << user.toStdString() << std::endl << fullName.toStdString() << std::endl << passw.toStdString() << std::endl << add.toStdString() << std::endl << phone.toStdString() << std::endl << temp_date.toStdString() << std::endl;
+    if(!addUserQuery.exec("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date) VALUES (1,'" + user + "', '" + passw + "', '" + fullName + "', '" + email + "', '" + add + "', '" + phone + "', '" + temp_date + "', 'never')")) {
         std::cout << "[Database::addUser]  Error: " << addUserQuery.lastError().text().toStdString() << std::endl;
-        std::cout << "INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date) VALUES (:userP, :userN, :passw, :fullN, :email, :add, :phone, :date)\n";
+        std::cout << "INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date)";
         *hasError = true;
         return;
     }
@@ -130,7 +130,7 @@ void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, boo
 
     if (!checkIdQuery.exec("SELECT COUNT(*) FROM user WHERE id LIKE " + temp))
     {
-        std::cout << "[Database::getReg]  Error: " << checkIdQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::checkId]  Error: " << checkIdQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -140,9 +140,9 @@ void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, boo
     {
         getSelfQuery.clear();
 
-        if (!getSelfQuery.exec("SELECT e-mail, user_name, full_name, address, phone, registration_date FROM user WHERE id = " + temp))
+        if (!getSelfQuery.exec("SELECT \"e-mail\", user_name, full_name, address, phone, registration_date FROM user WHERE id = " + temp))
         {
-            std::cout << "[Database::getReg]  Error: " << getSelfQuery.lastError().text().toStdString() << std::endl;
+            std::cout << "[Database::getSelf]  Error: " << getSelfQuery.lastError().text().toStdString() << std::endl;
             *hasError = true;
             return;
         }
@@ -158,7 +158,7 @@ void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, boo
         data->insert("reg",getSelfQuery.value(5).toString());
 
         *ok = true;
-        std::cout << "ok -> true\n";
+        //std::cout << "ok -> true\n";
         return;
     }
     if (!checkIdQuery.value(0).toInt())

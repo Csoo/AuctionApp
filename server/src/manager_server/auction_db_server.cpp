@@ -3,9 +3,9 @@
 //
 
 #include <QString>
-#include <QJsonDocument>
 #include <QJsonArray>
 #include <iostream>
+#include <QJsonDocument>
 
 #include "auction_db_server.h"
 
@@ -14,7 +14,7 @@
 //}
 
 Auction_db_server::Auction_db_server() {
-    db = new db_server("QSQLITE", "Auction", "./database.db");
+    db = new db_server("QSQLITE", "Auction", "/home/petras/Dokumentumok/AuctionApp/server/src/database.db");
     db->init();
 
     QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
@@ -29,7 +29,7 @@ Auction_db_server::Auction_db_server() {
 void Auction_db_server::login(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    std::cout << "login section\n";
+    //std::cout << "login section\n";
     QString user = "", passw = "";
 
     for (const auto &h: request.headers) {
@@ -61,12 +61,12 @@ void Auction_db_server::login(const Request &request, Response &response) {
     }
     std::cout << "password ok\n";
     bool ok, hasError;
-    std::cout << "check start\n";
+    //std::cout << "check start\n";
     emit check_login(user,passw, &ok, &hasError);
-    std::cout << "check end\n";
+    //std::cout << "check end\n";
     if (hasError)
     {
-        std::cout << "err\n";
+        std::cout << "error\n";
         response.status = 500;
         return;
     }
@@ -81,61 +81,66 @@ void Auction_db_server::login(const Request &request, Response &response) {
         std::cout << "false\n";
         response.set_content("false","application/json");
     }
-    std::cout << "return\n";
+    //std::cout << "return\n";
     response.status = 200;
 }
 
 void Auction_db_server::userReg(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    std::cout << "reg section\n";
+    //std::cout << "reg section\n";
     if (request.headers.find("Content-Type") == request.headers.end())
     {
         response.status = 400;
         return;
     }
-    std::cout << "content type ok\n";
+    //std::cout << "content type ok\n";
     QString email, user, fullName, passw, add, phone;
 
-    QJsonDocument body = QJsonDocument::fromJson(request.body.c_str());
+    QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr);
+
+    QVariantMap body = bodyJson.toVariant().toMap();
 
     try
     {
-        email = body["email"].toString();
-        user = body["user"].toString();
-        fullName = body["fullName"].toString();
-        passw = body["password"].toString();
-        add = body["address"].toString();
+        email = body.value("email").toString();
+        user = body.value("user").toString();
+        fullName = body.value("fullName").toString();
+        passw = body.value("password").toString();
+        add = body.value("address").toString();
     }
     catch (...)
     {
         response.status = 400;
         return;
     }
+
     std::cout << "data ok\n";
-    if (body["phone"] != "")
-    {
-        phone = body["phone"].toString();
-    }
+
+    phone = body.value("phone").toString();
+
     std::cout << "phone ok\n";
     bool ok, hasError;
-    std::cout << "reg check start\n";
+    //std::cout << "reg check start\n";
     emit check_reg(email, user, &ok, &hasError);
-    std::cout << "reg check end\n";
+    //std::cout << "reg check end\n";
     if (hasError)
     {
         response.status = 500;
         return;
     }
-    std::cout << "no err\n";
+    std::cout << "no error\n";
     if (!ok)
     {
         std::cout << "user add start\n";
+        std::cout << email.toStdString() << std::endl << user.toStdString() << std::endl << fullName.toStdString() << std::endl << passw.toStdString() << std::endl << add.toStdString() << std::endl << phone.toStdString() << std::endl;
+
         emit add_user(email, user, fullName, passw, add, phone, &hasError);
         std::cout << "user add end\n";
     }
 
-    if (ok == 1)
+    if (ok)
     {
         std::cout << "err wrong user or email\n";
         response.set_content("bad username or bad email","application/json");
@@ -165,12 +170,16 @@ void Auction_db_server::search(const Request &request, Response &response) {
     QString text;
     QJsonArray filters;
 
-    QJsonDocument body = QJsonDocument::fromJson(request.body.c_str());
+    QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr);
+
+    QVariantMap body = bodyJson.toVariant().toMap();
 
     try
     {
-        text = body["text"].toString();
-        filters = body["filters"].toArray();
+        text = body.value("text").toString();
+        filters = body.value("filters").toJsonArray();
+
     }
     catch (...)
     {
