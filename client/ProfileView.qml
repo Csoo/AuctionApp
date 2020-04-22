@@ -9,6 +9,12 @@ Item {
     width: 1080
     height: 690
 
+    Component.onCompleted: profile.getUserData(1)
+
+    function getUserData(id) {
+        //httpRequest.userDataRequest(id);
+    }
+
     Image {
         id: image
         x: 118
@@ -19,7 +25,7 @@ Item {
         visible: true
         sourceSize.height: 443
         sourceSize.width: 309
-        source: "c:/Users/stecs/Pictures/Clipboard01.jpg"
+        source: "img/profil.png"
         fillMode: Image.Stretch
     }
 
@@ -172,7 +178,7 @@ Item {
 
     Label {
         id: positive_tag
-        x: 666
+        x: 502
         y: 307
         width: 93
         height: 20
@@ -183,7 +189,7 @@ Item {
 
     Label {
         id: positive
-        x: 780
+        x: 616
         y: 307
         width: 152
         height: 20
@@ -193,7 +199,7 @@ Item {
 
     Label {
         id: negative_tag
-        x: 666
+        x: 502
         y: 335
         width: 93
         height: 20
@@ -204,7 +210,7 @@ Item {
 
     Label {
         id: negative
-        x: 780
+        x: 616
         y: 335
         width: 152
         height: 20
@@ -214,7 +220,7 @@ Item {
 
     Label {
         id: reviews_tag
-        x: 666
+        x: 502
         y: 253
         text: qsTr("Reviews:")
         font.bold: true
@@ -223,8 +229,4 @@ Item {
 }
 
 
-/*##^##
-Designer {
-    D{i:1;anchors_x:"-160"}
-}
-##^##*/
+

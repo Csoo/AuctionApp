@@ -29,6 +29,7 @@ ApplicationWindow {
 
         property bool isOption: false
         property bool isLoggedIn: false
+        property int pageIndex: 0
 
         Page {
             visible: !main.isOption
@@ -41,6 +42,10 @@ ApplicationWindow {
                 function loggingIn() {
                     loginStack.push(loggedIn);
                     main.isLoggedIn = true;
+                }
+                function loggingOut() {
+                    loginStack.pop();
+                    main.isLoggedIn = false;
                 }
             }
 
@@ -71,10 +76,20 @@ ApplicationWindow {
 
             Component {
                 id: loggedIn
-                ProfileView {
+
+                SwipeView {
+                    id: loggedInSwipeView
+                    interactive: false
+                    currentIndex: main.pageIndex
+                    ProfileView {
+                        id: profileView
+                    }
+
+                    AddAuctionView {
+                        id: addView
+                    }
 
                 }
-
             }
         }
 
@@ -102,6 +117,8 @@ ApplicationWindow {
             anchors.left: parent.left
             anchors.leftMargin: 0
 
+            onProfilPressed: main.pageIndex = 0
+            onSearchPressed: main.pageIndex = 1
             onSettingPressed: main.isOption = true
             state: main.isLoggedIn ? "loggedIn" : "loggedOut"
         }

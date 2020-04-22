@@ -25,6 +25,10 @@ Item {
                 target: setting
                 anchors.top: search.bottom
             }
+            PropertyChanges {
+                target: logout
+                opacity: 1.0
+            }
         },
         State {
             name: "loggedOut"
@@ -40,6 +44,10 @@ Item {
                 target: setting
                 anchors.top: parent.top
             }
+            PropertyChanges {
+                target: logout
+                opacity: 0.0
+            }
         }
     ]
 
@@ -50,7 +58,7 @@ Item {
             reversible: true
 
             NumberAnimation {
-                targets: [profil, search]
+                targets: [profil, search, logout]
                 properties: "opacity"
                 duration: 500
                 easing.type: Easing.InOutQuad
@@ -157,7 +165,7 @@ Item {
         sourceSize.height: 88
         sourceSize.width: 88
         fillMode: Image.PreserveAspectFit
-        source: "img/setting.png"
+        source: "img/exit.png"
 
         MouseArea {
             id: quitArea
@@ -165,6 +173,32 @@ Item {
             hoverEnabled: true
             onClicked: Qt.quit()
         }
+    }
+
+    Image {
+        id: logout
+        x: 6
+        y: 393
+        width: 32
+        height: 32
+        rotation: -90
+        anchors.horizontalCenterOffset: 0
+        anchors.bottom: parent.bottom
+        sourceSize.height: 88
+        source: "img/exit.png"
+        MouseArea {
+            id: logoutArea
+            rotation: -90
+            hoverEnabled: true
+            anchors.fill: parent
+            onClicked: loginStack.loggingOut()
+        }
+        fillMode: Image.PreserveAspectFit
+        opacity: logoutArea.containsMouse ? 1.0 : 0.82
+        anchors.bottomMargin: 55
+        antialiasing: true
+        sourceSize.width: 88
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
 

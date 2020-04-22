@@ -9,5 +9,7 @@
         <file>LoginForm.qml</file>
         <file>OptionForm.qml</file>
         <file>ProfileView.qml</file>
+        <file>img/exit.png</file>
+        <file>AddAuctionView.qml</file>
     </qresource>
 </RCC>

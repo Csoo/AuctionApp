@@ -29,7 +29,7 @@ Auction_db_server::Auction_db_server() {
 void Auction_db_server::login(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    std::cout << "login section\n";
+    //std::cout << "login section\n";
     QString user = "", passw = "";
 
     for (const auto &h: request.headers) {
@@ -61,12 +61,12 @@ void Auction_db_server::login(const Request &request, Response &response) {
     }
     std::cout << "password ok\n";
     bool ok, hasError;
-    std::cout << "check start\n";
+    //std::cout << "check start\n";
     emit check_login(user,passw, &ok, &hasError);
-    std::cout << "check end\n";
+    //std::cout << "check end\n";
     if (hasError)
     {
-        std::cout << "err\n";
+        std::cout << "error\n";
         response.status = 500;
         return;
     }
@@ -81,20 +81,20 @@ void Auction_db_server::login(const Request &request, Response &response) {
         std::cout << "false\n";
         response.set_content("false","application/json");
     }
-    std::cout << "return\n";
+    //std::cout << "return\n";
     response.status = 200;
 }
 
 void Auction_db_server::userReg(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    std::cout << "reg section\n";
+    //std::cout << "reg section\n";
     if (request.headers.find("Content-Type") == request.headers.end())
     {
         response.status = 400;
         return;
     }
-    std::cout << "content type ok\n";
+    //std::cout << "content type ok\n";
     QString email, user, fullName, passw, add, phone;
 
     QJsonDocument body = QJsonDocument::fromJson(request.body.c_str());
@@ -119,15 +119,15 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
     }
     std::cout << "phone ok\n";
     bool ok, hasError;
-    std::cout << "reg check start\n";
+    //std::cout << "reg check start\n";
     emit check_reg(email, user, &ok, &hasError);
-    std::cout << "reg check end\n";
+    //std::cout << "reg check end\n";
     if (hasError)
     {
         response.status = 500;
         return;
     }
-    std::cout << "no err\n";
+    std::cout << "no error\n";
     if (!ok)
     {
         std::cout << "user add start\n";
