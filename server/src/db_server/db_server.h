@@ -13,6 +13,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QDebug>
+#include <iostream>
 
 class db_server: public QThread {
 public:
