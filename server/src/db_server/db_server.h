@@ -19,6 +19,7 @@ class db_server: public QThread {
 public:
 
     db_server(const QString& driver, QString connectionName, QString dbName);
+    ~db_server() override;
 
     bool init();
 

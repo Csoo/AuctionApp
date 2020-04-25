@@ -2,6 +2,7 @@
 // Created by petras on 2020. 03. 24..
 //
 
+#include <QCoreApplication>
 #include "db_server.h"
 
 db_server::db_server(const QString &driver, QString connectionName, QString dbName):
@@ -17,6 +18,12 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     checkIdQuery(db)
 {
     moveToThread(this);
+}
+
+db_server::~db_server() {
+    quit();
+    wait();
+    moveToThread(nullptr);
 }
 
 bool db_server::init() {
