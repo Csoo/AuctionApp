@@ -241,7 +241,7 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
                 + R"(","fullName":")" + data["fullName"]
                 + R"(","address":")" + data["address"]
                 + R"(","phone":")" + data["phone"]
-                + R"(","reg":")" + data["reg"];
+                + R"(","reg":")" + data["reg"] + "\n}";
 
 
     response.set_content(body.toStdString(),"application/json");
@@ -273,10 +273,10 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
         return;
     }
 
-    QString body = R"(","user":")" + data["user"]
+    QString body = R"({"user":")" + data["user"]
                    + R"(","fullName":")" + data["fullName"]
                    + R"(","reg":")" + data["reg"]
-                   + R"(","last":")" + data["last"];
+                   + R"(","last":")" + data["last"] + "\n}";
 
 
     response.set_content(body.toStdString(),"application/json");
