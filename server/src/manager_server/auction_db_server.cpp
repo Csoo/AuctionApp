@@ -13,8 +13,8 @@
 //
 //}
 
-Auction_db_server::Auction_db_server() {
-    db = new db_server("QSQLITE", "Auction", "/home/petras/Dokumentumok/AuctionApp/server/src/database.db");
+Auction_db_server::Auction_db_server(const QString &route) {
+    db = new db_server("QSQLITE", "Auction", route);
     db->init();
 
     QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
@@ -22,6 +22,9 @@ Auction_db_server::Auction_db_server() {
     QObject::connect(this, &Auction_db_server::add_user, db, &db_server::add_user_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::get_self, db, &db_server::get_self_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::get_other, db, &db_server::get_other_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_search, db, &db_server::get_search_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_auction, db, &db_server::get_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::all_auction, db, &db_server::all_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
 }
@@ -29,7 +32,6 @@ Auction_db_server::Auction_db_server() {
 void Auction_db_server::login(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    //std::cout << "login section\n";
     QString user = "", passw = "";
 
     for (const auto &h: request.headers) {
@@ -61,9 +63,9 @@ void Auction_db_server::login(const Request &request, Response &response) {
     }
     std::cout << "password ok\n";
     bool ok, hasError;
-    //std::cout << "check start\n";
+
     emit check_login(user,passw, &ok, &hasError);
-    //std::cout << "check end\n";
+
     if (hasError)
     {
         std::cout << "error\n";
@@ -81,20 +83,19 @@ void Auction_db_server::login(const Request &request, Response &response) {
         std::cout << "false\n";
         response.set_content("false","application/json");
     }
-    //std::cout << "return\n";
+
     response.status = 200;
 }
 
 void Auction_db_server::userReg(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    //std::cout << "reg section\n";
     if (request.headers.find("Content-Type") == request.headers.end())
     {
         response.status = 400;
         return;
     }
-    //std::cout << "content type ok\n";
+
     QString email, user, fullName, passw, add, phone;
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
@@ -122,9 +123,9 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
 
     std::cout << "phone ok\n";
     bool ok, hasError;
-    //std::cout << "reg check start\n";
+
     emit check_reg(email, user, &ok, &hasError);
-    //std::cout << "reg check end\n";
+
     if (hasError)
     {
         response.status = 500;
@@ -161,17 +162,17 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
 void Auction_db_server::search(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    if (request.headers.find("content_type") == request.headers.end())
+    if (request.headers.find("Content-Type") == request.headers.end())
     {
         response.status = 400;
         return;
     }
 
     QString text;
-    QJsonArray filters;
+    QJsonArray filters, resJSON;
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
-    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr);
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), resJD;
 
     QVariantMap body = bodyJson.toVariant().toMap();
 
@@ -187,7 +188,25 @@ void Auction_db_server::search(const Request &request, Response &response) {
         return;
     }
 
-    //todo: logic for parameterize qsl query
+    bool hasError;
+
+    emit get_search(text, filters, resJSON, hasError);
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    if (resJSON.empty())
+    {
+        response.status = 404;
+        return;
+    }
+
+    resJD.setArray(resJSON);
+    QString resString(resJD.toJson());
+    response.set_content(resString.toStdString(),"application/json");
 
     response.status = 200;
 }
@@ -197,9 +216,11 @@ void Auction_db_server::auction(const Request &request, Response &response) {
 
     int id = auId.toInt();
 
-    bool ok, hasError;
+    bool hasError;
+    QJsonArray resJSON;
+    QJsonDocument resJD;
 
-    //todo: signal emit
+    emit get_auction(id, resJSON, hasError);
 
     if (hasError)
     {
@@ -207,7 +228,41 @@ void Auction_db_server::auction(const Request &request, Response &response) {
         return;
     }
 
-    //todo: normal response
+    if (resJSON.empty())
+    {
+        response.status = 404;
+        return;
+    }
+
+    resJD.setArray(resJSON);
+    QString resString(resJD.toJson());
+    response.set_content(resString.toStdString(),"application/json");
+
+    response.status = 200;
+}
+
+void Auction_db_server::allAuction(const Request &request, Response &response) {
+    bool hasError;
+    QJsonArray resJSON;
+    QJsonDocument resJD;
+
+    emit all_auction(resJSON, hasError);
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    if (resJSON.empty())
+    {
+        response.status = 404;
+        return;
+    }
+
+    resJD.setArray(resJSON);
+    QString resString(resJD.toJson());
+    response.set_content(resString.toStdString(),"application/json");
 
     response.status = 200;
 }

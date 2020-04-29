@@ -223,3 +223,22 @@ void db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     std::cout << "SELECT COUNT(*) FROM user WHERE id LIKE :id\n";
     *hasError = true;
 }
+
+void db_server::get_search_slot(const QString &text, const QJsonArray &filters, QJsonArray &resJSON, bool &hasError) {
+    //   "text": "vécé kefe",
+    //    "category": "szerszám",
+    //    "filters": [
+    //        "color": "green",
+    //        "state": "new",
+    //        "minPrice": 100,
+    //        "maxPrice": 200
+    //    ]
+}
+
+void db_server::get_auction_slot(const int id, QJsonArray &resJSON, bool &hasError) {
+
+}
+
+void db_server::all_auction_slot(QJsonArray &resJSON, bool &hasError) {
+
+}

@@ -16,13 +16,14 @@ using namespace httplib;
 class Auction_db_server :public QObject{
 Q_OBJECT
 public:
-    Auction_db_server();
+    explicit Auction_db_server(const QString &route);
 
     void login(const Request &request, Response &response);
     void userReg(const Request &request, Response &response);
 
     void search(const Request &request, Response &response);
     void auction(const Request &request, Response &response);
+    void allAuction(const Request &request, Response &response);
 
     void getSelf(const Request &request, Response &response);
     void getOther(const Request &request, Response &response);
@@ -35,7 +36,9 @@ signals:
     void check_reg(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
-    //void get_search(QList<int> ints, QList<QString> strings);
+    void get_search(const QString &text, const QJsonArray &filters, QJsonArray &resJSON, bool &hasError);
+    void get_auction(const int id, QJsonArray &resJSON, bool &hasError);
+    void all_auction(QJsonArray &resJSON, bool &hasError);
 
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
 

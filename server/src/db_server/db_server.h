@@ -29,6 +29,9 @@ public slots:
     void check_reg_slot(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self_slot(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other_slot(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
+    void get_search_slot(const QString &text, const QJsonArray &filters, QJsonArray &resJSON, bool &hasError);
+    void get_auction_slot(const int id, QJsonArray &resJSON, bool &hasError);
+    void all_auction_slot(QJsonArray &resJSON, bool &hasError);
 
     void add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
 
