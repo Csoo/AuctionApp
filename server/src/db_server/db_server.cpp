@@ -16,7 +16,9 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     addUserQuery(db),
     updateLastQuery(db),
     checkIdQuery(db),
-    getSearchQuery(db)
+    getSearchQuery(db),
+    getAuctionQuery(db),
+    allAuctionQuery(db)
 {
     moveToThread(this);
 }
@@ -276,18 +278,78 @@ void db_server::get_search_slot(const QString &text, const QString &category, co
     QString resTemp = "{\n[\n";
 
     while (getSearchQuery.next()) {
-        resTemp += "{\n\"auction_id\" : " + getSearchQuery.value(0).toString() + ",\n\"data\" : [\n \"title\" : \"" + getSearchQuery.value(1).toString() + "\",\n"
-                                                                                                "\"condition\" : \"" + getSearchQuery.value(2).toString() + "\",\n"
-                                                                                                " \"price\" : \"" + getSearchQuery.value(3).toString() + "\"\n]\n},";
+        resTemp += "{\n\"auction_id\" : \"" + getSearchQuery.value(0).toString() + "\",\n\"data\" : [\n \"title\" : \"" + getSearchQuery.value(1).toString() + "\",\n"
+                      "\"condition\" : \"" + getSearchQuery.value(2).toString() + "\",\n\"price\" : \"" + getSearchQuery.value(3).toString() + "\"\n]\n},\n";
     }
 
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
 
-void db_server::get_auction_slot(int id, QJsonArray &resJSON, bool &hasError) {
+void db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError) {
+    *hasError = false;
 
+    QString temp = QString::number(id);
+
+    getAuctionQuery.clear();
+
+    if (!getAuctionQuery.exec("select auction.id, item_description.title, auction.start_date, auction.end_date, auction.current_price, auction.min_step, auction.fix_price,\n"
+                              "user.id, user.user_name, item_description.text, item_description.color, item_condition.condition_text\n"
+                              "from auction\n"
+                              "inner join item on auction.item_id=item.id inner join item_description on item.description_id=item_description.id\n"
+                              "inner join item_condition on item_condition.id=item_description.condition_id inner join user on item.user_id=user.id\n"
+                              "where auction.id = " + temp))
+    {
+        std::cout << "[Database::getAuction]  Error: " << getAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    getAuctionQuery.next();
+
+    QString resTemp = "{\n\"auction_id\" : \"" + getAuctionQuery.value(0).toString() + "\",\n\"title\" : \"" + getAuctionQuery.value(1).toString() + "\",\n"
+                      "\"start_date\" : \"" + getAuctionQuery.value(2).toString() + "\",\n\"end_date\" : \"" + getAuctionQuery.value(3).toString() + "\",\n"
+                      "\"current_price\" : \"" + getAuctionQuery.value(4).toString() + "\",\n\"min_step\" : \"" + getAuctionQuery.value(5).toString() + "\",\n"
+                      "\"fix_price\" : \"" + getAuctionQuery.value(6).toString() + "\",\n"
+                      "\"user\" : [\n\"last_licit_user_id\" : \"" + getAuctionQuery.value(7).toString() + "\",\n\"last_licit_user\" : \"" + getAuctionQuery.value(8).toString() + "\"\n],\n"
+                      "\"description_text\" : \"" + getAuctionQuery.value(9).toString() + "\",\n\"description_color\" : \"" + getAuctionQuery.value(10).toString() + "\",\n"
+                      "\"condition_text\" : \"" + getAuctionQuery.value(11).toString() + "\"\n}\n";
+
+    *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
 
-void db_server::all_auction_slot(QJsonArray &resJSON, bool &hasError) {
+void db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
+    *hasError = false;
 
+    allAuctionQuery.clear();
+
+    if (!allAuctionQuery.exec("select auction.id, item_description.title, auction.start_date, auction.end_date, auction.current_price, auction.min_step, auction.fix_price,\n"
+                              "user.id, user.user_name, item_description.text, item_description.color, item_condition.condition_text\n"
+                              "from auction\n"
+                              "inner join item on auction.item_id=item.id inner join item_description on item.description_id=item_description.id\n"
+                              "inner join item_condition on item_condition.id=item_description.condition_id inner join user on item.user_id=user.id\n"))
+    {
+        std::cout << "[Database::getAuction]  Error: " << allAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    QString resTemp = "{\n[\n";
+
+     while (allAuctionQuery.next()) {
+         if (resTemp.size() != 4)
+         {
+             resTemp += ",\n";
+         }
+         resTemp = "{\n\"auction_id\" : \"" + allAuctionQuery.value(0).toString() + "\",\n\"title\" : \"" + allAuctionQuery.value(1).toString() + "\",\n"
+         "\"start_date\" : \"" + allAuctionQuery.value(2).toString() + "\",\n\"end_date\" : \"" + allAuctionQuery.value(3).toString() + "\",\n"
+         "\"current_price\" : \"" + allAuctionQuery.value(4).toString() + "\",\n\"min_step\" : \"" + allAuctionQuery.value(5).toString() + "\",\n"
+         "\"fix_price\" : \"" + allAuctionQuery.value(6).toString() + "\",\n"
+         "\"user\" : [\n\"last_licit_user_id\" : \"" + allAuctionQuery.value(7).toString() + "\",\n\"last_licit_user\" : \"" + allAuctionQuery.value(8).toString() + "\"\n],\n"
+         "\"description_text\" : \"" + allAuctionQuery.value(9).toString() + "\",\n\"description_color\" : \"" + allAuctionQuery.value(10).toString() + "\",\n"
+         "\"condition_text\" : \"" + allAuctionQuery.value(11).toString() + "\"\n}";
+     }
+
+     resTemp += "]\n}\n";
+
+    *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }

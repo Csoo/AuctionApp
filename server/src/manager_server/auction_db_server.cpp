@@ -216,10 +216,9 @@ void Auction_db_server::auction(const Request &request, Response &response) {
     int id = auId.toInt();
 
     bool hasError;
-    QJsonArray resJSON;
-    QJsonDocument resJD;
+    QJsonDocument resJSON;
 
-    emit get_auction(id, resJSON, hasError);
+    emit get_auction(id, &resJSON, &hasError);
 
     if (hasError)
     {
@@ -227,14 +226,13 @@ void Auction_db_server::auction(const Request &request, Response &response) {
         return;
     }
 
-    if (resJSON.empty())
+    if (resJSON.isEmpty())
     {
         response.status = 404;
         return;
     }
 
-    resJD.setArray(resJSON);
-    QString resString(resJD.toJson());
+    QString resString(resJSON.toJson());
     response.set_content(resString.toStdString(),"application/json");
 
     response.status = 200;
@@ -242,10 +240,9 @@ void Auction_db_server::auction(const Request &request, Response &response) {
 
 void Auction_db_server::allAuction(const Request &request, Response &response) {
     bool hasError;
-    QJsonArray resJSON;
-    QJsonDocument resJD;
+    QJsonDocument resJSON;
 
-    emit all_auction(resJSON, hasError);
+    emit all_auction(&resJSON, &hasError);
 
     if (hasError)
     {
@@ -253,14 +250,13 @@ void Auction_db_server::allAuction(const Request &request, Response &response) {
         return;
     }
 
-    if (resJSON.empty())
+    if (resJSON.isEmpty())
     {
         response.status = 404;
         return;
     }
 
-    resJD.setArray(resJSON);
-    QString resString(resJD.toJson());
+    QString resString(resJSON.toJson());
     response.set_content(resString.toStdString(),"application/json");
 
     response.status = 200;

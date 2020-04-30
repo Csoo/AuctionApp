@@ -31,8 +31,8 @@ public slots:
     void get_self_slot(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other_slot(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError);
-    void get_auction_slot(int id, QJsonArray &resJSON, bool &hasError);
-    void all_auction_slot(QJsonArray &resJSON, bool &hasError);
+    void get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError);
+    void all_auction_slot(QJsonDocument *resJSON, bool *hasError);
 
     void add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
 
@@ -48,6 +48,8 @@ protected:
     QSqlQuery getOtherQuery;
     QSqlQuery checkIdQuery;
     QSqlQuery getSearchQuery;
+    QSqlQuery getAuctionQuery;
+    QSqlQuery allAuctionQuery;
 
     QSqlQuery addUserQuery;
 
