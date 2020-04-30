@@ -36,8 +36,8 @@ signals:
     void check_reg(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
-    void get_search(const QString &text, const QJsonArray &filters, QJsonArray &resJSON, bool &hasError);
-    void get_auction(const int id, QJsonArray &resJSON, bool &hasError);
+    void get_search(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError);
+    void get_auction(int id, QJsonArray &resJSON, bool &hasError);
     void all_auction(QJsonArray &resJSON, bool &hasError);
 
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);

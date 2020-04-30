@@ -15,7 +15,8 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     getOtherQuery(db),
     addUserQuery(db),
     updateLastQuery(db),
-    checkIdQuery(db)
+    checkIdQuery(db),
+    getSearchQuery(db)
 {
     moveToThread(this);
 }
@@ -119,8 +120,10 @@ void db_server::add_user_slot(const QString &email, const QString &user, const Q
 
     //:userP, :userN, :passw, :fullN, :email, :add, :phone, :date, :login)
     addUserQuery.clear();
-    std::cout << email.toStdString() << std::endl << user.toStdString() << std::endl << fullName.toStdString() << std::endl << passw.toStdString() << std::endl << add.toStdString() << std::endl << phone.toStdString() << std::endl << temp_date.toStdString() << std::endl;
-    if(!addUserQuery.exec("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date) VALUES (1,'" + user + "', '" + passw + "', '" + fullName + "', '" + email + "', '" + add + "', '" + phone + "', '" + temp_date + "', 'never')")) {
+
+    if(!addUserQuery.exec("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date)"
+                          " VALUES (1,'" + user + "', '" + passw + "', '" + fullName + "', '" + email + "', '" + add + "', '" + phone + "', '" + temp_date + "', 'never')")) {
+
         std::cout << "[Database::addUser]  Error: " << addUserQuery.lastError().text().toStdString() << std::endl;
         std::cout << "INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date)";
         *hasError = true;
@@ -224,18 +227,64 @@ void db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     *hasError = true;
 }
 
-void db_server::get_search_slot(const QString &text, const QJsonArray &filters, QJsonArray &resJSON, bool &hasError) {
-    //   "text": "vécé kefe",
-    //    "category": "szerszám",
-    //    "filters": [
-    //        "color": "green",
-    //        "state": "new",
-    //        "minPrice": 100,
-    //        "maxPrice": 200
-    //    ]
+void db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError) {
+
+    *hasError = false;
+
+    getSearchQuery.clear();
+
+    QVariantMap filterMap = filters.toVariant().toMap();
+
+    QString temp;
+
+    if (filterMap.contains("minPrice"))
+    {
+        if (filterMap.contains("maxPrice"))
+        {
+            temp = "where (auction.current_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + " or "
+                              "auction.fix_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + ")";
+        }
+        else
+        {
+            temp = "where (auction.current_price > " + filterMap["minPrice"].toString() + " or auction.fix_price > " + filterMap["minPrice"].toString() + ")";
+        }
+    }
+    else
+    {
+        if (filterMap.contains("maxPrice"))
+        {
+            temp = "where (auction.current_price < " + filterMap["maxPrice"].toString() + " or auction.fix_price < " + filterMap["maxPrice"].toString() + ")";
+        }
+    }
+
+    filterMap.erase(filterMap.find("maxPrice"));
+    filterMap.erase(filterMap.find("minPrice"));
+
+    for (const auto &filter : filterMap) {
+        temp += " and " + filterMap.key(filter.toString()) + " = '" + filter.toString() + "'";
+    }
+
+    if (!getSearchQuery.exec("select auction.id, item_description.title, item_condition.condition_text, auction.current_price from auction\n"
+                           "inner join item on auction.item_id=item.id\ninner join item_category on item_category.id=item.category_id\n"
+                           "inner join item_description on item.description_id=item_description.id\ninner join item_condition on item_condition.id=item_description.condition_id" + temp))
+    {
+        std::cout << "[Database::getSearch]  Error: " << getSearchQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    QString resTemp = "{\n[\n";
+
+    while (getSearchQuery.next()) {
+        resTemp += "{\n\"auction_id\" : " + getSearchQuery.value(0).toString() + ",\n\"data\" : [\n \"title\" : \"" + getSearchQuery.value(1).toString() + "\",\n"
+                                                                                                "\"condition\" : \"" + getSearchQuery.value(2).toString() + "\",\n"
+                                                                                                " \"price\" : \"" + getSearchQuery.value(3).toString() + "\"\n]\n},";
+    }
+
+    *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
 
-void db_server::get_auction_slot(const int id, QJsonArray &resJSON, bool &hasError) {
+void db_server::get_auction_slot(int id, QJsonArray &resJSON, bool &hasError) {
 
 }
 

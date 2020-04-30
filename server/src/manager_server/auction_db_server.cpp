@@ -168,18 +168,18 @@ void Auction_db_server::search(const Request &request, Response &response) {
         return;
     }
 
-    QString text;
-    QJsonArray filters, resJSON;
+    QString text, category;
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
-    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), resJD;
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
 
     QVariantMap body = bodyJson.toVariant().toMap();
 
     try
     {
         text = body.value("text").toString();
-        filters = body.value("filters").toJsonArray();
+        category = body.value("category").toString();
+        filters = body.value("filters").toJsonDocument();
 
     }
     catch (...)
@@ -190,7 +190,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
 
     bool hasError;
 
-    emit get_search(text, filters, resJSON, hasError);
+    emit get_search(text, category, filters, &resJSON, &hasError);
 
     if (hasError)
     {
@@ -198,14 +198,13 @@ void Auction_db_server::search(const Request &request, Response &response) {
         return;
     }
 
-    if (resJSON.empty())
+    if (resJSON.isEmpty())
     {
         response.status = 404;
         return;
     }
 
-    resJD.setArray(resJSON);
-    QString resString(resJD.toJson());
+    QString resString(resJSON.toJson());
     response.set_content(resString.toStdString(),"application/json");
 
     response.status = 200;
