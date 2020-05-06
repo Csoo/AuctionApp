@@ -11,6 +11,108 @@ Item {
     anchors.fill: parent
     visible: true
 
+    function registering(userName, password, email, fullName, address, phone) {
+        backButton.enabled = false;
+        var error = false;
+        if (userName === "") {
+            userNameTextReg.color = "red";
+            error = true;
+        } else{
+            userNameTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (password === "") {
+            passwordTextReg.color = "red";
+            error = true;
+        } else{
+            passwordTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (password === "" || password !== passwordConfReg.text) {
+            passwordConfTextReg.color = "red";
+            error = true;
+        } else{
+            passwordConfTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (email === "") {
+            emailTextReg.color = "red";
+            error = true;
+        } else{
+            emailTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (fullName === "") {
+            fullNameTextReg.color = "red";
+            error = true;
+        } else{
+            fullNameTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (address === "") {
+            addressTextReg.color = "red";
+            error = true;
+        } else{
+            addressTextReg.color = applicationWindow.highlightTextColor;
+        }
+
+        if (error) {
+            backButton.enabled = true;
+            return;
+        }
+
+        if ( httpRequest.registerRequest(userName, password, email, fullName, address, phone) ) {
+            okRegistration.open()
+        } else {
+            wrongRegistration.open();
+        }
+        backButton.enabled = true;
+    }
+
+    Title {
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        title: qsTr("Registration")
+    }
+
+    Popup {
+        id: okRegistration
+        x: parent.width/2-100
+        y: parent.height*0.85
+        width: 200
+        height: 24
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: okRegistrationText
+            color: "#dfdfdf"
+            text: qsTr("Successfull registration!.")
+            styleColor: "#209a14"
+            wrapMode: Text.WordWrap
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+
+    Popup {
+        id: wrongRegistration
+        x: parent.width/2-120
+        y: parent.height*0.85
+        width: 240
+        height: 32
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: wrongRegistrationText
+            color: "#dfdfdf"
+            text: qsTr("This username or e-mail address is already used. Please check if you registerd before.")
+            wrapMode: Text.WordWrap
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+
     Item {
         id: container
         width: 289

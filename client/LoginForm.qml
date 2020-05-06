@@ -7,6 +7,8 @@ Item {
     visible: true
     anchors.fill: parent
 
+    Keys.onPressed: if (event.key === Qt.Key_Return) {httpRequest.loginRequest(userName.text, password.text) ? login.loginAccepted() : wrongLogin.open()}
+
     signal loginAccepted()
 
     Popup {
@@ -26,6 +28,14 @@ Item {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
         }
+    }
+
+    Title {
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        title: qsTr("Auction App")
     }
 
     Item {
@@ -51,7 +61,7 @@ Item {
                 height: parent.height
                 anchors.left: parent.left
                 color: highlightTextColor
-                text: qsTr("User Name")
+                text: qsTr("Username")
                 font.weight: Font.Medium
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter

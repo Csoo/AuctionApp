@@ -6,7 +6,7 @@ using json = nlohmann::json;
 APIrequest::APIrequest(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
-    url(QUrl("http://localhost:8080"))
+    url(QUrl("http://81.183.216.27:3000"))
 {
 
 }

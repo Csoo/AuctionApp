@@ -1,4 +1,4 @@
-import QtQuick 2.0
+ import QtQuick 2.0
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.3
 
@@ -8,6 +8,20 @@ Item {
     y: 0
     width: 1080
     height: 690
+
+    Component.onCompleted: profile.getUserData(1)
+
+    function getUserData(id) {
+        //httpRequest.userDataRequest(id);
+    }
+
+    Title {
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        title: qsTr("Profile")
+    }
 
     Image {
         id: image

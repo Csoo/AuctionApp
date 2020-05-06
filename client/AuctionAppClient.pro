@@ -36,4 +36,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     3rdparty/nlohmann/json.hpp \
-    apirequest.h
+    apirequest.h \
+    auctionimages.h
+
+DISTFILES +=
