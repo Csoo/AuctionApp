@@ -30,6 +30,7 @@ ApplicationWindow {
 
         property bool isOption: false
         property bool isLoggedIn: false
+        property int pageIndex: 0
 
         Page {
             visible: !main.isOption
@@ -42,6 +43,10 @@ ApplicationWindow {
                 function loggingIn() {
                     loginStack.push(loggedIn);
                     main.isLoggedIn = true;
+                }
+                function loggingOut() {
+                    loginStack.pop();
+                    main.isLoggedIn = false;
                 }
             }
 
@@ -95,7 +100,6 @@ ApplicationWindow {
                     }
 
                 }
-
             }
         }
 

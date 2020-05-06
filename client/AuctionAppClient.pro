@@ -15,6 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         apirequest.cpp \
+        auctionimages.cpp \
         main.cpp
 
 RESOURCES += qml.qrc

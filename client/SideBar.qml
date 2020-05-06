@@ -285,7 +285,7 @@ Item {
         sourceSize.height: 88
         sourceSize.width: 88
         fillMode: Image.PreserveAspectFit
-        source: "img/setting.png"
+        source: "img/exit.png"
 
         MouseArea {
             id: quitArea

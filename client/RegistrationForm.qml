@@ -236,7 +236,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             visible: true
             Label {
-                id: nameTextReg
+                id: emailTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("E-Mail")
@@ -248,7 +248,7 @@ Item {
             }
 
             TextField {
-                id: nameReg
+                id: emailReg
                 width: 200
                 height: parent.height
                 placeholderText: qsTr("e-mail")
@@ -278,8 +278,8 @@ Item {
             height: 40
             text: qsTr("Register")
             highlighted: true
+            onClicked: register.registering(userNameReg.text, passwordReg.text, emailReg.text, fullNameReg.text, addressReg.text, phoneReg.text)
         }
-
 
     }
 
@@ -295,7 +295,7 @@ Item {
             width: 289
             height: 40
             Label {
-                id: userNameTextReg1
+                id: addressTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("Address")
@@ -306,7 +306,7 @@ Item {
             }
 
             TextField {
-                id: userNameReg1
+                id: addressReg
                 width: 200
                 height: parent.height
                 anchors.right: parent.right
@@ -327,7 +327,7 @@ Item {
             width: 289
             height: 40
             Label {
-                id: passwordTextReg1
+                id: phoneTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("Tel.")
@@ -338,7 +338,7 @@ Item {
             }
 
             TextField {
-                id: passwordReg1
+                id: phoneReg
                 x: 96
                 y: 0
                 width: 200
@@ -378,7 +378,7 @@ Item {
             height: 40
             anchors.horizontalCenterOffset: 1
             Label {
-                id: nameTextReg1
+                id: fullNameTextReg
                 height: parent.height
                 color: highlightTextColor
                 text: qsTr("Full Name")
@@ -390,7 +390,7 @@ Item {
             }
 
             TextField {
-                id: nameReg1
+                id: fullNameReg
                 width: 200
                 height: parent.height
                 anchors.right: parent.right

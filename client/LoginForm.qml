@@ -131,7 +131,7 @@ Item {
             anchors.left: userContainer.right
             anchors.leftMargin: 21
             highlighted: true
-            onClicked: httpRequest.loginRequest(userName.text, password.text) ? login() : wrongLogin.open()
+            onClicked: httpRequest.loginRequest(userName.text, password.text) ? login.loginAccepted() : wrongLogin.open()
             //onClicked: userName.text == "admin" ? login.loginAccepted() : wrongLogin.open()
         }
 
