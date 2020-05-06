@@ -14,6 +14,7 @@ ApplicationWindow {
 
     property bool isDark: settings.dark ? true : false
     property color highlightTextColor: isDark ? "#90CAF9" : "#2196F3"
+    property date currentDate: new Date()
 
     Material.theme: isDark ? Material.Dark : Material.Light
     Material.accent: Material.Blue
@@ -80,10 +81,19 @@ ApplicationWindow {
                 SwipeView {
                     id: loggedInSwipeView
                     interactive: false
+                    orientation: Qt.Vertical
+                    onCurrentIndexChanged: {
+                        main.isOption = false
+                    }
                     currentIndex: main.pageIndex
                     ProfileView {
                         id: profileView
                     }
+
+                    AddAuction {
+                        id: addAuction
+                    }
+
 
                     AddAuctionView {
                         id: addView
@@ -118,7 +128,8 @@ ApplicationWindow {
             anchors.leftMargin: 0
 
             onProfilPressed: main.pageIndex = 0
-            onSearchPressed: main.pageIndex = 1
+            onAddAuctionPressed: main.pageIndex = 1
+            onSearchPressed: main.pageIndex = 2
             onSettingPressed: main.isOption = true
             state: main.isLoggedIn ? "loggedIn" : "loggedOut"
         }

@@ -39,3 +39,5 @@ HEADERS += \
     3rdparty/nlohmann/json.hpp \
     apirequest.h \
     auctionimages.h
+
+DISTFILES +=

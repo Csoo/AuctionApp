@@ -64,6 +64,14 @@ Item {
         backButton.enabled = true;
     }
 
+    Title {
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        title: qsTr("Registration")
+    }
+
     Popup {
         id: okRegistration
         x: parent.width/2-100

@@ -6,6 +6,14 @@ Item {
     id: option
     property bool dark: darkSwitch.checked ? true : false
 
+    Title {
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        title: qsTr("Option")
+    }
+
     Switch {
         id: darkSwitch
         x: 344
