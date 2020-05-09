@@ -25,6 +25,8 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(this, &Auction_db_server::get_search, db, &db_server::get_search_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::get_auction, db, &db_server::get_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::all_auction, db, &db_server::all_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_id, db, &db_server::get_id_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::add_auction, db, &db_server::add_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
 }
@@ -332,4 +334,72 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
     response.set_content(body.toStdString(),"application/json");
 
     response.status = 200;
+}
+
+void Auction_db_server::addAuction(const Request &request, Response &response) {
+    if (request.headers.find("Content-Type") == request.headers.end())
+    {
+        response.status = 400;
+        return;
+    }
+
+    QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
+
+    QVariantMap body = bodyJson.toVariant().toMap();
+
+    QMap<QString,QString> p;
+    QString tag;
+
+    try
+    {
+        p["user"] = body.value("user_id").toString();
+        p["title"] = body.value("title").toString();
+        p["description"] = body.value("description_text").toString();
+        p["color"] = body.value("color").toString();
+        p["cp"] = body.value("current_price").toString();
+        p["mins"] = body.value("min_step").toString();
+        p["categ"] = body.value("category").toString();
+        p["condition"] = body.value("condition_id").toString();
+        tag = body.value("tags").toString();
+        p["ed"] =body.value("end_date").toString();
+    }
+    catch (...)
+    {
+        response.body = "false";
+        response.status = 400;
+        return;
+    }
+
+    QStringList tags;
+
+    tag = tag.mid(1,tag.length()-2);
+    tags = tag.split(',');
+
+    for (auto &t: tags) {
+        t = t.mid(1,t.length()-2);
+    }
+
+    bool hasError;
+
+    emit add_auction(p, tags, &hasError);
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    QString id;
+
+    emit get_id(p["user"], &id, &hasError);
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    response.status = 200;
+    response.set_content(id.toStdString(),"application/json");
 }

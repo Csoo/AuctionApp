@@ -18,7 +18,9 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     checkIdQuery(db),
     getSearchQuery(db),
     getAuctionQuery(db),
-    allAuctionQuery(db)
+    allAuctionQuery(db),
+    getAuctionIdQuery(db),
+    addAuctionQuery(db)
 {
     moveToThread(this);
 }
@@ -59,7 +61,6 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
     if (getLoginQuery.value(0).toInt() == 1)
     {
         *ok = true;
-        //std::cout << "ok -> true\n";
 
         //'YYYY-MM-DD HH:MM' - date format in string -- Qt::ISODate (0-10) + Qt::ISODate (0-5)
         now = QDateTime::currentDateTime();
@@ -120,7 +121,6 @@ void db_server::add_user_slot(const QString &email, const QString &user, const Q
 
     QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
 
-    //:userP, :userN, :passw, :fullN, :email, :add, :phone, :date, :login)
     addUserQuery.clear();
 
     if(!addUserQuery.exec("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date)"
@@ -170,7 +170,7 @@ void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, boo
         data->insert("reg",getSelfQuery.value(5).toString());
 
         *ok = true;
-        //std::cout << "ok -> true\n";
+
         return;
     }
     if (!checkIdQuery.value(0).toInt())
@@ -352,4 +352,85 @@ void db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
      resTemp += "]\n}\n";
 
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
+}
+
+void db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
+    *hasError = false;
+
+    getAuctionIdQuery.clear();
+
+    if(!getAuctionIdQuery.exec("SELECT auction.id FROM item\n"
+                               "inner join item on auction.item_id=item.id inner join user on item.user_id=user.id\n"
+                               "WHRER user.id = " + user + " ORDER BY id DESC LIMIT 1"))
+    {
+        std::cout << "[Database::getAuctionId]  Error: " << getAuctionIdQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    getAuctionIdQuery.next();
+
+    *id = getAuctionIdQuery.value(0).toString();
+}
+
+void db_server::add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError){
+    *hasError = false;
+
+    addAuctionQuery.clear();
+
+    if(!addAuctionQuery.exec("INSERT INTO item_description (title, condition_id, color, text) VALUES (" + parameters["title"] + ", " + parameters["condition"] + ", " + parameters["color"] + ", " + parameters["description"] + ")"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    addAuctionQuery.clear();
+
+    if(!addAuctionQuery.exec("SELECT id FROM item_description ORDER BY id DESC LIMIT 1"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    addAuctionQuery.next();
+
+    QString descId = addAuctionQuery.value(0).toString();
+
+    addAuctionQuery.clear();
+
+    if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES (" + parameters["user"] + ", " + descId + ", " + parameters["categ"] + ")"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    addAuctionQuery.clear();
+
+    if(!addAuctionQuery.exec("SELECT id FROM item ORDER BY id DESC LIMIT 1"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    addAuctionQuery.next();
+
+    QString itemId = addAuctionQuery.value(0).toString();
+
+    addAuctionQuery.clear();
+
+    //'YYYY-MM-DD HH:MM' - date format in string
+    now = QDateTime::currentDateTime();
+
+    QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
+
+    if(!addAuctionQuery.exec("INSERT INTO auction (item_id, start_date, end_date, current_price, min_step, fix_price, last_licit_user_id) VALUES (" + itemId + ", " + temp_date + ", " + parameters["ed"] + ", " + parameters["cp"] + ", " + parameters["mins"] + ", " + "0" + ", " + parameters["user"] + ")"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
 }

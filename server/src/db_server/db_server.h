@@ -33,8 +33,11 @@ public slots:
     void get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError);
     void get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError);
     void all_auction_slot(QJsonDocument *resJSON, bool *hasError);
+    void get_id_slot(const QString &user, QString *id, bool *hasError);
 
     void add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
+    void add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
+
 
 protected:
 
@@ -50,8 +53,10 @@ protected:
     QSqlQuery getSearchQuery;
     QSqlQuery getAuctionQuery;
     QSqlQuery allAuctionQuery;
+    QSqlQuery getAuctionIdQuery;
 
     QSqlQuery addUserQuery;
+    QSqlQuery addAuctionQuery;
 
     QSqlQuery updateLastQuery;
 

@@ -22,6 +22,8 @@ public:
     void userReg(const Request &request, Response &response);
 
     void search(const Request &request, Response &response);
+
+    void addAuction(const Request &request, Response &response);
     void auction(const Request &request, Response &response);
     void allAuction(const Request &request, Response &response);
 
@@ -39,8 +41,10 @@ signals:
     void get_search(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError);
     void get_auction(int id, QJsonDocument *resJSON, bool *hasError);
     void all_auction(QJsonDocument *resJSON, bool *hasError);
+    void get_id(const QString &user, QString *id, bool *hasError);
 
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
+    void add_auction(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
 
 private:
     db_server* db;
