@@ -10,6 +10,9 @@ INCLUDE_DIRECTORIES(db_server)
 ADD_SUBDIRECTORY(cpp_email)
 INCLUDE_DIRECTORIES(cpp_email)
 
+ADD_SUBDIRECTORY(auction_closer)
+INCLUDE_DIRECTORIES(auction_closer)
+
 INCLUDE(3rdparty)
 
 ADD_EXECUTABLE(auctionapp main.cpp)

@@ -14,19 +14,21 @@
 //}
 
 Auction_db_server::Auction_db_server(const QString &route) {
-    db = new db_server("QSQLITE", "Auction", route);
+    db = new Db_server("QSQLITE", "Auction", route);
+    closes = new QMap<QString,QString>();
+    //closer = new Auction_closer(closes);
     db->init();
 
-    QObject::connect(this, &Auction_db_server::check_login, db, &db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::check_reg, db, &db_server::check_reg_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::add_user, db, &db_server::add_user_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::get_self, db, &db_server::get_self_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::get_other, db, &db_server::get_other_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::get_search, db, &db_server::get_search_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::get_auction, db, &db_server::get_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::all_auction, db, &db_server::all_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::get_id, db, &db_server::get_id_slot, Qt::ConnectionType::BlockingQueuedConnection);
-    QObject::connect(this, &Auction_db_server::add_auction, db, &db_server::add_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::check_login, db, &Db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::check_reg, db, &Db_server::check_reg_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::add_user, db, &Db_server::add_user_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_self, db, &Db_server::get_self_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_other, db, &Db_server::get_other_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_search, db, &Db_server::get_search_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_auction, db, &Db_server::get_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::all_auction, db, &Db_server::all_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_id, db, &Db_server::get_id_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::add_auction, db, &Db_server::add_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
 }
@@ -293,7 +295,7 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
                 + R"(","fullName":")" + data["fullName"]
                 + R"(","address":")" + data["address"]
                 + R"(","phone":")" + data["phone"]
-                + R"(","reg":")" + data["reg"] + "\n}";
+                + R"(","reg":")" + data["reg"] + "\"\n}";
 
 
     response.set_content(body.toStdString(),"application/json");
@@ -328,7 +330,7 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
     QString body = R"({"user":")" + data["user"]
                    + R"(","fullName":")" + data["fullName"]
                    + R"(","reg":")" + data["reg"]
-                   + R"(","last":")" + data["last"] + "\n}";
+                   + R"(","last":")" + data["last"] + "\"\n}";
 
 
     response.set_content(body.toStdString(),"application/json");
@@ -362,7 +364,7 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
         p["categ"] = body.value("category").toString();
         p["condition"] = body.value("condition_id").toString();
         tag = body.value("tags").toString();
-        p["ed"] =body.value("end_date").toString();
+        p["ed"] = body.value("end_date").toString();
     }
     catch (...)
     {
@@ -400,6 +402,67 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
         return;
     }
 
-    response.status = 200;
+    closes->insert(id, p["ed"]);
+
     response.set_content(id.toStdString(),"application/json");
+    response.status = 200;
+}
+
+void Auction_db_server::bid(const Request &request, Response &response) {
+    if (request.headers.find("Content-Type") == request.headers.end())
+    {
+        response.status = 400;
+        return;
+    }
+
+    QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
+
+    QVariantMap body = bodyJson.toVariant().toMap();
+
+    QString auction, licit_use;
+    int current_price, bid;
+
+    try
+    {
+        auction = body.value("auction_id").toString();
+        licit_use = body.value("licit_user_id").toString();
+        current_price = body.value("current_price").toInt();
+        bid = body.value("bid").toInt();
+    }
+    catch (...)
+    {
+        response.status = 400;
+        return;
+    }
+
+    //check auction close
+    if (!closes->contains(auction))
+    {
+        response.status = 404;
+        return;
+    }
+
+    bool hasError;
+
+    //check bid
+    emit ;
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    //set bid
+    emit ;
+
+    if (hasError)
+    {
+        response.status = 500;
+        return;
+    }
+
+    response.set_content("","application/json");
+    response.status = 200;
 }

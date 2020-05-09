@@ -16,11 +16,11 @@
 #include <QJsonDocument>
 #include <iostream>
 
-class db_server: public QThread {
+class Db_server: public QThread {
 public:
 
-    db_server(const QString& driver, QString connectionName, QString dbName);
-    ~db_server() override;
+    Db_server(const QString& driver, QString connectionName, QString dbName);
+    ~Db_server() override;
 
     bool init();
 
