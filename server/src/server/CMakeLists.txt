@@ -8,4 +8,4 @@ SET (SOURCES auction_server.cpp)
 
 ADD_LIBRARY(auction_server ${SOURCES})
 
-TARGET_LINK_LIBRARIES(auction_server Qt5::Core db_server)
+TARGET_LINK_LIBRARIES(auction_server Qt5::Core db_server auction_db_server auction_closer)

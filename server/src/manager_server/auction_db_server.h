@@ -10,6 +10,7 @@
 #include <QObject>
 
 #include <db_server.h>
+//#include <auction_closer.h>
 
 using namespace httplib;
 
@@ -30,6 +31,8 @@ public:
     void getSelf(const Request &request, Response &response);
     void getOther(const Request &request, Response &response);
 
+    void bid(const Request &request, Response &response);
+
     //void temp(const Request &request, Response &response);
 
 signals:
@@ -46,6 +49,10 @@ signals:
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
     void add_auction(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
 
+public:
+    QMap<QString,QString> *closes;
+
 private:
-    db_server* db;
+    Db_server* db;
+    //Auction_closer* closer;
 };

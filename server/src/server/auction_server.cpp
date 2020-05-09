@@ -19,6 +19,7 @@ Auction_server::Auction_server(const std::string &ip, int port, const std::strin
     server.Post(R"(/reg)",[&](const Request& req, Response& res) {db.userReg(req,res);});
     server.Post(R"(/search)",[&](const Request& req, Response& res) {db.search(req,res);});
     server.Post(R"(/auction)",[&](const Request& req, Response& res) {db.addAuction(req,res);});
+    server.Post(R"(/bid)",[&](const Request& req, Response& res) {db.bid(req,res);});
 
     /*server.Put(R"()",[this](const Request& req, Response& res) {db.temp(req,res);});
     server.Delete(R"()",[this](const Request& req, Response& res) {db.temp(req,res);});*/

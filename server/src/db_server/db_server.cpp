@@ -5,7 +5,7 @@
 #include <QCoreApplication>
 #include "db_server.h"
 
-db_server::db_server(const QString &driver, QString connectionName, QString dbName):
+Db_server::Db_server(const QString &driver, QString connectionName, QString dbName):
     db(QSqlDatabase::addDatabase(driver, connectionName)),
     connectionName(std::move(connectionName)),
     dbName(std::move(dbName)),
@@ -25,13 +25,13 @@ db_server::db_server(const QString &driver, QString connectionName, QString dbNa
     moveToThread(this);
 }
 
-db_server::~db_server() {
+Db_server::~Db_server() {
     quit();
     wait();
     moveToThread(nullptr);
 }
 
-bool db_server::init() {
+bool Db_server::init() {
     db.setDatabaseName(dbName);
 
     if (!db.open())
@@ -42,7 +42,7 @@ bool db_server::init() {
     return true;
 }
 
-void db_server::check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError) {
+void Db_server::check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError) {
 
     *hasError = false;
     *ok = false;
@@ -82,7 +82,7 @@ void db_server::check_login_slot(const QString &user, const QString &passw, bool
     *hasError = true;
 }
 
-void db_server::check_reg_slot(const QString &email, const QString &user, bool* ok, bool *hasError) {
+void Db_server::check_reg_slot(const QString &email, const QString &user, bool* ok, bool *hasError) {
 
     *hasError = false;
     *ok = false;
@@ -113,7 +113,7 @@ void db_server::check_reg_slot(const QString &email, const QString &user, bool* 
     *hasError = true;
 }
 
-void db_server::add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool *hasError) {
+void Db_server::add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool *hasError) {
     *hasError = false;
 
     //'YYYY-MM-DD HH:MM' - date format in string
@@ -133,7 +133,7 @@ void db_server::add_user_slot(const QString &email, const QString &user, const Q
     }
 }
 
-void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, bool *hasError) {
+void Db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, bool *hasError) {
     *hasError = false;
     *ok = false;
 
@@ -182,7 +182,7 @@ void db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, boo
     *hasError = true;
 }
 
-void db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, bool *hasError) {
+void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, bool *hasError) {
     *hasError = false;
     *ok = false;
 
@@ -229,7 +229,7 @@ void db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     *hasError = true;
 }
 
-void db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError) {
+void Db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError) {
 
     *hasError = false;
 
@@ -285,7 +285,7 @@ void db_server::get_search_slot(const QString &text, const QString &category, co
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
 
-void db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError) {
+void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError) {
     *hasError = false;
 
     QString temp = QString::number(id);
@@ -305,7 +305,7 @@ void db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
     }
 
     getAuctionQuery.next();
-
+//todo
     QString resTemp = "{\n\"auction_id\" : \"" + getAuctionQuery.value(0).toString() + "\",\n\"title\" : \"" + getAuctionQuery.value(1).toString() + "\",\n"
                       "\"start_date\" : \"" + getAuctionQuery.value(2).toString() + "\",\n\"end_date\" : \"" + getAuctionQuery.value(3).toString() + "\",\n"
                       "\"current_price\" : \"" + getAuctionQuery.value(4).toString() + "\",\n\"min_step\" : \"" + getAuctionQuery.value(5).toString() + "\",\n"
@@ -317,7 +317,7 @@ void db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
 
-void db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
+void Db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
     *hasError = false;
 
     allAuctionQuery.clear();
@@ -354,7 +354,7 @@ void db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
 
-void db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
+void Db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
     *hasError = false;
 
     getAuctionIdQuery.clear();
@@ -373,7 +373,7 @@ void db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
     *id = getAuctionIdQuery.value(0).toString();
 }
 
-void db_server::add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError){
+void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError){
     *hasError = false;
 
     addAuctionQuery.clear();
