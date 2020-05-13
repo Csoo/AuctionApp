@@ -52,22 +52,35 @@ bool APIrequest::registerRequest(const QString &name, const QString &pw, const Q
 
 int APIrequest::addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QDate endDate)
 {
-    QJsonObject regJson;
+    url.setPath("/auction");
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    regJson.insert("user_id", QJsonValue::fromVariant(userId));
-    regJson.insert("title", QJsonValue::fromVariant(title));
-    regJson.insert("description_text", QJsonValue::fromVariant(descriptionText));
-    regJson.insert("color", QJsonValue::fromVariant(color));
-    regJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
-    regJson.insert("min_step", QJsonValue::fromVariant(minStep));
-    regJson.insert("category_id", QJsonValue::fromVariant(categoryId));
-    regJson.insert("condition_id", QJsonValue::fromVariant(conditionId));
-    regJson.insert("tags", QJsonValue::fromVariant(tags));
-    regJson.insert("end_date", QJsonValue::fromVariant(endDate));
+    QJsonObject auctionJson;
 
-    qDebug() << QJsonDocument(regJson).toJson();
+    auctionJson.insert("user_id", QJsonValue::fromVariant(userId));
+    auctionJson.insert("title", QJsonValue::fromVariant(title));
+    auctionJson.insert("description_text", QJsonValue::fromVariant(descriptionText));
+    auctionJson.insert("color", QJsonValue::fromVariant(color));
+    auctionJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
+    auctionJson.insert("min_step", QJsonValue::fromVariant(minStep));
+    auctionJson.insert("category_id", QJsonValue::fromVariant(categoryId));
+    auctionJson.insert("condition_id", QJsonValue::fromVariant(conditionId));
+    auctionJson.insert("tags", QJsonValue::fromVariant(tags));
+    auctionJson.insert("end_date", QJsonValue::fromVariant(endDate.toString()));
 
-    return -1; //vagy auctionId
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->post(request, QJsonDocument(auctionJson).toJson());
+    loop.exec();
+
+
+    QByteArray res = reply->readAll();
+    if (res == "false")
+        return false;
+
+    return res.toInt();
 }
 
 bool APIrequest::bidRequest(int auctionId, int licitUserId, int currentPrice, int bid)

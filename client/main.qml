@@ -28,7 +28,7 @@ ApplicationWindow {
         anchors.topMargin: 0
         anchors.fill: parent
 
-        property int loggedinProfileId: 1
+        property int loggedinProfileId: 8
         property bool isOption: false
         property bool isLoggedIn: false
         property int pageIndex: 0

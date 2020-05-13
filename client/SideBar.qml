@@ -90,6 +90,10 @@ Item {
                 target: logoutArea
                 enabled: false
             }
+            PropertyChanges {
+                target: logoutHightlight
+                visible: false
+            }
         }
     ]
 
@@ -175,6 +179,7 @@ Item {
     }
 
     Rectangle {
+        id: logoutHightlight
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: addAuction.verticalCenter
         height: 40

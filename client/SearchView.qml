@@ -54,7 +54,7 @@ Item {
         anchors.top: searchBar.bottom
         anchors.topMargin: 24
         currentIndex: -1
-        model: ["Forniture", "Toy", "Tool", "Electronics", "Cars"]
+        model: ["Furniture", "Toy", "Tool", "Electronics", "Cars"]
     }
     ComboBox {
         id: condition
@@ -74,9 +74,9 @@ Item {
         width: 140
         height: 44
         text: qsTr("")
+        anchors.left: condition.right
+        anchors.leftMargin: 10
         anchors.verticalCenter: category.verticalCenter
-        anchors.left: label3.right
-        anchors.leftMargin: 0
         placeholderText: "Item color"
         horizontalAlignment: Text.AlignLeft
     }
@@ -95,7 +95,6 @@ Item {
         ScrollBar.vertical: ScrollBar {
             active: true
         }
-        model: ListModel{ListElement{title:"lillimillim33";price:99999;condition:"sosemmegunt"}}
 
         delegate: Item {
             id: element
