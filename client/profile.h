@@ -23,6 +23,7 @@ public:
     explicit Profile(QObject *parent = nullptr);
 
     Q_INVOKABLE void getOwnProfile(int id);
+    Q_INVOKABLE void getOtherProfile(int id);
 signals:
     void userNameChanged();
     void emailChanged();
@@ -37,6 +38,7 @@ private:
     QString m_address;
     QString m_phone;
     QString m_regDate;
+    QString m_lastDate;
 };
 
 #endif // PROFILE_H

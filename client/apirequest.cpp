@@ -52,62 +52,73 @@ bool APIrequest::registerRequest(const QString &name, const QString &pw, const Q
 
 int APIrequest::addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QDate endDate)
 {
-    url.setPath("/auction");
+    QJsonObject regJson;
+
+    regJson.insert("user_id", QJsonValue::fromVariant(userId));
+    regJson.insert("title", QJsonValue::fromVariant(title));
+    regJson.insert("description_text", QJsonValue::fromVariant(descriptionText));
+    regJson.insert("color", QJsonValue::fromVariant(color));
+    regJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
+    regJson.insert("min_step", QJsonValue::fromVariant(minStep));
+    regJson.insert("category_id", QJsonValue::fromVariant(categoryId));
+    regJson.insert("condition_id", QJsonValue::fromVariant(conditionId));
+    regJson.insert("tags", QJsonValue::fromVariant(tags));
+    regJson.insert("end_date", QJsonValue::fromVariant(endDate));
+
+    qDebug() << QJsonDocument(regJson).toJson();
+
+    return -1; //vagy auctionId
+}
+
+int APIrequest::bidRequest(int auctionId, int licitUserId, int currentPrice, int bid)
+{
+    url.setPath("/bid");
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QJsonObject auctionJson;
+    QJsonObject bidJson;
 
-    auctionJson.insert("user_id", QJsonValue::fromVariant(userId));
-    auctionJson.insert("title", QJsonValue::fromVariant(title));
-    auctionJson.insert("description_text", QJsonValue::fromVariant(descriptionText));
-    auctionJson.insert("color", QJsonValue::fromVariant(color));
-    auctionJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
-    auctionJson.insert("min_step", QJsonValue::fromVariant(minStep));
-    auctionJson.insert("category_id", QJsonValue::fromVariant(categoryId));
-    auctionJson.insert("condition_id", QJsonValue::fromVariant(conditionId));
-    auctionJson.insert("tags", QJsonValue::fromVariant(tags));
-    auctionJson.insert("end_date", QJsonValue::fromVariant(endDate.toString()));
+    bidJson.insert("auction_id", QJsonValue::fromVariant(auctionId));
+    bidJson.insert("licit_user_id", QJsonValue::fromVariant(licitUserId));
+    bidJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
+    bidJson.insert("bid", QJsonValue::fromVariant(bid));
+
+    qDebug() << QJsonDocument(bidJson).toJson();
 
     QEventLoop loop;
     connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
 
-    reply = manager->post(request, QJsonDocument(auctionJson).toJson());
+    reply = manager->post(request, QJsonDocument(bidJson).toJson());
     loop.exec();
 
+    return reply->readAll().toInt();
+}
+
+int APIrequest::rateUserRequest(int userIdFrom, int userIdTo, bool isPositive, const QString &message)
+{
+    url.setPath("/rate");
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+
+    QJsonObject rateJson;
+
+    rateJson.insert("user_id_from", QJsonValue::fromVariant(userIdFrom));
+    rateJson.insert("user_id_to", QJsonValue::fromVariant(userIdTo));
+    rateJson.insert("positive", QJsonValue::fromVariant(isPositive)); //bool?
+    rateJson.insert("message", QJsonValue::fromVariant(message));
+
+    qDebug() << QJsonDocument(rateJson).toJson();
+
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->post(request, QJsonDocument(rateJson).toJson());
+    loop.exec();
 
     QByteArray res = reply->readAll();
     if (res == "false")
         return false;
-
     return res.toInt();
-}
-
-bool APIrequest::bidRequest(int auctionId, int licitUserId, int currentPrice, int bid)
-{
-    QJsonObject regJson;
-
-    regJson.insert("auction_id", QJsonValue::fromVariant(auctionId));
-    regJson.insert("licit_user_id", QJsonValue::fromVariant(licitUserId));
-    regJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
-    regJson.insert("bid", QJsonValue::fromVariant(bid));
-
-    qDebug() << QJsonDocument(regJson).toJson();
-
-    return false;
-}
-
-bool APIrequest::rateUserRequest(int userIdFrom, int userIdTo, bool isPositive, const QString &message)
-{
-    QJsonObject regJson;
-    regJson.insert("user_id_from", QJsonValue::fromVariant(userIdFrom));
-    regJson.insert("user_id_to", QJsonValue::fromVariant(userIdTo));
-    regJson.insert("positive", QJsonValue::fromVariant(isPositive)); //bool?
-    regJson.insert("message", QJsonValue::fromVariant(message));
-
-    qDebug() << QJsonDocument(regJson).toJson();
-
-    return false;
 }
 
 bool APIrequest::allAuctionRequest()
@@ -116,30 +127,53 @@ bool APIrequest::allAuctionRequest()
 }
 
 QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, QStringList tags)
-{     
-    /*QJsonDocument json = QJsonDocument::fromJson("[{\"auction_id\": 7, \"data\": [{\"title\": \"Ez egy kék lapát\"}, {\"condition\": \"használt\"}, {\"price\": 400}]}, {\"auction_id\": 3, \"data\": [{\"title\": \"Ez egy másik lapát\"}, {\"condition\": \"új\"}, {\"price\": 1000}]}]");
+{
+    url.setPath("/search");
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+
+    QJsonObject searchJson;
+
+    searchJson.insert("text", QJsonValue::fromVariant(searchText));
+    searchJson.insert("category", QJsonValue::fromVariant(category));
+    searchJson.insert("color", QJsonValue::fromVariant(color));
+    QJsonObject filterObject;
+    filterObject.insert("state", QJsonValue::fromVariant(condition));
+    filterObject.insert("minPrice", QJsonValue::fromVariant(minPrice));
+    filterObject.insert("maxPrice", QJsonValue::fromVariant(maxPrice));
+    searchJson.insert("filters", filterObject);
+    searchJson.insert("tags", QJsonValue::fromVariant(tags));
+
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->post(request, QJsonDocument(searchJson).toJson());
+    loop.exec();
+
+    QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
+
     QJsonArray arr = json.array();
     qDebug() << json.toJson();
 
-    QList<int> auctionIdList;
-    QStringList titleList;
-    QStringList conditionList;
-    QList<int> priceList;
+    int r_auctionId;
+    QString r_title;
+    QString r_condition;
+    int r_price;
+    QVector<AuctionItem> auctionItemVector;
 
     foreach (QJsonValue element, arr) {
-        auctionIdList.append(element["auction_id"].toInt());
+        r_auctionId = element["auction_id"].toInt();
         //qDebug() << element["auction_id"].toInt();
-        titleList.append(element["data"][0]["title"].toString());
+        r_title = element["data"][0]["title"].toString();
         //qDebug() << element["data"][0]["title"].toString();
-        conditionList.append(element["data"][1]["condition"].toString());
+        r_condition = element["data"][1]["condition"].toString();
         //qDebug() << element["data"][1]["condition"].toString();
-        priceList.append(element["data"][2]["price"].toInt());
+        r_price = element["data"][2]["price"].toInt();
         //qDebug() << element["data"][2]["price"].toInt();
+        auctionItemVector.append(AuctionItem(r_auctionId, r_title, r_condition, r_price));
     }
-    qDebug() << auctionIdList << titleList << conditionList << priceList;*/
 
-
-    return QVector<AuctionItem> {AuctionItem(0,"Termék","jobbmárnemislehetne",1000), AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300)};
+    return auctionItemVector;
 }
 
 QJsonDocument APIrequest::ownProfileRequest(int id)

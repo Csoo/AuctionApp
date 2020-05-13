@@ -5,30 +5,38 @@ Auction::Auction(QObject *parent) : QObject(parent)
 
 }
 
-/*QJsonDocument json = QJsonDocument::fromJson("{\"auction_id\": 2, \"title\": \"valami\", \"start_date\": \"2020-04-24 10:23\", \"end_date\": \"2020-05-01 12:00\", \"current_price\": 1000, \"min_step\": 500, \"fix_price\": 5000, \"user\": [{\"last_licit_user_id\": 3, \"last_licit_user\": \"béla666\"}], \"description_text\": \"Dfnweujif wejfnwejkv nwefujh!?\", \"color\": \"hupilila\", \"condition_text\": \"használt\"}");
-QJsonObject obj = json.object();
-qDebug() << json.toJson();
+void Auction::getAuction(int id)
+{
+    APIrequest req;
+    QJsonDocument json = req.auctionRequest(id);
+    QJsonObject obj = json.object();
 
-int auctionId = obj["auction_id"].toInt();
-QString title = obj["title"].toString();
-QString startDate = obj["start_date"].toString();
-QString endDate = obj["end_date"].toString();
-int currentPrice = obj["current_price"].toInt();
-int minStep = obj["min_step"].toInt();
-int fixPrice = obj["fix_price"].toInt();
-QString descriptionText = obj["description_text"].toString();
-QString color = obj["color"].toString();
-QString condition_text = obj["condition_text"].toString();
-QJsonArray jsonArray = obj["user"].toArray();
+    qDebug() << json.toJson();
 
-QList<int> userId;
-QStringList userName;
+    m_auctionId = obj["auction_id"].toInt();
+    m_ownerUserId = obj["owner_id"].toInt();
+    m_ownerUserName = obj["owner"].toString();
+    m_title = obj["title"].toString();
+    m_startDate = obj["start_date"].toString();
+    m_endDate = obj["end_date"].toString();
+    m_currentPrice = obj["current_price"].toInt();
+    m_minStep = obj["min_step"].toInt();
+    m_fixPrice = obj["fix_price"].toInt();
+    m_descriptionText = obj["description_text"].toString();
+    m_color = obj["color"].toString();
+    m_conditionText = obj["condition_text"].toString();
 
-foreach (const QJsonValue & value, jsonArray) {
-    QJsonObject obj = value.toObject();
-    userId.append(obj["last_licit_user_id"].toInt());
-    userName.append(obj["last_licit_user"].toString());
+    QJsonArray jsonArray = obj["user"].toArray();
+
+    QList<int> userId;
+    QStringList userName;
+
+    foreach (const QJsonValue & value, jsonArray) {
+        QJsonObject obj = value.toObject();
+        userId.append(obj["last_licit_user_id"].toInt());
+        userName.append(obj["last_licit_user"].toString());
+    }
+
+    m_lastLicitUserid = userId.first();
+    m_lastLicitUserName = userName.first();
 }
-
-qDebug() << auctionId << title << startDate << endDate << currentPrice << minStep << fixPrice << descriptionText << color << condition_text;
-qDebug() << userId << userName;*/
