@@ -2,17 +2,19 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>SideBar.qml</file>
-        <file>img/profil.png</file>
-        <file>img/search.png</file>
-        <file>img/setting.png</file>
         <file>RegistrationForm.qml</file>
         <file>LoginForm.qml</file>
         <file>OptionForm.qml</file>
         <file>ProfileView.qml</file>
-        <file>img/exit.png</file>
-        <file>AddAuctionView.qml</file>
+        <file>SearchView.qml</file>
         <file>AddAuction.qml</file>
         <file>Title.qml</file>
         <file>img/addauction.png</file>
+        <file>img/exit.png</file>
+        <file>img/search.png</file>
+        <file>img/setting.png</file>
+        <file>img/profile.png</file>
+        <file>Auction.qml</file>
+        <file>UserView.qml</file>
     </qresource>
 </RCC>

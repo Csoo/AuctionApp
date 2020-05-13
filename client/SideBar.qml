@@ -118,6 +118,7 @@ Item {
         x: 7
         y: 40
         color: "#000000"
+        visible: true
         opacity: 0.8
         border.width: 0
         anchors.fill: parent
@@ -190,12 +191,12 @@ Item {
         height: 32
         anchors.horizontalCenter: parent.horizontalCenter
         antialiasing: true
-        sourceSize.height: 88
-        sourceSize.width: 88
+        sourceSize.height: 32
+        sourceSize.width: 32
         anchors.top: parent.top
         anchors.topMargin: 42
         fillMode: Image.PreserveAspectFit
-        source: "img/profil.png"
+        source: "img/profile.png"
         MouseArea {
             anchors.fill: parent
             id: profilArea
@@ -212,8 +213,8 @@ Item {
         height: 32
         anchors.horizontalCenter: parent.horizontalCenter
         antialiasing: true
-        sourceSize.height: 88
-        sourceSize.width: 88
+        sourceSize.height: 32
+        sourceSize.width: 32
         anchors.top: addAuction.bottom
         anchors.topMargin: 22
         fillMode: Image.PreserveAspectFit
@@ -234,8 +235,8 @@ Item {
         height: 32
         anchors.horizontalCenter: parent.horizontalCenter
         antialiasing: true
-        sourceSize.height: 88
-        sourceSize.width: 88
+        sourceSize.height: 32
+        sourceSize.width: 32
         anchors.top: profil.bottom
         anchors.topMargin: 22
         fillMode: Image.PreserveAspectFit
@@ -257,8 +258,8 @@ Item {
         height: 32
         anchors.horizontalCenter: parent.horizontalCenter
         antialiasing: true
-        sourceSize.height: 88
-        sourceSize.width: 88
+        sourceSize.height: 32
+        sourceSize.width: 32
         anchors.top: search.bottom
         anchors.topMargin: 22
         fillMode: Image.PreserveAspectFit
@@ -282,8 +283,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 14
         antialiasing: true
-        sourceSize.height: 88
-        sourceSize.width: 88
+        sourceSize.height: 32
+        sourceSize.width: 32
         fillMode: Image.PreserveAspectFit
         source: "img/exit.png"
 
@@ -304,7 +305,7 @@ Item {
         rotation: -90
         anchors.horizontalCenterOffset: 0
         anchors.bottom: parent.bottom
-        sourceSize.height: 88
+        sourceSize.height: 32
         source: "img/exit.png"
         MouseArea {
             id: logoutArea
@@ -316,7 +317,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         anchors.bottomMargin: 55
         antialiasing: true
-        sourceSize.width: 88
+        sourceSize.width: 32
         anchors.horizontalCenter: parent.horizontalCenter
     }
 

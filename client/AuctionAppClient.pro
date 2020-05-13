@@ -15,8 +15,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         apirequest.cpp \
+        auction.cpp \
         auctionimages.cpp \
-        main.cpp
+        auctionitem.cpp \
+        auctionlistmodel.cpp \
+        main.cpp \
+        profile.cpp
 
 RESOURCES += qml.qrc
 
@@ -38,6 +42,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     3rdparty/nlohmann/json.hpp \
     apirequest.h \
-    auctionimages.h
+    auction.h \
+    auctionimages.h \
+    auctionitem.h \
+    auctionlistmodel.h \
+    profile.h
 
 DISTFILES +=

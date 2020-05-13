@@ -28,9 +28,11 @@ ApplicationWindow {
         anchors.topMargin: 0
         anchors.fill: parent
 
+        property int loggedinProfileId: 1
         property bool isOption: false
         property bool isLoggedIn: false
         property int pageIndex: 0
+        property int searchIndex: 0
 
         Page {
             visible: !main.isOption
@@ -88,15 +90,36 @@ ApplicationWindow {
                     currentIndex: main.pageIndex
                     ProfileView {
                         id: profileView
+                        profileId: main.loggedinProfileId
                     }
 
                     AddAuction {
                         id: addAuction
                     }
 
+                    Item {
+                        id: browser
+                        Page{
+                            visible: main.searchIndex === 0
+                            SearchView {
+                                id: searchView
+                                onAuctionClicked: {
+                                    main.searchIndex = 1
+                                    auction.auctionId = auctionId
+                                }
+                            }
+                        }
+                        Page {
+                            visible: main.searchIndex === 1
+                            Auction {
+                                id: auction
+                            }
 
-                    AddAuctionView {
-                        id: addView
+                        }
+                        Page {
+                            visible: main.searchIndex === 2
+
+                        }
                     }
 
                 }
@@ -129,7 +152,10 @@ ApplicationWindow {
 
             onProfilPressed: main.pageIndex = 0
             onAddAuctionPressed: main.pageIndex = 1
-            onSearchPressed: main.pageIndex = 2
+            onSearchPressed: {
+                main.pageIndex = 2
+                main.searchIndex = 0
+            }
             onSettingPressed: main.isOption = true
             state: main.isLoggedIn ? "loggedIn" : "loggedOut"
         }

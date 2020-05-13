@@ -4,6 +4,8 @@
 #include <QQmlContext>
 #include <apirequest.h>
 #include <auctionimages.h>
+#include <auctionlistmodel.h>
+#include <profile.h>
 
 int main(int argc, char *argv[])
 {
@@ -16,8 +18,12 @@ int main(int argc, char *argv[])
 
     APIrequest req;
     AuctionImages imgs;
+    Profile profile;
+    AuctionListModel model;
     engine.rootContext()->setContextProperty("httpRequest", &req);
     engine.rootContext()->setContextProperty("images", &imgs);
+    engine.rootContext()->setContextProperty("myProfile", &profile);
+    engine.rootContext()->setContextProperty("auctionModel", &model);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -2,15 +2,49 @@ import QtQuick 2.0
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.3
 import QtQml 2.14
+import QtQuick.Dialogs 1.3
 
 Item {
     id: addAuction
-    
+
+    property date endDate: currentDate
+
     function setEndDate(days) {
-        var endDate = currentDate;
+        var endDate = new Date();
         endDate.setDate(endDate.getDate() + (days*1));
         endDate.setHours(endDateHour.value-1);
-        return endDate.toLocaleString(Qt.locale(), "yyyy.MM.dd. hh:00");
+        if (endDate <= currentDate) { //TODO: min duration
+            endDateLabel.color = "red";
+            createButton.enabled = false;
+        } else {
+            endDateLabel.color = applicationWindow.highlightTextColor;
+            createButton.enabled = true;
+        }
+        console.log(endDate.toLocaleString());
+        return endDate;
+    }
+
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file"
+        onAccepted: {
+            console.log(fileDialog.fileUrl)
+            images.addImage(fileDialog.fileUrl)
+        }
+        onRejected: {
+            console.log("Canceled")
+        }
+    }
+
+    Button {
+        id: imageButton
+        text: qsTr("Upload Image")
+        height: createButton.height
+        anchors.left: column.left
+        anchors.leftMargin: 0
+        anchors.top: createButton.top
+        anchors.topMargin: 0
+        onClicked: fileDialog.open()
     }
 
     Title {
@@ -18,11 +52,11 @@ Item {
         anchors.rightMargin: 0
         anchors.left: parent.left
         anchors.leftMargin: 0
-        title: qsTr("Add new auction")
+        title: qsTr("Add New Auction")
     }
     
     Button {
-        id: button
+        id: createButton
         x: 482
         width: 158
         height: 41
@@ -272,7 +306,7 @@ Item {
                 id: label8
                 width: 82
                 height: 30
-                text: qsTr("Additional tags")
+                text: qsTr("Additional Tags")
                 wrapMode: Text.WordWrap
                 verticalAlignment: Text.AlignVCenter
             }
@@ -310,15 +344,15 @@ Item {
                 font.bold: false
                 placeholderText: "days"
                 inputMethodHints :Qt.ImhDigitsOnly
-                validator: IntValidator {bottom: 1; top: 366}
-                onTextChanged: setEndDate(endDateTextField.text)
+                validator: IntValidator {bottom: 1; top: 99}
+                onTextChanged: addAuction.endDate=setEndDate(endDateTextField.text)
             }
 
             Label {
                 id: label9
                 width: 82
                 height: 30
-                text: qsTr("Auction duration")
+                text: qsTr("Auction Duration")
                 wrapMode: Text.WordWrap
                 verticalAlignment: Text.AlignVCenter
             }
@@ -343,7 +377,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 120
                 to: 23
-                onValueChanged: setEndDate(endDateTextField.text)
+                onValueChanged: addAuction.endDate=setEndDate(endDateTextField.text)
             }
 
             Label {
@@ -369,13 +403,14 @@ Item {
             Label {
                 id: endDateLabel
                 height: 60
-                text: qsTr("The auction will end at ") + setEndDate(0) + "."
+                text: qsTr("The auction will end at ") + addAuction.endDate.toLocaleString(Qt.locale(), "yyyy.MM.dd. hh:00") + "."
                 anchors.right: parent.right
+                color: applicationWindow.highlightTextColor
                 anchors.rightMargin: 0
                 anchors.left: parent.left
                 anchors.leftMargin: 0
                 verticalAlignment: Text.AlignVCenter
-                font.bold: true
+                font.bold: false
                 horizontalAlignment: Text.AlignLeft
             }
 
@@ -388,6 +423,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:1;anchors_y:371}
+    D{i:0;autoSize:true;height:480;width:640}D{i:2;anchors_x:32;anchors_y:440}
 }
 ##^##*/

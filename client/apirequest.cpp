@@ -26,8 +26,6 @@ bool APIrequest::loginRequest(const QString &name, const QString &pw)
     reply = manager->get(request);
     loop.exec();
 
-    qDebug() << reply->errorString() << endl;
-
     return reply->readAll() == "true";
 }
 
@@ -51,7 +49,49 @@ bool APIrequest::registerRequest(const QString &name, const QString &pw, const Q
     reply = manager->post(request, QJsonDocument(regJson).toJson());
     loop.exec();
 
-    //qDebug() << reply->readAll() << url.toString();
-
     return reply->readAll() != "bad username or bad email";
+}
+
+bool APIrequest::addAuctionRequest(const QString &title, const QString &desc, const QString &color, int price, int bid, const QString &category, int conditionId, QDate endDate)
+{
+
+}
+
+bool APIrequest::bidRequest(int auctionId, int userId, int currentPrice, int bid)
+{
+
+}
+
+bool APIrequest::rateUserRequest(int fromUserId, int toUserId, bool isPositive, const QString &message)
+{
+
+}
+
+QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, QStringList tags)
+{
+    return QVector<AuctionItem> {AuctionItem(0,"picililli","jobbmárnemislehetne",1000), AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"bojler","best",20300),AuctionItem(2,"picililli","best",20300)};
+}
+
+QJsonDocument APIrequest::ownProfileRequest(int id)
+{
+     url.setPath("/user/self/" + QString::number(id));
+     request.setUrl(url);
+
+     QEventLoop loop;
+     connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+     reply = manager->get(request);
+     loop.exec();
+
+     return QJsonDocument::fromJson(reply->readAll() + "\"}");
+}
+
+QJsonDocument APIrequest::profileRequest(int id)
+{
+
+}
+
+QJsonDocument APIrequest::auctionRequest(int id)
+{
+
 }

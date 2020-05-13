@@ -11,6 +11,10 @@ Item {
 
     signal loginAccepted()
 
+    Component.onCompleted: {
+        login.loginAccepted()
+    }
+
     Popup {
         id: wrongLogin
         x: parent.width/2-100
