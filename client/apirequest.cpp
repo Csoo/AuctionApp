@@ -145,7 +145,16 @@ QJsonDocument APIrequest::ownProfileRequest(int id)
 
 QJsonDocument APIrequest::profileRequest(int id)
 {
+    url.setPath("/user/" + QString::number(id));
+    request.setUrl(url);
 
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->get(request);
+    loop.exec();
+
+    return QJsonDocument::fromJson(reply->readAll() + "\"}");
 }
 
 QJsonDocument APIrequest::auctionRequest(int id)
