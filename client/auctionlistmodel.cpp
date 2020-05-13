@@ -3,8 +3,7 @@
 AuctionListModel::AuctionListModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    APIrequest req;
-    auctions = req.searchRequest();
+
 }
 
 int AuctionListModel::rowCount(const QModelIndex &parent) const
@@ -50,5 +49,5 @@ QHash<int, QByteArray> AuctionListModel::roleNames() const
 void AuctionListModel::setAuctions()
 {
     APIrequest req;
-    auctions = req.searchRequest();
+    auctions = req.searchRequest(QString(),QString(),QString(),QString(),1,1,QStringList());
 }

@@ -1,8 +1,6 @@
 #include "apirequest.h"
 #include <QDebug>
 
-using json = nlohmann::json;
-
 APIrequest::APIrequest(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
@@ -63,6 +61,11 @@ bool APIrequest::bidRequest(int auctionId, int userId, int currentPrice, int bid
 }
 
 bool APIrequest::rateUserRequest(int fromUserId, int toUserId, bool isPositive, const QString &message)
+{
+
+}
+
+bool APIrequest::allAuctionRequest()
 {
 
 }
