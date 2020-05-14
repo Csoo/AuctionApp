@@ -26,7 +26,7 @@ public:
 
 public slots:
 
-    void check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError);
+    void check_login_slot(const QString &user, const QString &passw, int* id, bool* ok, bool* hasError);
     void check_reg_slot(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self_slot(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other_slot(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);

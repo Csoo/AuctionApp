@@ -5,13 +5,25 @@
 #pragma once
 
 #include <QThread>
+#include <QDateTime>
+#include <QMap>
 
 class Auction_closer : public QThread{
 public:
     explicit Auction_closer(QMap<QString,QString> *closes);
-    void init();
+    ~Auction_closer() override;
+
+    void closeAuction(const QString &id);
+
+public slots:
+    void server_start_slot();
+
+signals:
+    void recursion();
 
 private:
     QMap<QString,QString> *close;
+    QDateTime CT;
+    QString CTS;
 
 };

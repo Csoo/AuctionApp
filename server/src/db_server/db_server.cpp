@@ -42,7 +42,7 @@ bool Db_server::init() {
     return true;
 }
 
-void Db_server::check_login_slot(const QString &user, const QString &passw, bool* ok, bool* hasError) {
+void Db_server::check_login_slot(const QString &user, const QString &passw, int* id, bool* ok, bool* hasError) {
 
     *hasError = false;
     *ok = false;
@@ -75,6 +75,17 @@ void Db_server::check_login_slot(const QString &user, const QString &passw, bool
     }
     if (!getLoginQuery.value(0).toInt())
     {
+        if(!getLoginQuery.exec("SELECT id FROM user WHERE user_name = '" + user + "' AND password = '" + passw + "'"))
+        {
+            std::cout << "[Database::getUsers]  Error: " << getLoginQuery.lastError().text().toStdString() << std::endl;
+            *hasError = true;
+            return;
+        }
+
+        getLoginQuery.next();
+
+        *id = getLoginQuery.value(0).toInt();
+
         return;
     }
     std::cout << "[Database::getUsers]  Error: count > 1\n";
@@ -305,7 +316,7 @@ void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
     }
 
     getAuctionQuery.next();
-//todo
+
     QString resTemp = "{\n\"auction_id\" : \"" + getAuctionQuery.value(0).toString() + "\",\n\"title\" : \"" + getAuctionQuery.value(1).toString() + "\",\n"
                       "\"start_date\" : \"" + getAuctionQuery.value(2).toString() + "\",\n\"end_date\" : \"" + getAuctionQuery.value(3).toString() + "\",\n"
                       "\"current_price\" : \"" + getAuctionQuery.value(4).toString() + "\",\n\"min_step\" : \"" + getAuctionQuery.value(5).toString() + "\",\n"

@@ -16,7 +16,7 @@
 Auction_db_server::Auction_db_server(const QString &route) {
     db = new Db_server("QSQLITE", "Auction", route);
     closes = new QMap<QString,QString>();
-    //closer = new Auction_closer(closes);
+    closer = new Auction_closer(closes);
     db->init();
 
     QObject::connect(this, &Auction_db_server::check_login, db, &Db_server::check_login_slot, Qt::ConnectionType::BlockingQueuedConnection);
@@ -29,46 +29,45 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(this, &Auction_db_server::all_auction, db, &Db_server::all_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::get_id, db, &Db_server::get_id_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::add_auction, db, &Db_server::add_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::server_start, closer, &Auction_closer::server_start_slot, Qt::ConnectionType::QueuedConnection);
 
     db->start();
+    closer->start();
 }
 
 void Auction_db_server::login(const Request &request, Response &response) {
     response.headers = request.headers;
 
-    QString user = "", passw = "";
-
-    for (const auto &h: request.headers) {
-        if (h.first == "user")
-        {
-            user = h.second.data();
-            break;
-        }
-    }
-
-    if (user == "")
+    if (request.headers.find("Content-Type") == request.headers.end())
     {
         response.status = 400;
         return;
     }
-    std::cout << "user ok\n";
-    for (const auto &h: request.headers) {
-        if (h.first == "password")
-        {
-            passw = h.second.data();
-            break;
-        }
-    }
 
-    if (passw == "")
+    QString user, passw;
+
+    QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr);
+
+    QVariantMap body = bodyJson.toVariant().toMap();
+
+    try
+    {
+        user = body.value("user").toString();
+        passw = body.value("password").toString();
+    }
+    catch (...)
     {
         response.status = 400;
         return;
     }
-    std::cout << "password ok\n";
+
+    std::cout << "user-password ok\n";
+
     bool ok, hasError;
+    int id;
 
-    emit check_login(user,passw, &ok, &hasError);
+    emit check_login(user, passw, &id, &ok, &hasError);
 
     if (hasError)
     {
@@ -80,7 +79,7 @@ void Auction_db_server::login(const Request &request, Response &response) {
     if (ok)
     {
         std::cout << "true\n";
-        response.set_content("true","application/json");
+        response.set_content(QString::number(id).toStdString(),"application/json");
     }
     else
     {

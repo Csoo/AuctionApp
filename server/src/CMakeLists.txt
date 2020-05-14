@@ -17,4 +17,4 @@ INCLUDE(3rdparty)
 
 ADD_EXECUTABLE(auctionapp main.cpp)
 
-TARGET_LINK_LIBRARIES(auctionapp auction_server auction_db_server pthread cpp_email ${PYTHON_LIBRARIES})
+TARGET_LINK_LIBRARIES(auctionapp auction_server auction_db_server pthread cpp_email auction_closer ${PYTHON_LIBRARIES})

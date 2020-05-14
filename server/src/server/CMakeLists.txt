@@ -3,6 +3,7 @@ INCLUDE(3rdparty)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/db_server)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/manager_server)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/auction_closer)
 
 SET (SOURCES auction_server.cpp)
 

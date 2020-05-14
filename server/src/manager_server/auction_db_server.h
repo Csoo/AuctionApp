@@ -10,7 +10,7 @@
 #include <QObject>
 
 #include <db_server.h>
-//#include <auction_closer.h>
+#include <auction_closer.h>
 
 using namespace httplib;
 
@@ -37,7 +37,7 @@ public:
 
 signals:
 
-    void check_login(const QString &user, const QString &passw, bool* ok, bool* hasError);
+    void check_login(const QString &user, const QString &passw, int* id, bool* ok, bool* hasError);
     void check_reg(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
@@ -49,10 +49,12 @@ signals:
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
     void add_auction(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
 
+    void server_start();
+
 public:
     QMap<QString,QString> *closes;
 
 private:
     Db_server* db;
-    //Auction_closer* closer;
+    Auction_closer* closer;
 };
