@@ -310,7 +310,7 @@ void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
                       "\"start_date\" : \"" + getAuctionQuery.value(2).toString() + "\",\n\"end_date\" : \"" + getAuctionQuery.value(3).toString() + "\",\n"
                       "\"current_price\" : \"" + getAuctionQuery.value(4).toString() + "\",\n\"min_step\" : \"" + getAuctionQuery.value(5).toString() + "\",\n"
                       "\"fix_price\" : \"" + getAuctionQuery.value(6).toString() + "\",\n"
-                      "\"user\" : [\n\"last_licit_user_id\" : \"" + getAuctionQuery.value(7).toString() + "\",\n\"last_licit_user\" : \"" + getAuctionQuery.value(8).toString() + "\"\n],\n"
+                      "\"user\" : [{\n\"last_licit_user_id\" : \"" + getAuctionQuery.value(7).toString() + "\",\n\"last_licit_user\" : \"" + getAuctionQuery.value(8).toString() + "\"\n}],\n"
                       "\"description_text\" : \"" + getAuctionQuery.value(9).toString() + "\",\n\"description_color\" : \"" + getAuctionQuery.value(10).toString() + "\",\n"
                       "\"condition_text\" : \"" + getAuctionQuery.value(11).toString() + "\"\n}\n";
 
