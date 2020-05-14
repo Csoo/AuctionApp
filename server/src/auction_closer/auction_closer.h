@@ -4,11 +4,14 @@
 
 #pragma once
 
+#include <iostream>
+
 #include <QThread>
 #include <QDateTime>
 #include <QMap>
 
 class Auction_closer : public QThread{
+Q_OBJECT
 public:
     explicit Auction_closer(QMap<QString,QString> *closes);
     ~Auction_closer() override;

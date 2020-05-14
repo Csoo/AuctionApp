@@ -33,9 +33,12 @@ Auction_db_server::Auction_db_server(const QString &route) {
 
     db->start();
     closer->start();
+
+    std::cout << "[Auction_db_server] Log: Start server & Start Db_server & Start Auction_closer" << std::endl;
 }
 
 void Auction_db_server::login(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get login request" << std::endl;
     response.headers = request.headers;
 
     if (request.headers.find("Content-Type") == request.headers.end())
@@ -43,6 +46,7 @@ void Auction_db_server::login(const Request &request, Response &response) {
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
 
     QString user, passw;
 
@@ -58,11 +62,11 @@ void Auction_db_server::login(const Request &request, Response &response) {
     }
     catch (...)
     {
+        std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
         response.status = 400;
         return;
     }
-
-    std::cout << "user-password ok\n";
+    std::cout << "[Auction_db_server] Log: Login parameters dumped" << std::endl;
 
     bool ok, hasError;
     int id;
@@ -71,19 +75,19 @@ void Auction_db_server::login(const Request &request, Response &response) {
 
     if (hasError)
     {
-        std::cout << "error\n";
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
     if (ok)
     {
-        std::cout << "true\n";
+        std::cout << "[Auction_db_server] Log: Login success" << std::endl;
         response.set_content(QString::number(id).toStdString(),"application/json");
     }
     else
     {
-        std::cout << "false\n";
+        std::cout << "[Auction_db_server] Log: Login failed" << std::endl;
         response.set_content("false","application/json");
     }
 
@@ -91,6 +95,7 @@ void Auction_db_server::login(const Request &request, Response &response) {
 }
 
 void Auction_db_server::userReg(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get registration request" << std::endl;
     response.headers = request.headers;
 
     if (request.headers.find("Content-Type") == request.headers.end())
@@ -98,6 +103,7 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
 
     QString email, user, fullName, passw, add, phone;
 
@@ -116,37 +122,38 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
     }
     catch (...)
     {
+        std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
         response.status = 400;
         return;
     }
-
-    std::cout << "data ok\n";
+    std::cout << "[Auction_db_server] Log: Registration parameters dumped" << std::endl;
 
     phone = body.value("phone").toString();
 
-    std::cout << "phone ok\n";
+    std::cout << "[Auction_db_server] Log: Phone got" << std::endl;
     bool ok, hasError;
 
+    std::cout << "[Auction_db_server] Log: Request Db_server for registration check" << std::endl;
     emit check_reg(email, user, &ok, &hasError);
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
-    std::cout << "no error\n";
+
     if (!ok)
     {
-        std::cout << "user add start\n";
+        std::cout << "[Auction_db_server] Log: Request Db_server for add user" << std::endl;
         std::cout << email.toStdString() << std::endl << user.toStdString() << std::endl << fullName.toStdString() << std::endl << passw.toStdString() << std::endl << add.toStdString() << std::endl << phone.toStdString() << std::endl;
 
         emit add_user(email, user, fullName, passw, add, phone, &hasError);
-        std::cout << "user add end\n";
     }
 
     if (ok)
     {
-        std::cout << "err wrong user or email\n";
+        std::cout << "[Auction_db_server] Log: Request Db_server for add user failed - bad username or email" << std::endl;
         response.set_content("bad username or bad email","application/json");
         response.status = 400;
         return;
@@ -154,7 +161,7 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
 
     if (hasError)
     {
-        std::cout << "err from user add\n";
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
@@ -163,6 +170,7 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
 }
 
 void Auction_db_server::search(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get search request" << std::endl;
     response.headers = request.headers;
 
     if (request.headers.find("Content-Type") == request.headers.end())
@@ -170,6 +178,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
 
     QString text, category;
 
@@ -187,22 +196,27 @@ void Auction_db_server::search(const Request &request, Response &response) {
     }
     catch (...)
     {
+        std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Search parameters dumped" << std::endl;
 
     bool hasError;
 
+    std::cout << "[Auction_db_server] Log: Request Db_server for search auctions" << std::endl;
     emit get_search(text, category, filters, &resJSON, &hasError);
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
     if (resJSON.isEmpty())
     {
+        std::cout << "[Auction_db_server] Error: resJSON is empty from Db_server" << std::endl;
         response.status = 404;
         return;
     }
@@ -214,6 +228,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
 }
 
 void Auction_db_server::auction(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get auction getter request" << std::endl;
     QString auId = QString::fromStdString(request.matches[1].str());
 
     int id = auId.toInt();
@@ -221,16 +236,19 @@ void Auction_db_server::auction(const Request &request, Response &response) {
     bool hasError;
     QJsonDocument resJSON;
 
+    std::cout << "[Auction_db_server] Log: Request Db_server for get auction by id" << std::endl;
     emit get_auction(id, &resJSON, &hasError);
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
     if (resJSON.isEmpty())
     {
+        std::cout << "[Auction_db_server] Error: resJSON is empty from Db_server" << std::endl;
         response.status = 404;
         return;
     }
@@ -242,19 +260,23 @@ void Auction_db_server::auction(const Request &request, Response &response) {
 }
 
 void Auction_db_server::allAuction(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get request for get all auction" << std::endl;
     bool hasError;
     QJsonDocument resJSON;
 
+    std::cout << "[Auction_db_server] Log: Request Db_server for get all auctions" << std::endl;
     emit all_auction(&resJSON, &hasError);
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
     if (resJSON.isEmpty())
     {
+        std::cout << "[Auction_db_server] Error: resJSON is empty from Db_server" << std::endl;
         response.status = 404;
         return;
     }
@@ -266,25 +288,26 @@ void Auction_db_server::allAuction(const Request &request, Response &response) {
 }
 
 void Auction_db_server::getSelf(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get request for self data" << std::endl;
     QString auId = QString::fromStdString(request.matches[1].str());
-    std::cout << "getS section\n";
+
     int id = auId.toInt();
 
     bool ok, hasError;
     QMap<QString,QString> data;
-    std::cout << "get start\n";
+    std::cout << "[Auction_db_server] Log: Request Db_server for get self data" << std::endl;
     emit get_self(id, &data, &ok, &hasError);
-    std::cout << "get end\n";
+
     if (hasError)
     {
-        std::cout << "get err\n";
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
     if (!ok)
     {
-        std::cout << "not found\n";
+        std::cout << "[Auction_db_server] Error: Self user not found" << std::endl;
         response.status = 404;
         return;
     }
@@ -295,7 +318,7 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
                 + R"(","address":")" + data["address"]
                 + R"(","phone":")" + data["phone"]
                 + R"(","reg":")" + data["reg"] + "\"\n}";
-
+    std::cout << "[Auction_db_server] Log: Response body dumped" << std::endl;
 
     response.set_content(body.toStdString(),"application/json");
 
@@ -303,25 +326,26 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
 }
 
 void Auction_db_server::getOther(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get request for user data" << std::endl;
     QString auId = QString::fromStdString(request.matches[1].str());
-    std::cout << "getO section\n";
+
     int id = auId.toInt();
 
     bool ok, hasError;
     QMap<QString,QString> data;
-    std::cout << "get start\n";
+    std::cout << "[Auction_db_server] Log: Request Db_server for get user data" << std::endl;
     emit get_other(id, &data, &ok, &hasError);
-    std::cout << "get end\n";
+
     if (hasError)
     {
-        std::cout << "get err\n";
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
     if (!ok)
     {
-        std::cout << "not found\n";
+        std::cout << "[Auction_db_server] Error: User " + QString::number(id).toStdString() + " not found" << std::endl;
         response.status = 404;
         return;
     }
@@ -330,7 +354,7 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
                    + R"(","fullName":")" + data["fullName"]
                    + R"(","reg":")" + data["reg"]
                    + R"(","last":")" + data["last"] + "\"\n}";
-
+    std::cout << "[Auction_db_server] Log: Response body dumped" << std::endl;
 
     response.set_content(body.toStdString(),"application/json");
 
@@ -338,11 +362,13 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
 }
 
 void Auction_db_server::addAuction(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get add request for auction" << std::endl;
     if (request.headers.find("Content-Type") == request.headers.end())
     {
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
     QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
@@ -367,10 +393,12 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
     }
     catch (...)
     {
+        std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
         response.body = "false";
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Registration parameters dumped" << std::endl;
 
     QStringList tags;
 
@@ -383,20 +411,24 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
 
     bool hasError;
 
+    std::cout << "[Auction_db_server] Log: Request Db_server for add auction" << std::endl;
     emit add_auction(p, tags, &hasError);
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
     QString id;
 
+    std::cout << "[Auction_db_server] Log: Request Db_server for check added auction" << std::endl;
     emit get_id(p["user"], &id, &hasError);
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
@@ -413,6 +445,7 @@ void Auction_db_server::bid(const Request &request, Response &response) {
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
     QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
@@ -431,6 +464,7 @@ void Auction_db_server::bid(const Request &request, Response &response) {
     }
     catch (...)
     {
+        std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
         response.status = 400;
         return;
     }
@@ -444,20 +478,22 @@ void Auction_db_server::bid(const Request &request, Response &response) {
 
     bool hasError;
 
-    //check bid
+    std::cout << "[Auction_db_server] Log: Request Db_server for validate bid" << std::endl;
     emit ;
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }
 
-    //set bid
+    std::cout << "[Auction_db_server] Log: Request Db_server for set bid by parameters" << std::endl;
     emit ;
 
     if (hasError)
     {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
         response.status = 500;
         return;
     }

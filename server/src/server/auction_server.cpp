@@ -9,6 +9,8 @@ Auction_server::Auction_server(const std::string &ip, int port, const std::strin
     Auction_db_server db(QString::fromStdString(route));
     Server server;
 
+    std::cout << "[Auction_server] Log: Start server" << std::endl;
+
     server.Get(R"(/auction/(\d+))",[&](const Request& req, Response& res) {db.auction(req,res);});
     server.Get(R"(/auction/all)",[&](const Request& req, Response& res) {db.allAuction(req,res);});
     server.Get(R"(/user/self/(\d+))",[&](const Request& req, Response& res) {db.getSelf(req,res);});

@@ -22,6 +22,8 @@ Db_server::Db_server(const QString &driver, QString connectionName, QString dbNa
     getAuctionIdQuery(db),
     addAuctionQuery(db)
 {
+    std::cout << "[Db_server] Log: Started" << std::endl;
+
     moveToThread(this);
 }
 
@@ -188,7 +190,7 @@ void Db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, boo
     {
         return;
     }
-    std::cout << "[Database::getReg]  Error: count > 1\n";
+    std::cout << "[Database::getSelf]  Error: count > 1\n";
     std::cout << "SELECT COUNT(*) FROM user WHERE id LIKE :id\n";
     *hasError = true;
 }
@@ -202,7 +204,7 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
 
     if (!checkIdQuery.exec("SELECT COUNT(*) FROM user WHERE id LIKE " + temp))
     {
-        std::cout << "[Database::getReg]  Error: " << checkIdQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::checkId]  Error: " << checkIdQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -214,7 +216,7 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
 
         if (!getOtherQuery.exec("SELECT user_name, full_name, registration_date, last_login_date FROM user WHERE id = " + temp))
         {
-            std::cout << "[Database::getReg]  Error: " << getOtherQuery.lastError().text().toStdString() << std::endl;
+            std::cout << "[Database::getOther]  Error: " << getOtherQuery.lastError().text().toStdString() << std::endl;
             *hasError = true;
             return;
         }
@@ -235,7 +237,7 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     {
         return;
     }
-    std::cout << "[Database::getReg]  Error: count > 1\n";
+    std::cout << "[Database::getOther]  Error: count > 1\n";
     std::cout << "SELECT COUNT(*) FROM user WHERE id LIKE :id\n";
     *hasError = true;
 }
@@ -339,7 +341,7 @@ void Db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
                               "inner join item on auction.item_id=item.id inner join item_description on item.description_id=item_description.id\n"
                               "inner join item_condition on item_condition.id=item_description.condition_id inner join user on item.user_id=user.id\n"))
     {
-        std::cout << "[Database::getAuction]  Error: " << allAuctionQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::allAuction]  Error: " << allAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
