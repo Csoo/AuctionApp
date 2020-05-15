@@ -18,10 +18,18 @@ Item {
             createButton.enabled = false;
         } else {
             endDateLabel.color = applicationWindow.highlightTextColor;
-            createButton.enabled = true;
+            addAuction.auctionIsValid()
         }
         console.log(endDate.toLocaleString());
         return endDate;
+    }
+
+    function auctionIsValid() {
+        if (name.text.length == 0 || desctiption.text.length == 0 || price.text.length == 0 || bid.text.length == 0 || category.currentIndex == -1 || condition.currentIndex == -1 || endDateTextField.length == 0) {
+            createButton.enabled = false;
+        } else {
+            createButton.enabled = true;
+        }
     }
 
     FileDialog {
@@ -54,7 +62,7 @@ Item {
         anchors.leftMargin: 0
         title: qsTr("Add New Auction")
     }
-    
+
     Button {
         id: createButton
         x: 482
@@ -66,8 +74,9 @@ Item {
         anchors.top: column1.bottom
         anchors.topMargin: 27
         highlighted: true
+        enabled: false
     }
-    
+
     Item {
         id: column
         x: 20
@@ -77,7 +86,7 @@ Item {
         anchors.horizontalCenterOffset: -140
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        
+
         Item {
             id: row
             height: 40
@@ -87,7 +96,7 @@ Item {
             anchors.rightMargin: 0
             anchors.left: parent.left
             anchors.leftMargin: 0
-            
+
             Label {
                 id: label
                 width: 82
@@ -104,6 +113,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 0
                 horizontalAlignment: Text.AlignLeft
+                onTextEdited: addAuction.auctionIsValid()
             }
         }
 
@@ -125,6 +135,7 @@ Item {
                 wrapMode: Text.WordWrap
                 anchors.right: parent.right
                 anchors.rightMargin: 0
+                onTextChanged: addAuction.auctionIsValid()
             }
 
             Label {
@@ -150,7 +161,7 @@ Item {
                 id: label3
                 width: 82
                 height: 30
-                text: qsTr("Color")
+                text: qsTr("Color (optional)")
                 verticalAlignment: Text.AlignVCenter
             }
 
@@ -187,11 +198,12 @@ Item {
                 height: 44
                 text: qsTr("")
                 anchors.rightMargin: 0
-                placeholderText: "$"   
+                placeholderText: "$"
                 inputMethodHints :Qt.ImhDigitsOnly
                 validator: IntValidator {bottom: 1}
                 anchors.right: parent.right
                 horizontalAlignment: Text.AlignLeft
+                onTextEdited: addAuction.auctionIsValid()
             }
             anchors.top: row3.bottom
         }
@@ -223,6 +235,7 @@ Item {
                 placeholderText: "$"
                 anchors.right: parent.right
                 horizontalAlignment: Text.AlignLeft
+                onTextEdited: addAuction.auctionIsValid()
             }
             anchors.top: row4.bottom
         }
@@ -251,9 +264,11 @@ Item {
                 width: 200
                 height: 35
                 currentIndex: -1
+                displayText: currentIndex == -1 ? "Choose category..." : currentText
                 anchors.right: parent.right
                 anchors.rightMargin: 0
-                model: ["Forniture", "Toy", "Tool", "Electronics", "Cars"]
+                model: ["Furniture", "Toy", "Tool", "Electronics", "Cars"]
+                onCurrentIndexChanged: addAuction.auctionIsValid()
             }
 
             Label {
@@ -280,9 +295,11 @@ Item {
                 width: 200
                 height: 35
                 currentIndex: -1
+                displayText: currentIndex == -1 ? "Choose condition..." : currentText
                 anchors.rightMargin: 0
                 anchors.right: parent.right
                 model: ["new", "used", "bad"]
+                onCurrentIndexChanged: addAuction.auctionIsValid()
             }
 
             Label {
@@ -306,7 +323,7 @@ Item {
                 id: label8
                 width: 82
                 height: 30
-                text: qsTr("Additional Tags")
+                text: qsTr("Additional Tags (optional)")
                 wrapMode: Text.WordWrap
                 verticalAlignment: Text.AlignVCenter
             }
@@ -346,6 +363,7 @@ Item {
                 inputMethodHints :Qt.ImhDigitsOnly
                 validator: IntValidator {bottom: 1; top: 99}
                 onTextChanged: addAuction.endDate=setEndDate(endDateTextField.text)
+                onTextEdited: addAuction.auctionIsValid()
             }
 
             Label {
@@ -417,8 +435,8 @@ Item {
             anchors.top: row10.bottom
         }
     }
-    
-    
+
+
 }
 
 /*##^##
@@ -426,3 +444,8 @@ Designer {
     D{i:0;autoSize:true;height:480;width:640}D{i:2;anchors_x:32;anchors_y:440}
 }
 ##^##*/
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/
