@@ -46,8 +46,8 @@ QHash<int, QByteArray> AuctionListModel::roleNames() const
     return names;
 }
 
-void AuctionListModel::setAuctions()
+void AuctionListModel::setAuctions(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags)
 {
     APIrequest req;
-    auctions = req.searchRequest(QString(),QString(),QString(),QString(),1,1,QStringList());
+    auctions = req.searchRequest(searchText, category, color, condition, minPrice, maxPrice, tags);
 }

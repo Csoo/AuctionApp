@@ -90,10 +90,6 @@ Item {
                 target: logoutArea
                 enabled: false
             }
-            PropertyChanges {
-                target: logoutHightlight
-                visible: false
-            }
         }
     ]
 
@@ -159,6 +155,7 @@ Item {
     }
 
     Rectangle {
+        id: logoutHighlight
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: logout.verticalCenter
         height: 40
@@ -179,12 +176,11 @@ Item {
     }
 
     Rectangle {
-        id: logoutHightlight
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: addAuction.verticalCenter
         height: 40
         width: blackBar.width
-        color: "#317de8"
+        color: "#000000"
         opacity: 0.4
         visible: addAuctionArea.containsMouse ? true : false
     }

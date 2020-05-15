@@ -19,10 +19,11 @@ bool APIrequest::loginRequest(const QString &name, const QString &pw)
     QEventLoop loop;
     connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
 
-    qDebug() << url.toString() << " / " << name.toUtf8() << pw.toUtf8() << endl;
-
     reply = manager->get(request);
     loop.exec();
+
+
+    qDebug() << "login status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
     return reply->readAll() == "true";
 }
@@ -46,6 +47,7 @@ bool APIrequest::registerRequest(const QString &name, const QString &pw, const Q
 
     reply = manager->post(request, QJsonDocument(regJson).toJson());
     loop.exec();
+    qDebug() << "registration status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
     return reply->readAll() != "bad username or bad email";
 }
@@ -67,7 +69,10 @@ int APIrequest::addAuctionRequest(int userId, const QString &title, const QStrin
 
     qDebug() << QJsonDocument(regJson).toJson();
 
-    return -1; //vagy auctionId
+    QByteArray res = reply->readAll();
+    if (res == "false")
+        return -1;
+    return res.toInt();
 }
 
 int APIrequest::bidRequest(int auctionId, int licitUserId, int currentPrice, int bid)
@@ -117,7 +122,7 @@ int APIrequest::rateUserRequest(int userIdFrom, int userIdTo, bool isPositive, c
 
     QByteArray res = reply->readAll();
     if (res == "false")
-        return false;
+        return -1;
     return res.toInt();
 }
 
@@ -126,7 +131,7 @@ bool APIrequest::allAuctionRequest()
 
 }
 
-QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, QStringList tags)
+QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags)
 {
     url.setPath("/search");
     request.setUrl(url);
@@ -149,6 +154,8 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const 
 
     reply = manager->post(request, QJsonDocument(searchJson).toJson());
     loop.exec();
+
+    qDebug() << "search status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
     QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
 
@@ -187,7 +194,7 @@ QJsonDocument APIrequest::ownProfileRequest(int id)
      reply = manager->get(request);
      loop.exec();
 
-     return QJsonDocument::fromJson(reply->readAll() + "\"}");
+     return QJsonDocument::fromJson(reply->readAll());
 }
 
 QJsonDocument APIrequest::profileRequest(int id)
@@ -201,7 +208,7 @@ QJsonDocument APIrequest::profileRequest(int id)
     reply = manager->get(request);
     loop.exec();
 
-    return QJsonDocument::fromJson(reply->readAll() + "\"}");
+    return QJsonDocument::fromJson(reply->readAll());
 }
 
 QJsonDocument APIrequest::auctionRequest(int id)

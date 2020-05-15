@@ -25,7 +25,7 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void setAuctions();
+    Q_INVOKABLE void setAuctions(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags);
 
 private:
     QVector<AuctionItem> auctions;
