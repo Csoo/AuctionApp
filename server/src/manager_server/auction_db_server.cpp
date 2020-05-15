@@ -30,6 +30,8 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(this, &Auction_db_server::get_id, db, &Db_server::get_id_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::add_auction, db, &Db_server::add_auction_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::server_start, closer, &Auction_closer::server_start_slot, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(this, &Auction_db_server::check_bid, db, &Db_server::check_bid_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::set_bid, db, &Db_server::set_bid_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
     closer->start();
@@ -440,6 +442,7 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
 }
 
 void Auction_db_server::bid(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get bid request" << std::endl;
     if (request.headers.find("Content-Type") == request.headers.end())
     {
         response.status = 400;
@@ -452,13 +455,13 @@ void Auction_db_server::bid(const Request &request, Response &response) {
 
     QVariantMap body = bodyJson.toVariant().toMap();
 
-    QString auction, licit_use;
+    QString auction, licit_user;
     int current_price, bid;
 
     try
     {
         auction = body.value("auction_id").toString();
-        licit_use = body.value("licit_user_id").toString();
+        licit_user = body.value("licit_user_id").toString();
         current_price = body.value("current_price").toInt();
         bid = body.value("bid").toInt();
     }
@@ -468,6 +471,7 @@ void Auction_db_server::bid(const Request &request, Response &response) {
         response.status = 400;
         return;
     }
+    std::cout << "[Auction_db_server] Log: Bid parameters dumped" << std::endl;
 
     //check auction close
     if (!closes->contains(auction))
@@ -476,10 +480,10 @@ void Auction_db_server::bid(const Request &request, Response &response) {
         return;
     }
 
-    bool hasError;
+    bool hasError, ok;
 
     std::cout << "[Auction_db_server] Log: Request Db_server for validate bid" << std::endl;
-    emit ;
+    emit check_bid(auction, current_price, &ok, &hasError);
 
     if (hasError)
     {
@@ -488,8 +492,17 @@ void Auction_db_server::bid(const Request &request, Response &response) {
         return;
     }
 
-    std::cout << "[Auction_db_server] Log: Request Db_server for set bid by parameters" << std::endl;
-    emit ;
+    if (ok)
+    {
+        std::cout << "[Auction_db_server] Log: Request Db_server for set bid by parameters" << std::endl;
+        emit set_bid(auction, licit_user, current_price + bid, &hasError);
+    }
+    else
+    {
+        std::cout << "[Auction_db_server] Error: Higher price" << std::endl;
+        response.status = 400;
+        return;
+    }
 
     if (hasError)
     {
@@ -498,6 +511,40 @@ void Auction_db_server::bid(const Request &request, Response &response) {
         return;
     }
 
-    response.set_content("","application/json");
+    response.set_content(QString::number(current_price + bid).toStdString(),"application/json");
     response.status = 200;
+}
+
+void Auction_db_server::rate(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get rate request" << std::endl;
+    if (request.headers.find("Content-Type") == request.headers.end())
+    {
+        response.status = 400;
+        return;
+    }
+    std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
+
+    QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
+
+    QVariantMap body = bodyJson.toVariant().toMap();
+
+    QString ms;
+    int from, to, p;
+
+    try
+    {
+        from = body.value("user_id_from").toInt();
+        to = body.value("user_id_to").toInt();
+        p = body.value("positive").toInt();
+        ms = body.value("message").toString();
+    }
+    catch (...)
+    {
+        std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
+        response.status = 400;
+        return;
+    }
+    std::cout << "[Auction_db_server] Log: Rating parameters dumped" << std::endl;
+
 }

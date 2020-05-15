@@ -34,10 +34,11 @@ public slots:
     void get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError);
     void all_auction_slot(QJsonDocument *resJSON, bool *hasError);
     void get_id_slot(const QString &user, QString *id, bool *hasError);
+    void check_bid_slot(const QString &auction, int currentP, bool *ok, bool *hasError);
 
     void add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
     void add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
-
+    void set_bid_slot(const QString &auction, const QString &user, int currentP, bool *hasError);
 
 protected:
 
@@ -54,11 +55,13 @@ protected:
     QSqlQuery getAuctionQuery;
     QSqlQuery allAuctionQuery;
     QSqlQuery getAuctionIdQuery;
+    QSqlQuery checkBidQuery;
 
     QSqlQuery addUserQuery;
     QSqlQuery addAuctionQuery;
 
     QSqlQuery updateLastQuery;
+    QSqlQuery setBidQuery;
 
     QDateTime now;
 };

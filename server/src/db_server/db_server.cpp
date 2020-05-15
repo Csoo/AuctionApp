@@ -20,7 +20,9 @@ Db_server::Db_server(const QString &driver, QString connectionName, QString dbNa
     getAuctionQuery(db),
     allAuctionQuery(db),
     getAuctionIdQuery(db),
-    addAuctionQuery(db)
+    addAuctionQuery(db),
+    checkBidQuery(db),
+    setBidQuery(db)
 {
     std::cout << "[Db_server] Log: Started" << std::endl;
 
@@ -447,3 +449,38 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
         return;
     }
 }
+
+void Db_server::check_bid_slot(const QString &auction, int currentP, bool *ok, bool *hasError) {
+    *hasError = false;
+    *ok = false;
+
+    checkBidQuery.clear();
+
+    if(!checkBidQuery.exec("select " + QString::number(currentP) + " from auction where id = " + auction))
+    {
+        std::cout << "[Database::addAuction]  Error: " << checkBidQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    checkBidQuery.next();
+
+    if (currentP == checkBidQuery.value(0).toInt())
+    {
+        *ok = true;
+    }
+}
+
+void Db_server::set_bid_slot(const QString &auction, const QString &user, int currentP, bool *hasError) {
+    *hasError = false;
+
+    setBidQuery.clear();
+
+    if(!setBidQuery.exec("UPDATE auction SET current_price = " + QString::number(currentP) + ", last_licit_user_id = " + user + " WHERE id = " + auction))
+    {
+        std::cout << "[Database::addAuction]  Error: " << setBidQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+}
+
