@@ -62,6 +62,11 @@ void Db_server::check_login_slot(const QString &user, const QString &passw, int*
 
     getLoginQuery.next();
 
+    if (getLoginQuery.value(0).toInt() == 0)
+    {
+        return;
+    }
+
     if (getLoginQuery.value(0).toInt() == 1)
     {
         *ok = true;
