@@ -74,7 +74,7 @@ void Auction_db_server::login(const Request &request, Response &response) {
     int id;
 
     emit check_login(user, passw, &id, &ok, &hasError);
-
+std::cout << id << std::endl << QString::number(id).toStdString() << std::endl;
     if (hasError)
     {
         std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
