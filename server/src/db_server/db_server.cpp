@@ -62,6 +62,11 @@ void Db_server::check_login_slot(const QString &user, const QString &passw, int*
 
     getLoginQuery.next();
 
+    if (getLoginQuery.value(0).toInt() == 0)
+    {
+        return;
+    }
+
     if (getLoginQuery.value(0).toInt() == 1)
     {
         *ok = true;
@@ -75,10 +80,6 @@ void Db_server::check_login_slot(const QString &user, const QString &passw, int*
 
         updateLastQuery.exec("UPDATE user SET last_login_date = '" + temp_date + "' WHERE user_name = '" + user + "'");
 
-        return;
-    }
-    if (!getLoginQuery.value(0).toInt())
-    {
         if(!getLoginQuery.exec("SELECT id FROM user WHERE user_name = '" + user + "' AND password = '" + passw + "'"))
         {
             std::cout << "[Database::getUsers]  Error: " << getLoginQuery.lastError().text().toStdString() << std::endl;
@@ -92,6 +93,7 @@ void Db_server::check_login_slot(const QString &user, const QString &passw, int*
 
         return;
     }
+
     std::cout << "[Database::getUsers]  Error: count > 1\n";
     std::cout << "SELECT COUNT(*) FROM user WHERE user_name LIKE :un AND password LIKE :pw\n";
     *hasError = true;
@@ -232,7 +234,6 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
         data->insert("last",getOtherQuery.value(3).toString());
 
         *ok = true;
-        std::cout << "ok -> true\n";
         return;
     }
     if (!checkIdQuery.value(0).toInt())
