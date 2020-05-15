@@ -16,5 +16,7 @@
         <file>img/profile.png</file>
         <file>Auction.qml</file>
         <file>UserView.qml</file>
+        <file>img/moon.png</file>
+        <file>img/sun.png</file>
     </qresource>
 </RCC>

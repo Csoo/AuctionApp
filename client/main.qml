@@ -12,7 +12,7 @@ ApplicationWindow {
     minimumHeight: 300
     title: qsTr("Auction Application")
 
-    property bool isDark: settings.dark ? true : false
+    property bool isDark: true
     property color highlightTextColor: isDark ? "#90CAF9" : "#2196F3"
     property date currentDate: new Date()
 
@@ -29,13 +29,11 @@ ApplicationWindow {
         anchors.fill: parent
 
         property int loggedinProfileId: 1
-        property bool isOption: false
         property bool isLoggedIn: false
         property int pageIndex: 0
         property int searchIndex: 0
 
         Page {
-            visible: !main.isOption
             anchors.fill: parent
             StackView {
                 id: loginStack
@@ -84,9 +82,6 @@ ApplicationWindow {
                     id: loggedInSwipeView
                     interactive: false
                     orientation: Qt.Vertical
-                    onCurrentIndexChanged: {
-                        main.isOption = false
-                    }
                     currentIndex: main.pageIndex
                     ProfileView {
                         id: profileView
@@ -126,17 +121,20 @@ ApplicationWindow {
             }
         }
 
-        Page {
-            visible: main.isOption
-            anchors.fill: parent
-            OptionForm {
-                id: settings
-            }
-            Button {
-                x: 374
-                y: 378
-                text: "Back"
-                onClicked: main.isOption = false
+        Image {
+            width: 30
+            sourceSize.height: 32
+            sourceSize.width: 32
+            opacity: 0.5
+            anchors.top: parent.top
+            anchors.topMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            fillMode: Image.PreserveAspectFit
+            source: applicationWindow.isDark ? "img/sun.png" : "img/moon.png"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: applicationWindow.isDark = !applicationWindow.isDark
             }
         }
 

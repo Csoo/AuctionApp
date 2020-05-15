@@ -4,28 +4,35 @@
 APIrequest::APIrequest(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
-    url(QUrl("http://81.183.216.27:3000"))
+    url(QUrl("http://localhost:3000"))
 {
 
 }
 
-bool APIrequest::loginRequest(const QString &name, const QString &pw)
+int APIrequest::loginRequest(const QString &name, const QString &pw)
 {
     url.setPath("/login");
     request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    request.setRawHeader("user", name.toUtf8());
-    request.setRawHeader("password", pw.toUtf8());
+    QJsonObject json;
+    json.insert("user", QJsonValue::fromVariant(name));
+    json.insert("password", QJsonValue::fromVariant(pw));
+
     QEventLoop loop;
     connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
 
-    reply = manager->get(request);
+    reply = manager->post(request, QJsonDocument(json).toJson());
     loop.exec();
 
 
     qDebug() << "login status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
-    return reply->readAll() == "true";
+    QByteArray res = reply->readAll();
+    qDebug() << res;
+    if (res == "false")
+        return -1;
+    return res.toInt();
 }
 
 bool APIrequest::registerRequest(const QString &name, const QString &pw, const QString &email, const QString &fullName, const QString &address, const QString &phone)
@@ -141,11 +148,11 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const 
 
     searchJson.insert("text", QJsonValue::fromVariant(searchText));
     searchJson.insert("category", QJsonValue::fromVariant(category));
-    searchJson.insert("color", QJsonValue::fromVariant(color));
     QJsonObject filterObject;
-    filterObject.insert("state", QJsonValue::fromVariant(condition));
+    if (color != "") searchJson.insert("color", QJsonValue::fromVariant(color));
+    if (condition != "") filterObject.insert("state", QJsonValue::fromVariant(condition));
     filterObject.insert("minPrice", QJsonValue::fromVariant(minPrice));
-    filterObject.insert("maxPrice", QJsonValue::fromVariant(maxPrice));
+    if (maxPrice != -1) filterObject.insert("maxPrice", QJsonValue::fromVariant(maxPrice));
     searchJson.insert("filters", filterObject);
     searchJson.insert("tags", QJsonValue::fromVariant(tags));
 

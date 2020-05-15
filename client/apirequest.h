@@ -24,7 +24,7 @@ class APIrequest : public QObject
 public:
     explicit APIrequest(QObject *parent = nullptr);
 
-    Q_INVOKABLE bool loginRequest(const QString &name, const QString &pw);
+    Q_INVOKABLE int loginRequest(const QString &name, const QString &pw);
     Q_INVOKABLE bool registerRequest(const QString &name, const QString &pw,  const QString &email,  const QString &fullName,  const QString &address,  const QString &phone = "");
     Q_INVOKABLE int addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId,  int conditionId, QStringList tags, QDate endDate);
     Q_INVOKABLE int bidRequest(int auctionId, int licitUserId, int currentPrice, int bid);

@@ -39,17 +39,9 @@ Item {
                 target: searchArea
                 enabled: true
             }
-            AnchorChanges {
-                target: setting
-                anchors.top: search.bottom
-            }
             PropertyChanges {
                 target: logout
                 opacity: 1.0
-            }
-            PropertyChanges {
-                target: logoutArea
-                enabled: true
             }
         },
         State {
@@ -78,17 +70,9 @@ Item {
                 target: searchArea
                 enabled: false
             }
-            AnchorChanges {
-                target: setting
-                anchors.top: parent.top
-            }
             PropertyChanges {
                 target: logout
                 opacity: 0.0
-            }
-            PropertyChanges {
-                target: logoutArea
-                enabled: false
             }
         }
     ]
@@ -145,16 +129,6 @@ Item {
     }
 
     Rectangle {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: setting.verticalCenter
-        height: 40
-        width: blackBar.width
-        color: "#317de8"
-        opacity: 0.4
-        visible: settingArea.containsMouse ? true : false
-    }
-
-    Rectangle {
         id: logoutHighlight
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: logout.verticalCenter
@@ -162,7 +136,7 @@ Item {
         width: blackBar.width
         color: "#317de8"
         opacity: 0.4
-        visible: logoutArea.containsMouse ? true : false
+        visible: logoutArea.containsMouse && sideBar.state === "loggedIn" ? true : false
     }
 
     Rectangle {
@@ -180,7 +154,7 @@ Item {
         anchors.verticalCenter: addAuction.verticalCenter
         height: 40
         width: blackBar.width
-        color: "#000000"
+        color: "#317de8"
         opacity: 0.4
         visible: addAuctionArea.containsMouse ? true : false
     }
@@ -248,29 +222,6 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             onClicked: sidebar.addAuctionPressed()
-        }
-    }
-
-
-    Image {
-        id: setting
-        x: 0
-        width: 32
-        height: 32
-        anchors.horizontalCenter: parent.horizontalCenter
-        antialiasing: true
-        sourceSize.height: 32
-        sourceSize.width: 32
-        anchors.top: search.bottom
-        anchors.topMargin: 22
-        fillMode: Image.PreserveAspectFit
-        source: "img/setting.png"
-
-        MouseArea {
-            id: settingArea
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: sidebar.settingPressed()
         }
     }
 

@@ -18,7 +18,7 @@ Item {
     function search() {
         searchView.loading = true;
         var tagList = searchView.getTags(tags.text);
-        auctionModel.setAuctions(searchBar.text, category.currentText, itemColor.text, condition.currentText, minPrice.text, maxPrice.text, tagList);
+        auctionModel.setAuctions(searchBar.text, category.currentText, itemColor.text, condition.currentText, minPrice.text, maxPrice.text === "100000+ Ft" ? -1 : maxPrice.text, tagList);
         auctionList.model = auctionModel;
         console.log(auctionModel.rowCount());
         searchView.loading = false;

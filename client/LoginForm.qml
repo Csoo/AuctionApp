@@ -11,8 +11,15 @@ Item {
 
     signal loginAccepted()
 
-    Component.onCompleted: {
-        login.loginAccepted()
+    function loginAction() {
+        var responseId = httpRequest.loginRequest(userName.text, password.text)
+        console.log(responseId);
+        if(responseId === -1) {
+            wrongLogin.open();
+        }else {
+            main.loggedinProfileId = responseId;
+            login.loginAccepted();
+        }
     }
 
     Popup {
@@ -135,7 +142,7 @@ Item {
             anchors.left: userContainer.right
             anchors.leftMargin: 21
             highlighted: true
-            onClicked: httpRequest.loginRequest(userName.text, password.text) ? login.loginAccepted() : wrongLogin.open()
+            onClicked: login.loginAction()
             //onClicked: userName.text == "admin" ? login.loginAccepted() : wrongLogin.open()
         }
 
