@@ -4,7 +4,7 @@
 APIrequest::APIrequest(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
-    url(QUrl("http://81.183.216.27:3000"))
+    url(QUrl("http://localhost:3000"))
 {
 
 }
@@ -30,8 +30,12 @@ int APIrequest::loginRequest(const QString &name, const QString &pw)
 
     QByteArray res = reply->readAll();
     qDebug() << res;
-    if (res != "false" && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
+    if (res != "false" && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200) {
+        if (res.isEmpty()) {
+            return -1;
+        }
         return res.toInt();
+    }
     return -1;
 }
 
@@ -140,6 +144,9 @@ bool APIrequest::allAuctionRequest()
 
 QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags)
 {
+    QVector<AuctionItem> test = {AuctionItem(1, "kutya", "new", 2120), AuctionItem(2, "macska", "bad", 212), AuctionItem(3, "kiskutya", "new", 21200), AuctionItem(4, "nagykutya", "bad", 123), AuctionItem(5, "körte", "cool", 34), AuctionItem(6, "kutya", "new", 2120), AuctionItem(7, "kutya", "newW", 120), AuctionItem(8, "alma", "new", 210)};
+    return test;
+
     url.setPath("/search");
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");

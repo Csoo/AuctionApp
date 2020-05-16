@@ -11,8 +11,6 @@ Item {
     anchors.fill: parent
     visible: true
 
-    property bool loading: false
-
     function registering(userName, password, email, fullName, address, phone) {
         backButton.enabled = false;
         var error = false;
@@ -74,20 +72,19 @@ Item {
             return;
         }
 
-        register.loading = true;
-        if (httpRequest.registerRequest(userName, password, email, fullName, address, phone) ) {
+
+
+
+
+        main.isLoading = true;
+        if ( httpRequest.registerRequest(userName, password, email, fullName, address, phone) ) {
+
             okRegistration.open()
         } else {
             wrongRegistration.open();
         }
-        register.loading = false;
+        main.isLoading = false;
         backButton.enabled = true;
-    }
-
-    BusyIndicator {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        running: loading
     }
 
     Title {

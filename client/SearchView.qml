@@ -5,7 +5,6 @@ import QtQuick.Controls.Styles 1.4
 
 Item {
     id: searchView
-    property bool loading: false
 
     signal auctionClicked(int auctionId)
 
@@ -16,12 +15,12 @@ Item {
     }
 
     function search() {
-        searchView.loading = true;
+        main.isLoading = true;
         var tagList = searchView.getTags(tags.text);
         auctionModel.setAuctions(searchBar.text, category.currentText, itemColor.text, condition.currentText, minPrice.text, maxPrice.text === "100000+ Ft" ? -1 : maxPrice.text, tagList);
         auctionList.model = auctionModel;
         console.log(auctionModel.rowCount());
-        searchView.loading = false;
+        main.isLoading = false;
     }
 
     Title {
@@ -63,14 +62,6 @@ Item {
                 onClicked: search()
             }
         }
-    }
-
-    BusyIndicator {
-        anchors.verticalCenterOffset: 292
-        anchors.horizontalCenterOffset: 390
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        running: loading
     }
 
     ComboBox {

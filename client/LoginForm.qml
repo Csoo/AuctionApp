@@ -7,13 +7,15 @@ Item {
     visible: true
     anchors.fill: parent
 
-    Keys.onPressed: if (event.key === Qt.Key_Return) {httpRequest.loginRequest(userName.text, password.text) ? login.loginAccepted() : wrongLogin.open()}
+    Keys.onPressed: if (event.key === Qt.Key_Return) {login.loginFunction()}
 
     signal loginAccepted()
 
-    function loginAction() {
-        var responseId = httpRequest.loginRequest(userName.text, password.text)
+    function loginFunction() {
+        main.isLoading = true;
+        var responseId = httpRequest.loginRequest(userName.text, password.text);
         console.log(responseId);
+        main.isLoading = false;
         if(responseId === -1) {
             wrongLogin.open();
         }else {
@@ -142,8 +144,7 @@ Item {
             anchors.left: userContainer.right
             anchors.leftMargin: 21
             highlighted: true
-            onClicked: login.loginAction()
-            //onClicked: userName.text == "admin" ? login.loginAccepted() : wrongLogin.open()
+            onClicked: login.loginFunction()
         }
 
         Button {

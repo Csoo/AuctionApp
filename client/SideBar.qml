@@ -4,7 +4,7 @@ import QtGraphicalEffects 1.0
 Item {
     id: sidebar
     width: 55
-    opacity: 0.7
+    opacity: 0.8
     clip: true
 
     signal profilPressed()
@@ -103,7 +103,7 @@ Item {
         y: 40
         color: "#000000"
         visible: true
-        opacity: 0.8
+        opacity: 0.64
         border.width: 0
         anchors.fill: parent
     }
@@ -113,9 +113,9 @@ Item {
         anchors.verticalCenter: profil.verticalCenter
         height: 40
         width: blackBar.width
-        color: "#317de8"
-        opacity: 0.4
-        visible: profilArea.containsMouse ? true : false
+        color: main.pageIndex === 0 ? "#444444" : "#317de8"
+        opacity: main.isLoggedIn ? 0.4 : 0.0
+        visible: profilArea.containsMouse || main.pageIndex === 0 ? true : false
     }
 
     Rectangle {
@@ -123,9 +123,9 @@ Item {
         anchors.verticalCenter: search.verticalCenter
         height: 40
         width: blackBar.width
-        color: "#317de8"
-        opacity: 0.4
-        visible: searchArea.containsMouse ? true : false
+        color: main.pageIndex === 2 ? "#444444" : "#317de8"
+        opacity: main.isLoggedIn ? 0.4 : 0.0
+        visible: searchArea.containsMouse || main.pageIndex === 2 ? true : false
     }
 
     Rectangle {
@@ -154,9 +154,9 @@ Item {
         anchors.verticalCenter: addAuction.verticalCenter
         height: 40
         width: blackBar.width
-        color: "#317de8"
-        opacity: 0.4
-        visible: addAuctionArea.containsMouse ? true : false
+        color: main.pageIndex === 1 ? "#444444" : "#317de8"
+        opacity: main.isLoggedIn ? 0.4 : 0.0
+        visible: addAuctionArea.containsMouse || main.pageIndex === 1 ? true : false
     }
 
     Image {
@@ -256,7 +256,7 @@ Item {
         height: 32
         rotation: -90
         anchors.horizontalCenterOffset: 0
-        anchors.bottom: parent.bottom
+        anchors.bottom: quit.top
         sourceSize.height: 32
         source: "img/exit.png"
         MouseArea {
@@ -267,7 +267,7 @@ Item {
             onClicked: loginStack.loggingOut()
         }
         fillMode: Image.PreserveAspectFit
-        anchors.bottomMargin: 55
+        anchors.bottomMargin: 22
         antialiasing: true
         sourceSize.width: 32
         anchors.horizontalCenter: parent.horizontalCenter

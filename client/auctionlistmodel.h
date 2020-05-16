@@ -15,7 +15,8 @@ public:
     enum {
         TitleRole = Qt::UserRole,
         PriceRole,
-        ConditionRole
+        ConditionRole,
+        IdRole
     };
 
     // Basic functionality:

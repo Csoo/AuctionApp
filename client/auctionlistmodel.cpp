@@ -31,6 +31,9 @@ QVariant AuctionListModel::data(const QModelIndex &index, int role) const
     case ConditionRole:
         return auctions.at(index.row()).getCondition();
         break;
+    case IdRole:
+        return auctions.at(index.row()).getId();
+        break;
     default:
         return QVariant();
         break;
@@ -43,6 +46,7 @@ QHash<int, QByteArray> AuctionListModel::roleNames() const
     names[TitleRole] = "title";
     names[PriceRole] = "price";
     names[ConditionRole] = "condition";
+    names[IdRole] = "id";
     return names;
 }
 

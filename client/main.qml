@@ -22,16 +22,13 @@ ApplicationWindow {
 
     Item {
         id: main
-        anchors.rightMargin: 0
-        anchors.bottomMargin: 0
-        anchors.leftMargin: 0
-        anchors.topMargin: 0
         anchors.fill: parent
 
         property int loggedinProfileId: 1
         property bool isLoggedIn: false
         property int pageIndex: 0
         property int searchIndex: 0
+        property bool isLoading: false
 
         Page {
             anchors.fill: parent
@@ -43,6 +40,7 @@ ApplicationWindow {
                 function loggingIn() {
                     loginStack.push(loggedIn);
                     main.isLoggedIn = true;
+                    main.pageIndex = 0;
                 }
                 function loggingOut() {
                     loginStack.pop();
@@ -158,6 +156,11 @@ ApplicationWindow {
             state: main.isLoggedIn ? "loggedIn" : "loggedOut"
         }
 
+        BusyIndicator {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            running: main.isLoading
+        }
     }
 }
 
