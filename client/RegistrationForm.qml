@@ -16,41 +16,57 @@ Item {
     function registering(userName, password, email, fullName, address, phone) {
         backButton.enabled = false;
         var error = false;
-        if (userName === "") {
+        var emailRegx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var phoneRegx = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+        //Valid formats:
+        /*(123) 456-7890
+        (123)456-7890
+        123-456-7890
+        123.456.7890
+        1234567890
+        +31636363634
+        075-63546725*/
+        if (userName === "" || userName.search(" ") !== -1 || userName.search("\'") !== -1 || userName.search("\"") !== -1) {
             userNameTextReg.color = "red";
             error = true;
-        } else{
+        } else {
             userNameTextReg.color = applicationWindow.highlightTextColor;
         }
-        if (password === "") {
+        if (password === "" || password.search(" ") !== -1 || password.search("\'") !== -1 || password.search("\"") !== -1) {
             passwordTextReg.color = "red";
             error = true;
-        } else{
+        } else {
             passwordTextReg.color = applicationWindow.highlightTextColor;
         }
         if (password === "" || password !== passwordConfReg.text) {
             passwordConfTextReg.color = "red";
             error = true;
-        } else{
+        } else {
             passwordConfTextReg.color = applicationWindow.highlightTextColor;
         }
-        if (email === "") {
+        if (emailRegx.test(String(email).toLowerCase()) === false) {
             emailTextReg.color = "red";
             error = true;
-        } else{
+        } else {
             emailTextReg.color = applicationWindow.highlightTextColor;
         }
         if (fullName === "") {
             fullNameTextReg.color = "red";
             error = true;
-        } else{
+        } else {
             fullNameTextReg.color = applicationWindow.highlightTextColor;
         }
         if (address === "") {
             addressTextReg.color = "red";
             error = true;
-        } else{
+        } else {
             addressTextReg.color = applicationWindow.highlightTextColor;
+        }
+        if (phone !== "" && phoneRegx.test(String(phone).toLowerCase()) === false) {
+            phoneTextReg.color = "red";
+            error = true;
+        } else {
+            phoneTextReg.color = applicationWindow.highlightTextColor;
         }
 
         if (error) {
@@ -59,7 +75,7 @@ Item {
         }
 
         register.loading = true;
-        if ( httpRequest.registerRequest(userName, password, email, fullName, address, phone) ) {
+        if (httpRequest.registerRequest(userName, password, email, fullName, address, phone) ) {
             okRegistration.open()
         } else {
             wrongRegistration.open();
@@ -149,7 +165,7 @@ Item {
                 height: parent.height
                 anchors.left: parent.left
                 color: highlightTextColor
-                text: qsTr("User Name")
+                text: qsTr("Username")
                 font.weight: Font.Thin
                 font.bold: false
                 verticalAlignment: Text.AlignVCenter
@@ -159,7 +175,7 @@ Item {
                 anchors.right: parent.right
                 width: 200
                 height: parent.height
-                placeholderText: qsTr("name")
+                placeholderText: qsTr("username")
             }
 
         }
@@ -249,7 +265,7 @@ Item {
                 id: emailTextReg
                 height: parent.height
                 color: highlightTextColor
-                text: qsTr("E-Mail")
+                text: qsTr("E-mail")
                 wrapMode: Text.WordWrap
                 verticalAlignment: Text.AlignVCenter
                 font.bold: false
@@ -340,7 +356,7 @@ Item {
                 id: phoneTextReg
                 height: parent.height
                 color: highlightTextColor
-                text: qsTr("Tel.")
+                text: qsTr("Tel. (optional)")
                 font.weight: Font.Thin
                 verticalAlignment: Text.AlignVCenter
                 anchors.left: parent.left
@@ -355,7 +371,7 @@ Item {
                 height: parent.height
                 anchors.right: parent.right
                 passwordCharacter: "\u25cf"
-                placeholderText: qsTr("tel")
+                placeholderText: qsTr("phone number")
                 anchors.rightMargin: 0
             }
             layer.textureSize.height: 0
@@ -404,7 +420,7 @@ Item {
                 width: 200
                 height: parent.height
                 anchors.right: parent.right
-                placeholderText: qsTr("name")
+                placeholderText: qsTr("full name")
             }
             layer.textureSize.height: 0
             layer.textureSize.width: 0
