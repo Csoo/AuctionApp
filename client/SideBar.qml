@@ -254,11 +254,10 @@ Item {
         y: 393
         width: 32
         height: 32
-        rotation: -90
         anchors.horizontalCenterOffset: 0
         anchors.bottom: quit.top
         sourceSize.height: 32
-        source: "img/exit.png"
+        source: "img/logout.png"
         MouseArea {
             id: logoutArea
             rotation: -90

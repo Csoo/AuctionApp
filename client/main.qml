@@ -99,6 +99,7 @@ ApplicationWindow {
                                 onAuctionClicked: {
                                     main.searchIndex = 1
                                     auction.auctionId = auctionId
+                                    auction.auctionTitle = title
                                 }
                             }
                         }

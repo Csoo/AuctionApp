@@ -72,10 +72,6 @@ Item {
             return;
         }
 
-
-
-
-
         main.isLoading = true;
         if ( httpRequest.registerRequest(userName, password, email, fullName, address, phone) ) {
 

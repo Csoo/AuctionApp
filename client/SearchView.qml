@@ -6,7 +6,7 @@ import QtQuick.Controls.Styles 1.4
 Item {
     id: searchView
 
-    signal auctionClicked(int auctionId)
+    signal auctionClicked(int auctionId, string title)
 
     function getTags(text) {
         var arr = text.split(",");
@@ -59,7 +59,7 @@ Item {
                 id: searchArea
                 hoverEnabled: true
                 anchors.fill: parent
-                onClicked: search()
+                onClicked: searchView.search()
             }
         }
     }
@@ -199,7 +199,7 @@ Item {
                 id: hightlightArea
                 hoverEnabled: true
                 anchors.fill: parent
-                onClicked: auctionClicked(id)
+                onClicked: auctionClicked(id, title)
             }
             Rectangle {
                 id: hightlight
