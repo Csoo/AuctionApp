@@ -5,6 +5,7 @@
 
 class AuctionItem {
 public:
+    AuctionItem();
     AuctionItem(int id, const QString &title, const QString &condition, int price);
     ~AuctionItem();
 

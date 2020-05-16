@@ -23,7 +23,13 @@ Item {
             login.loginAccepted();
         }
     }
-
+    function loginIsValid() {
+        if (userName.text.length == 0 || password.text.length == 0) {
+            signInButton.enabled = false;
+        } else {
+            signInButton.enabled = true;
+        }
+    }
     Popup {
         id: wrongLogin
         x: parent.width/2-100
@@ -85,6 +91,7 @@ Item {
                 width: 200
                 height: parent.height
                 placeholderText: qsTr("name")
+                onTextEdited: login.loginIsValid()
             }
 
         }
@@ -119,6 +126,7 @@ Item {
                 placeholderText: qsTr("password")
                 passwordCharacter: "●"
                 echoMode: hidePassword.checked ? TextInput.Normal : TextInput.Password
+                onTextEdited: login.loginIsValid()
             }
 
             Switch {
@@ -145,6 +153,8 @@ Item {
             anchors.leftMargin: 21
             highlighted: true
             onClicked: login.loginFunction()
+            enabled: false
+            //onClicked: userName.text == "admin" ? login.loginAccepted() : wrongLogin.open()
         }
 
         Button {

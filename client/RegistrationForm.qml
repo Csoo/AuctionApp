@@ -205,8 +205,9 @@ Item {
                 width: 200
                 height: parent.height
                 anchors.rightMargin: 0
-                placeholderText: qsTr("password")
                 passwordCharacter: "●"
+                echoMode: TextInput.Password
+                placeholderText: qsTr("password")
             }
         }
 
@@ -239,9 +240,10 @@ Item {
                 width: 200
                 height: parent.height
                 anchors.rightMargin: 0
+                passwordCharacter: "●"
+                echoMode: TextInput.Password
                 placeholderText: qsTr("password")
                 anchors.right: parent.right
-                passwordCharacter: "\u25cf"
             }
             layer.textureSize.height: 0
             layer.textureSize.width: 0
@@ -367,7 +369,6 @@ Item {
                 width: 200
                 height: parent.height
                 anchors.right: parent.right
-                passwordCharacter: "\u25cf"
                 placeholderText: qsTr("phone number")
                 anchors.rightMargin: 0
             }

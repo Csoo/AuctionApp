@@ -9,6 +9,11 @@ AuctionItem::AuctionItem(int id, const QString &title, const QString &condition,
 
 }
 
+AuctionItem::AuctionItem()
+{
+
+}
+
 AuctionItem::~AuctionItem()
 {
 
