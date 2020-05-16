@@ -4,7 +4,7 @@
 APIrequest::APIrequest(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
-    url(QUrl("http://localhost:3000"))
+    url(QUrl("http://81.183.216.27:3000"))
 {
 
 }
@@ -30,9 +30,9 @@ int APIrequest::loginRequest(const QString &name, const QString &pw)
 
     QByteArray res = reply->readAll();
     qDebug() << res;
-    if (res == "false")
-        return -1;
-    return res.toInt();
+    if (res != "false" && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
+        return res.toInt();
+    return -1;
 }
 
 bool APIrequest::registerRequest(const QString &name, const QString &pw, const QString &email, const QString &fullName, const QString &address, const QString &phone)

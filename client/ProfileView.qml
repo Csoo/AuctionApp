@@ -1,4 +1,4 @@
- import QtQuick 2.0
+import QtQuick 2.0
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.3
 
@@ -8,6 +8,7 @@ Item {
     y: 0
     width: 1080
     height: 690
+    visible: false
 
     property int profileId: 1
 
@@ -39,6 +40,8 @@ Item {
         email_tag.visible = profile.profileId === main.loggedinProfileId
         lastlogin.visible = profile.profileId !== main.loggedinProfileId
         lastlogin_tag.visible = profile.profileId !== main.loggedinProfileId
+
+        profile.visible = true
     }
 
     Title {
