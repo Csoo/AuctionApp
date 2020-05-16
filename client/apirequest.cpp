@@ -227,5 +227,14 @@ QJsonDocument APIrequest::profileRequest(int id)
 
 QJsonDocument APIrequest::auctionRequest(int id)
 {
+    url.setPath("/auction/" + QString::number(id));
+    request.setUrl(url);
 
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->get(request);
+    loop.exec();
+
+    return QJsonDocument::fromJson(reply->readAll());
 }
