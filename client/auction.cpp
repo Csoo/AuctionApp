@@ -37,6 +37,6 @@ void Auction::getAuction(int id)
         userName.append(obj["last_licit_user"].toString());
     }
 
-    m_lastLicitUserid = userId.first();
+    m_lastLicitUserId = userId.first();
     m_lastLicitUserName = userName.first();
 }
