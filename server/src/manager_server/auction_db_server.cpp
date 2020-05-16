@@ -34,6 +34,7 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(this, &Auction_db_server::set_bid, db, &Db_server::set_bid_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(closer, &Auction_closer::add_rating, db, &Db_server::add_rating_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::set_rating, db, &Db_server::set_rating_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(closer, &Auction_closer::read_closes, db, &Db_server::read_closes_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
     closer->start();
@@ -439,6 +440,7 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
         return;
     }
 
+    //id, end_date
     closes->insert(id, p["ed"]);
 
     response.set_content(id.toStdString(),"application/json");

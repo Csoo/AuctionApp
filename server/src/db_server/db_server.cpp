@@ -24,7 +24,8 @@ Db_server::Db_server(const QString &driver, QString connectionName, QString dbNa
     checkBidQuery(db),
     setBidQuery(db),
     addRatingQuery(db),
-    setRatingQuery(db)
+    setRatingQuery(db),
+    readClosesQuery(db)
 {
     std::cout << "[Db_server] Log: Started" << std::endl;
 
@@ -92,8 +93,6 @@ void Db_server::check_login_slot(const QString &user, const QString &passw, int*
         getLoginQuery.next();
 
         *id = getLoginQuery.value(0).toInt();
-
-        return;
 
         return;
     }
@@ -461,7 +460,7 @@ void Db_server::check_bid_slot(const QString &auction, int currentP, bool *ok, b
 
     checkBidQuery.clear();
 
-    if(!checkBidQuery.exec("select " + QString::number(currentP) + " from auction where id = " + auction))
+    if(!checkBidQuery.exec("select current_price from auction where id = " + auction))
     {
         std::cout << "[Database::addAuction]  Error: " << checkBidQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -528,5 +527,23 @@ void Db_server::set_rating_slot(const QString &user, const QString &rater, const
         *hasError = true;
         return;
     }
+}
+
+void Db_server::read_closes_slot(QMap<QString, QString> *closes) {
+
+    readClosesQuery.clear();
+
+    if(!readClosesQuery.exec("select id, end_date from auction"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << readClosesQuery.lastError().text().toStdString() << std::endl;
+        return;
+    }
+
+    while (readClosesQuery.next()) {
+
+        //id, end_date
+        closes->insert(readClosesQuery.value(0).toString(), readClosesQuery.value(1).toString());
+    }
+
 }
 

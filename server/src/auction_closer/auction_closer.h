@@ -25,6 +25,7 @@ public slots:
 signals:
     void recursion();
     void add_rating(const QString &id, bool *hasError);
+    void read_closes(QMap<QString,QString> *closes);
 
 private:
     QMap<QString,QString> *close;

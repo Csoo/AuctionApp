@@ -13,6 +13,10 @@ close(closes)
 
     std::cout << "[Auction_closer] Log: Started" << std::endl;
 
+    emit read_closes(closes);
+
+    std::cout << "[Auction_closer] Log: Closes read" << std::endl;
+
     moveToThread(this);
 }
 

@@ -42,6 +42,8 @@ public slots:
     void add_rating_slot(const QString &id, bool *hasError);
     void set_rating_slot(const QString &user, const QString &rater, const QString &positive, const QString &desc, bool *hasError);
 
+    void read_closes_slot(QMap<QString,QString> *closes);
+
 protected:
 
     QSqlDatabase db;
@@ -58,6 +60,7 @@ protected:
     QSqlQuery allAuctionQuery;
     QSqlQuery getAuctionIdQuery;
     QSqlQuery checkBidQuery;
+    QSqlQuery readClosesQuery;
 
     QSqlQuery addUserQuery;
     QSqlQuery addAuctionQuery;
