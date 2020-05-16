@@ -32,9 +32,13 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(this, &Auction_db_server::server_start, closer, &Auction_closer::server_start_slot, Qt::ConnectionType::QueuedConnection);
     QObject::connect(this, &Auction_db_server::check_bid, db, &Db_server::check_bid_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::set_bid, db, &Db_server::set_bid_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(closer, &Auction_closer::add_rating, db, &Db_server::add_rating_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::set_rating, db, &Db_server::set_rating_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
     closer->start();
+
+    emit server_start();
 
     std::cout << "[Auction_db_server] Log: Start server & Start Db_server & Start Auction_closer" << std::endl;
 }
@@ -529,14 +533,13 @@ void Auction_db_server::rate(const Request &request, Response &response) {
 
     QVariantMap body = bodyJson.toVariant().toMap();
 
-    QString ms;
-    int from, to, p;
+    QString ms, from, to, p;
 
     try
     {
-        from = body.value("user_id_from").toInt();
-        to = body.value("user_id_to").toInt();
-        p = body.value("positive").toInt();
+        from = body.value("user_id_from").toString();
+        to = body.value("user_id_to").toString();
+        p = body.value("positive").toString();
         ms = body.value("message").toString();
     }
     catch (...)
@@ -547,4 +550,17 @@ void Auction_db_server::rate(const Request &request, Response &response) {
     }
     std::cout << "[Auction_db_server] Log: Rating parameters dumped" << std::endl;
 
+    bool hasError;
+
+    emit set_rating(to, from, p, ms, &hasError);
+
+    if (hasError)
+    {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
+        response.status = 500;
+        return;
+    }
+
+    response.set_content(to.toStdString(),"application/json");
+    response.status = 200;
 }

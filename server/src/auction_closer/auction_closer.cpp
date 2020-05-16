@@ -56,5 +56,16 @@ Auction_closer::~Auction_closer() {
 void Auction_closer::closeAuction(const QString &id) {
 
     std::cout << "[Auction_closer] Log: Auction " + id.toStdString() + " closed" << std::endl;
+
+    bool hasError;
+
+    emit add_rating(id, &hasError);
+
+    if (hasError)
+    {
+        std::cout << "[Auction_closer] Error: From Db_server" << id.toStdString() << " auction closing failed on add_rating"<< std::endl;
+        return;
+    }
+
     close->remove(id);
 }

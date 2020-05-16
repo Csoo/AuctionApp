@@ -52,6 +52,7 @@ signals:
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
     void add_auction(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
     void set_bid(const QString &auction, const QString &user, int currentP, bool *hasError);
+    void set_rating(const QString &user, const QString &rater, const QString &positive, const QString &desc, bool *hasError);
 
     void server_start();
 

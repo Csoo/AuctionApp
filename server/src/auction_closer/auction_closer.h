@@ -18,11 +18,13 @@ public:
 
     void closeAuction(const QString &id);
 
+
 public slots:
     void server_start_slot();
 
 signals:
     void recursion();
+    void add_rating(const QString &id, bool *hasError);
 
 private:
     QMap<QString,QString> *close;
