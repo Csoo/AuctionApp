@@ -540,9 +540,9 @@ void Db_server::set_rating_slot(const QString &user, const QString &rater, const
 
     std::lock_guard<std::mutex> m(db_m);
 
-    if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = " + desc +
-                            ", rating_date = " + CT.toString(Qt::ISODate).mid(-1,11) + " " +
-                            CT.time().toString(Qt::ISODate).mid(-1,6) + ", is_rated = 1 WHERE user_id = " +
+    if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = '" + desc +
+                            "', rating_date = '" + CT.toString(Qt::ISODate).mid(-1,11) + " " +
+                            CT.time().toString(Qt::ISODate).mid(-1,6) + "', is_rated = 1 WHERE user_id = " +
                             user + " AND rater_user_id = " + rater))
     {
         std::cout << "[Database::setRating]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
