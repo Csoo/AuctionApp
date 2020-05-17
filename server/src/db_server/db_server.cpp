@@ -576,8 +576,8 @@ void Db_server::add_rating_slot(const QString &id, bool *hasError) {
 
     addRatingQuery.clear();
 
-    if(!addRatingQuery.exec("INSERT INTO auction (user_id, rater_user_id, is_rated) VALUES (" +
-                            from + ", " + to + ", " + QString::number(0) + ")"))
+    if(!addRatingQuery.exec("INSERT INTO rating (user_id, rater_user_id, is_rated, auction_id) VALUES (" +
+                            from + ", " + to + ", " + QString::number(0) + ", " + id + ")"))
     {
         std::cout << "[Database::addRating]  Error: " << addRatingQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
