@@ -610,7 +610,7 @@ void Db_server::get_rate_slot(const QString &user, QString &p, QString &n, bool 
     *hasError = false;
     getRateQuery.clear();
 
-    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + ", is_positive=1"))
+    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + " AND is_positive=1"))
     {
         std::cout << "[Database::getRate]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -623,7 +623,7 @@ void Db_server::get_rate_slot(const QString &user, QString &p, QString &n, bool 
 
     getRateQuery.clear();
 
-    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + ", is_positive=0"))
+    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + " AND is_positive=0"))
     {
         std::cout << "[Database::getRate]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
