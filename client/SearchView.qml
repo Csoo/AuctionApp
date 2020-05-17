@@ -59,7 +59,7 @@ Item {
                 id: searchArea
                 hoverEnabled: true
                 anchors.fill: parent
-                onClicked: searchView.search()
+                onClicked: auctionModel.sortBy() //searchView.search()
             }
         }
     }

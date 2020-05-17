@@ -52,8 +52,10 @@ QHash<int, QByteArray> AuctionListModel::roleNames() const
 
 void AuctionListModel::sortBy()
 {
-    auctions.remove(1);
+    beginResetModel();
+    auctions.swapItemsAt(1,2);
     qDebug() << auctions[1].getTitle() << auctions[2].getTitle();
+    endResetModel();
 }
 
 void AuctionListModel::setAuctions(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags)
