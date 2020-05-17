@@ -151,7 +151,7 @@ void Db_server::add_user_slot(const QString &email, const QString &user, const Q
                           " VALUES (1,'" + user + "', '" + passw + "', '" + fullName + "', '" + email + "', '" + add + "', '" + phone + "', '" + temp_date + "', 'never')")) {
 
         std::cout << "[Database::addUser]  Error: " << addUserQuery.lastError().text().toStdString() << std::endl;
-        std::cout << "INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date)";
+        std::cout << "INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date)" << std::endl;
         *hasError = true;
         return;
     }
@@ -403,9 +403,9 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     std::lock_guard<std::mutex> m(db_m);
 
-    if(!addAuctionQuery.exec("INSERT INTO item_description (title, condition_id, color, text) VALUES (" +
-                                parameters["title"] + ", " + parameters["condition"] + ", " + parameters["color"] +
-                                ", " + parameters["description"] + ")"))
+    if(!addAuctionQuery.exec("INSERT INTO item_description (title, condition_id, color, text) VALUES ('" +
+                                parameters["title"] + "', " + parameters["condition"] + ", '" + parameters["color"]
+                                + "', '" + parameters["description"] + "')"))
     {
         std::cout << "[Database::addAuction1]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -427,8 +427,8 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     addAuctionQuery.clear();
 
-    if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES (" +
-                                parameters["user"] + ", " + descId + ", " + parameters["categ"] + ")"))
+    if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES ("
+                                + parameters["user"] + ", " + descId + ", " + parameters["categ"] + ")"))
     {
         std::cout << "[Database::addAuction3]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -456,8 +456,8 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
     QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
 
     if(!addAuctionQuery.exec("INSERT INTO auction (item_id, start_date, end_date, current_price, min_step, "
-                             "fix_price, last_licit_user_id) VALUES (" + itemId + ", " + temp_date + ", " + parameters["ed"] +
-                             ", " + parameters["cp"] + ", " + parameters["mins"] + ", " + "0" + ", " + parameters["user"] + ")"))
+                             "fix_price, last_licit_user_id) VALUES (" + itemId + ", '" + temp_date + "', '" + parameters["ed"] +
+                             "', " + parameters["cp"] + ", " + parameters["mins"] + ", " + "0" + ", " + parameters["user"] + ")"))
     {
         std::cout << "[Database::addAuction5]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
