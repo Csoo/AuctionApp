@@ -1,17 +1,5 @@
 
-
-#include <iostream>
-#include <Python.h>
-
 #include "cpp_email.h"
-
-
-int main()
-{
-	Email* email = new Email("stecsabi@gmail.com", "TEszt fejlec", "asdasdasdasdasdsasadasddasasdasdasdasdasd");
-	email->prepare();
-	email->send();
-}
 
 void Email::prepare() {
 	std::ofstream myfile;
@@ -33,4 +21,3 @@ void Email::send() {
 
 	Py_Finalize();
 }
-

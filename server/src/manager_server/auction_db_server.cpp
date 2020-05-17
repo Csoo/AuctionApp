@@ -35,6 +35,8 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(closer, &Auction_closer::add_rating, db, &Db_server::add_rating_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::set_rating, db, &Db_server::set_rating_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(closer, &Auction_closer::read_closes, db, &Db_server::read_closes_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(closer, &Auction_closer::get_close_data, db, &Db_server::get_close_data_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(closer, &Auction_closer::get_email, db, &Db_server::get_email_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
     closer->start();
@@ -156,6 +158,15 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
         std::cout << email.toStdString() << std::endl << user.toStdString() << std::endl << fullName.toStdString() << std::endl << passw.toStdString() << std::endl << add.toStdString() << std::endl << phone.toStdString() << std::endl;
 
         emit add_user(email, user, fullName, passw, add, phone, &hasError);
+
+        Email notification(email.toStdString(), "Registration notification", "Dear " + fullName.toStdString() + ",\nRegistration of " +
+                            user.toStdString() + " succeeded");
+        notification.prepare();
+        notification.send();
+        std::cout << "[Auction_db_server] Log: Email to just registered user sent" << std::endl;
+        //	Email* email = new Email("stecsabi@gmail.com", "TEszt fejlec", "asdasdasdasdasdsasadasddasasdasdasdasdasd");
+        //	email->prepare();
+        //	email->send();
     }
 
     if (ok)

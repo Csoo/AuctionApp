@@ -71,5 +71,35 @@ void Auction_closer::closeAuction(const QString &id) {
         return;
     }
 
+    QString lluser, auuser, currentP, title, llemail, auemail, text;
+
+    emit get_close_data(id, lluser, auuser, currentP, title, &hasError);
+
+    emit get_email(lluser, llemail, &hasError);
+    emit get_email(auuser, auemail, &hasError);
+
+    text = title + "\nAuction closing perice: " + currentP + "\nAuction owner: " + auuser;
+
+    notification = new Email(llemail.toStdString(),"Auction closing",text.toStdString());
+    notification->prepare();
+    notification->send();
+    std::cout << "[Auction_closer] Log: Email to last licit user sent" << std::endl;
+
+    delete notification;
+
+    text = title + "\nAuction closing perice: " + currentP + "\nAuction winer: " + lluser;
+
+    notification = new Email(auemail.toStdString(),"Auction closing",text.toStdString());
+    notification->prepare();
+    notification->send();
+    std::cout << "[Auction_closer] Log: Email to auction owner user sent" << std::endl;
+
+    delete notification;
+
+    //	Email* email = new Email("stecsabi@gmail.com", "TEszt fejlec", "asdasdasdasdasdsasadasddasasdasdasdasdasd");
+    //	email->prepare();
+    //	email->send();
+    //Nyertesnek, feladónak aukció címe, végső ára, ki volt az aukció készítő
+
     close->remove(id);
 }

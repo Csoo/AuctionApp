@@ -14,6 +14,7 @@ ADD_SUBDIRECTORY(auction_closer)
 INCLUDE_DIRECTORIES(auction_closer)
 
 INCLUDE(3rdparty)
+INCLUDE(python)
 
 ADD_EXECUTABLE(auctionapp main.cpp)
 

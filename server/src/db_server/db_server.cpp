@@ -25,7 +25,8 @@ Db_server::Db_server(const QString &driver, QString connectionName, QString dbNa
     setBidQuery(db),
     addRatingQuery(db),
     setRatingQuery(db),
-    readClosesQuery(db)
+    readClosesQuery(db),
+    getCloseQuery(db)
 {
     std::cout << "[Db_server] Log: Started" << std::endl;
 
@@ -397,7 +398,9 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     addAuctionQuery.clear();
 
-    if(!addAuctionQuery.exec("INSERT INTO item_description (title, condition_id, color, text) VALUES (" + parameters["title"] + ", " + parameters["condition"] + ", " + parameters["color"] + ", " + parameters["description"] + ")"))
+    if(!addAuctionQuery.exec("INSERT INTO item_description (title, condition_id, color, text) VALUES (" +
+                                parameters["title"] + ", " + parameters["condition"] + ", " + parameters["color"] +
+                                ", " + parameters["description"] + ")"))
     {
         std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -419,7 +422,8 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     addAuctionQuery.clear();
 
-    if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES (" + parameters["user"] + ", " + descId + ", " + parameters["categ"] + ")"))
+    if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES (" +
+                                parameters["user"] + ", " + descId + ", " + parameters["categ"] + ")"))
     {
         std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -446,7 +450,9 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
 
-    if(!addAuctionQuery.exec("INSERT INTO auction (item_id, start_date, end_date, current_price, min_step, fix_price, last_licit_user_id) VALUES (" + itemId + ", " + temp_date + ", " + parameters["ed"] + ", " + parameters["cp"] + ", " + parameters["mins"] + ", " + "0" + ", " + parameters["user"] + ")"))
+    if(!addAuctionQuery.exec("INSERT INTO auction (item_id, start_date, end_date, current_price, min_step, "
+                             "fix_price, last_licit_user_id) VALUES (" + itemId + ", " + temp_date + ", " + parameters["ed"] +
+                             ", " + parameters["cp"] + ", " + parameters["mins"] + ", " + "0" + ", " + parameters["user"] + ")"))
     {
         std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -480,7 +486,8 @@ void Db_server::set_bid_slot(const QString &auction, const QString &user, int cu
 
     setBidQuery.clear();
 
-    if(!setBidQuery.exec("UPDATE auction SET current_price = " + QString::number(currentP) + ", last_licit_user_id = " + user + " WHERE id = " + auction))
+    if(!setBidQuery.exec("UPDATE auction SET current_price = " + QString::number(currentP) +
+                            ", last_licit_user_id = " + user + " WHERE id = " + auction))
     {
         std::cout << "[Database::addAuction]  Error: " << setBidQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -506,7 +513,8 @@ void Db_server::add_rating_slot(const QString &id, bool *hasError) {
 
     addRatingQuery.clear();
 
-    if(!addRatingQuery.exec("INSERT INTO auction (user_id, rater_user_id, is_rated) VALUES (" + from + ", " + to + ", " + QString::number(0) + ")"))
+    if(!addRatingQuery.exec("INSERT INTO auction (user_id, rater_user_id, is_rated) VALUES (" +
+                            from + ", " + to + ", " + QString::number(0) + ")"))
     {
         std::cout << "[Database::addAuction]  Error: " << addRatingQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -521,7 +529,10 @@ void Db_server::set_rating_slot(const QString &user, const QString &rater, const
 
     QDateTime CT = QDateTime::currentDateTime();
 
-    if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = " + desc + ", rating_date = " + CT.toString(Qt::ISODate).mid(-1,11) + " " + CT.time().toString(Qt::ISODate).mid(-1,6) + ", is_rated = 1 WHERE user_id = " + user + ", rater_user_id = " + rater))
+    if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = " + desc +
+                            ", rating_date = " + CT.toString(Qt::ISODate).mid(-1,11) + " " +
+                            CT.time().toString(Qt::ISODate).mid(-1,6) + ", is_rated = 1 WHERE user_id = " +
+                            user + ", rater_user_id = " + rater))
     {
         std::cout << "[Database::addAuction]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -545,5 +556,42 @@ void Db_server::read_closes_slot(QMap<QString, QString> *closes) {
         closes->insert(readClosesQuery.value(0).toString(), readClosesQuery.value(1).toString());
     }
 
+}
+
+void Db_server::get_close_data_slot(const QString &id, QString &lluser, QString &auuser, QString &currentP, QString &title, bool *hasError) {
+    *hasError = false;
+    getCloseQuery.clear();
+
+    if(!getCloseQuery.exec("SELECT auction.last_licit_user, item.user_id, auction.current_price, item_description.title FROM "
+                           "auction inner join item on auction.item_id=item.id inner join item_description on item_description.id=item.description_id"
+                           "WHERE auction.id=" + id))
+    {
+        std::cout << "[Database::addAuction]  Error: " << getCloseQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    getCloseQuery.next();
+
+    lluser = getCloseQuery.value(0).toString();
+    auuser = getCloseQuery.value(1).toString();
+    currentP = getCloseQuery.value(2).toString();
+    title = getCloseQuery.value(3).toString();
+}
+
+void Db_server::get_email_slot(const QString &user, QString &email, bool *hasError) {
+    *hasError = false;
+    getCloseQuery.clear();
+
+    if(!getCloseQuery.exec("SELECT e-mail FROM user WHERE id=" + user))
+    {
+        std::cout << "[Database::addAuction]  Error: " << getCloseQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    getCloseQuery.next();
+
+    email = getCloseQuery.value(0).toString();
 }
 

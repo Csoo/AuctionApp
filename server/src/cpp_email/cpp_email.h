@@ -1,8 +1,14 @@
+#pragma once
+
 #include <iostream>
+
+#pragma push_macro("slots")
+#undef slots
 #include <Python.h>
+#pragma pop_macro("slots")
+
 #include <string>
 #include <fstream>
-
 
 class Email {
 	std::string address;
