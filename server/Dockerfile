@@ -10,7 +10,7 @@ COPY . /source
 RUN mkdir /source/build
 
 WORKDIR /source/build
-RUN cp ../src/database.db /
+RUN cp ../src/database.db / && cp ../src/cpp_email/emailsender.py /
 RUN cmake .. && make -j4 && cp src/auctionapp / && rm -r /source
 
 ENTRYPOINT ["/auctionapp"]
