@@ -82,7 +82,7 @@ Item {
         height: 41
         text: qsTr("Create Auction")
         anchors.right: column1.right
-        anchors.rightMargin: 22
+        anchors.rightMargin: 0
         anchors.top: column1.bottom
         anchors.topMargin: 27
         highlighted: true
@@ -92,13 +92,13 @@ Item {
 
     Item {
         id: column
-        x: 20
-        y: 40
+        y: 8
         width: 295
         height: 344
-        anchors.horizontalCenterOffset: -140
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 128
+        anchors.left: parent.left
+        anchors.leftMargin: 148
 
         Item {
             id: row
@@ -256,12 +256,12 @@ Item {
 
     Item {
         id: column1
-        y: 40
         width: 295
         height: 344
-        anchors.verticalCenter: parent.verticalCenter
         anchors.left: column.right
-        anchors.leftMargin: 40
+        anchors.leftMargin: 50
+        anchors.top: column.top
+        anchors.topMargin: 0
 
         Item {
             id: row6
@@ -452,7 +452,9 @@ Item {
 
 }
 
-/*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}D{i:2;anchors_x:32;anchors_y:440}D{i:5;anchors_height:344;anchors_x:20;anchors_y:40}
+D{i:23;anchors_height:344;anchors_y:40}
 }
- ##^##*/
+##^##*/

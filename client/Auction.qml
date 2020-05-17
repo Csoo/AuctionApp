@@ -6,7 +6,6 @@ Item {
     id: auctionView
     property int auctionId: 1
 
-    signal backPressed()
     signal userClicked(int userId)
 
     Component.onCompleted: {
@@ -33,14 +32,12 @@ Item {
 
     Item {
         id: frame
-        x: 312
-        y: 116
         width: 279
         height: 313
-        anchors.verticalCenterOffset: 24
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
-        anchors.rightMargin: 49
+        anchors.top: frame2.top
+        anchors.topMargin: 0
+        anchors.left: frame2.right
+        anchors.leftMargin: 22
 
         Item {
             id: element2
@@ -171,20 +168,19 @@ Item {
 
     Item {
         id: frame2
+        y: -5
         width: 231
+        height: 337
         anchors.left: parent.left
-        anchors.leftMargin: 147
-        anchors.top: frame.top
-        anchors.topMargin: 0
-        anchors.bottom: frame.bottom
-        anchors.bottomMargin: 0
+        anchors.leftMargin: 128
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 148
 
         TextField {
             id: bid
             y: 247
             width: 100
             height: 38
-            text: qsTr("Text Field")
             anchors.left: parent.left
             anchors.leftMargin: 0
             anchors.bottom: parent.bottom
@@ -261,7 +257,6 @@ Item {
             MouseArea {
                 id: latestUserArea
                 hoverEnabled: true
-                anchors.leftMargin: -93
                 anchors.fill: parent
                 onClicked: userClicked(latestUser.userId)
             }
@@ -281,25 +276,13 @@ Item {
         }
     }
 
-    Button {
-        id: backButton
-        x: 510
-        text: qsTr("Button")
-        anchors.top: frame.bottom
-        anchors.topMargin: 20
-        anchors.right: frame.right
-        anchors.rightMargin: 0
-        onClicked: backPressed()
-    }
-
-
 }
 
 /*##^##
 Designer {
     D{i:0;autoSize:true;height:480;width:640}D{i:3;anchors_width:200}D{i:6;anchors_width:200}
-D{i:9;anchors_width:279}D{i:10;anchors_width:200}D{i:13;anchors_width:200}D{i:18;anchors_x:106}
-D{i:21;anchors_x:37}D{i:23;anchors_y:423}D{i:22;anchors_x:112}D{i:24;anchors_width:250;anchors_x:-19;anchors_y:-11}
-D{i:16;anchors_height:200;anchors_width:212;anchors_x:66;anchors_y:204}D{i:25;anchors_y:423}
+D{i:9;anchors_width:279}D{i:10;anchors_width:200}D{i:13;anchors_width:200}D{i:2;anchors_x:312;anchors_y:116}
+D{i:18;anchors_x:106}D{i:21;anchors_x:37}D{i:23;anchors_y:423}D{i:22;anchors_x:112}
+D{i:24;anchors_width:250;anchors_x:"-19";anchors_y:"-11"}D{i:16;anchors_height:200;anchors_width:212;anchors_x:66;anchors_y:204}
 }
 ##^##*/

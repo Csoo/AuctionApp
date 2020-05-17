@@ -13,15 +13,15 @@ void Auction::getAuction(int id)
 
     qDebug() << json.toJson();
 
-    m_auctionId = obj["auction_id"].toVariant().Int;
-    m_ownerUserId = obj["owner_id"].toVariant().Int;
+    m_auctionId = obj["auction_id"].toString().toInt();
+    m_ownerUserId = obj["owner_id"].toString().toInt();
     m_ownerUserName = obj["owner"].toString();
     m_title = obj["title"].toString();
     m_startDate = obj["start_date"].toString();
     m_endDate = obj["end_date"].toString();
-    m_currentPrice = obj["current_price"].toVariant().Int;
-    m_minStep = obj["min_step"].toVariant().Int;
-    m_fixPrice = obj["fix_price"].toVariant().Int;
+    m_currentPrice = obj["current_price"].toString().toInt();
+    m_minStep = obj["min_step"].toString().toInt();
+    m_fixPrice = obj["fix_price"].toString().toInt();
     m_descriptionText = obj["description_text"].toString();
     m_color = obj["description_color"].toString();
     m_conditionText = obj["condition_text"].toString();
@@ -35,7 +35,7 @@ void Auction::getAuction(int id)
 
     foreach (const QJsonValue & value, jsonArray) {
         QJsonObject obj = value.toObject();
-        userId.append(obj["last_licit_user_id"].toInt());
+        userId.append(obj["last_licit_user_id"].toString().toInt());
         userName.append(obj["last_licit_user"].toString());
     }
 

@@ -121,10 +121,6 @@ ApplicationWindow {
                                 Auction {
                                     id: auction
                                     auctionId: main.auctionId
-                                    onBackPressed: {
-                                        main.searchIndex = 0
-                                        auctionLoader.sourceComponent = undefined
-                                    }
                                     onUserClicked: {
                                         searchProfile.profileId = userId
                                         main.searchIndex = 2
@@ -153,7 +149,7 @@ ApplicationWindow {
                             width: 40
                             visible: main.searchIndex !== 0 && main.pageIndex === 2
                             Label {
-                                text: ">"
+                                text: "<"
                                 font.weight: Font.ExtraBold
                                 font.pointSize: 14
                                 font.family: "Courier"
