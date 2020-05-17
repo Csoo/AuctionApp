@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <auctionitem.h>
 #include <apirequest.h>
+#include <algorithm>
 
 class AuctionListModel : public QAbstractListModel
 {
@@ -26,7 +27,7 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void sortBy();
+    Q_INVOKABLE void sortBy(const QString &by, bool asc);
     Q_INVOKABLE void setAuctions(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags);
 
 private:

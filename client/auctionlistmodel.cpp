@@ -50,11 +50,13 @@ QHash<int, QByteArray> AuctionListModel::roleNames() const
     return names;
 }
 
-void AuctionListModel::sortBy()
+void AuctionListModel::sortBy(const QString &by, bool asc)
 {
     beginResetModel();
-    auctions.swapItemsAt(1,2);
-    qDebug() << auctions[1].getTitle() << auctions[2].getTitle();
+    if (by == "price")
+        std::sort(auctions.begin(), auctions.end(), [asc](const AuctionItem &a, const AuctionItem &b)->bool{if(asc) return a.getPrice() < b.getPrice(); return a.getPrice() > b.getPrice();});
+    else
+        std::sort(auctions.begin(), auctions.end(), [asc](const AuctionItem &a, const AuctionItem &b)->bool{if(asc) return a.getTitle().toLower() < b.getTitle().toLower(); return a.getTitle().toLower() > b.getTitle().toLower();});
     endResetModel();
 }
 
