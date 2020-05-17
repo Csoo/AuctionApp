@@ -37,6 +37,7 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(closer, &Auction_closer::read_closes, db, &Db_server::read_closes_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(closer, &Auction_closer::get_close_data, db, &Db_server::get_close_data_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(closer, &Auction_closer::get_email, db, &Db_server::get_email_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_rate, db, &Db_server::get_rate_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
     closer->start();
@@ -313,6 +314,8 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
 
     bool ok, hasError;
     QMap<QString,QString> data;
+    QString positive, negative;
+
     std::cout << "[Auction_db_server] Log: Request Db_server for get self data" << std::endl;
     emit get_self(id, &data, &ok, &hasError);
 
@@ -330,12 +333,25 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
         return;
     }
 
+    emit get_rate(data["user"], positive, negative, &hasError);
+
+    if (hasError)
+    {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
+        response.status = 500;
+        return;
+    }
+
     QString body = R"({"email":")" + data["email"]
                 + R"(","user":")" + data["user"]
                 + R"(","fullName":")" + data["fullName"]
                 + R"(","address":")" + data["address"]
                 + R"(","phone":")" + data["phone"]
-                + R"(","reg":")" + data["reg"] + "\"\n}";
+                + R"(","reg":")" + data["reg"]
+                + R"(","pozitive":")" + positive
+                + R"(","negative":")" + negative
+                + "\"\n}";
+
     std::cout << "[Auction_db_server] Log: Response body dumped" << std::endl;
 
     response.set_content(body.toStdString(),"application/json");
@@ -351,6 +367,8 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
 
     bool ok, hasError;
     QMap<QString,QString> data;
+    QString positive, negative;
+
     std::cout << "[Auction_db_server] Log: Request Db_server for get user data" << std::endl;
     emit get_other(id, &data, &ok, &hasError);
 
@@ -368,10 +386,23 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
         return;
     }
 
+    emit get_rate(data["user"], positive, negative, &hasError);
+
+    if (hasError)
+    {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
+        response.status = 500;
+        return;
+    }
+
     QString body = R"({"user":")" + data["user"]
                    + R"(","fullName":")" + data["fullName"]
                    + R"(","reg":")" + data["reg"]
-                   + R"(","last":")" + data["last"] + "\"\n}";
+                   + R"(","last":")" + data["last"]
+                   + R"(","pozitive":")" + positive
+                   + R"(","negative":")" + negative
+                   + "\"\n}";
+
     std::cout << "[Auction_db_server] Log: Response body dumped" << std::endl;
 
     response.set_content(body.toStdString(),"application/json");

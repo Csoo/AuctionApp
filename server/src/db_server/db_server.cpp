@@ -26,7 +26,8 @@ Db_server::Db_server(const QString &driver, QString connectionName, QString dbNa
     addRatingQuery(db),
     setRatingQuery(db),
     readClosesQuery(db),
-    getCloseQuery(db)
+    getCloseQuery(db),
+    getRateQuery(db)
 {
     std::cout << "[Db_server] Log: Started" << std::endl;
 
@@ -603,5 +604,34 @@ void Db_server::get_email_slot(const QString &user, QString &email, bool *hasErr
     getCloseQuery.next();
 
     email = getCloseQuery.value(0).toString();
+}
+
+void Db_server::get_rate_slot(const QString &user, QString &p, QString &n, bool *hasError) {
+    *hasError = false;
+    getRateQuery.clear();
+
+    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + ", is_positive=1"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    getRateQuery.next();
+
+    p = getRateQuery.value(0).toString();
+
+    getRateQuery.clear();
+
+    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + ", is_positive=0"))
+    {
+        std::cout << "[Database::addAuction]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    getRateQuery.next();
+
+    n = getRateQuery.value(0).toString();
 }
 

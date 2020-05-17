@@ -39,7 +39,7 @@ public slots:
     void check_bid_slot(const QString &auction, int currentP, bool *ok, bool *hasError);
     void get_close_data_slot(const QString &id, QString &lluser, QString &auuser, QString &currentP, QString &title, bool *hasError);
     void get_email_slot(const QString &user, QString &email, bool *hasError);
-
+    void get_rate_slot(const QString &user, QString &p, QString &n, bool *hasError);
 
     void add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
     void add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
@@ -68,6 +68,7 @@ protected:
     QSqlQuery checkBidQuery;
     QSqlQuery readClosesQuery;
     QSqlQuery getCloseQuery;
+    QSqlQuery getRateQuery;
 
     QSqlQuery addUserQuery;
     QSqlQuery addAuctionQuery;
