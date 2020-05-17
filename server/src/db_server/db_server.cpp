@@ -384,7 +384,7 @@ void Db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
 
     if(!getAuctionIdQuery.exec("SELECT auction.id FROM item\n"
                                "inner join auction on auction.item_id=item.id inner join user on item.user_id=user.id\n"
-                               "WHRER user.id = " + user + " ORDER BY id DESC LIMIT 1"))
+                               "WHERE user.id = " + user + " ORDER BY id DESC LIMIT 1"))
     {
         std::cout << "[Database::getAuctionId]  Error: " << getAuctionIdQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -407,7 +407,7 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
                                 parameters["title"] + ", " + parameters["condition"] + ", " + parameters["color"] +
                                 ", " + parameters["description"] + ")"))
     {
-        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::addAuction1]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -416,7 +416,7 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     if(!addAuctionQuery.exec("SELECT id FROM item_description ORDER BY id DESC LIMIT 1"))
     {
-        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::addAuction2]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -430,7 +430,7 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
     if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES (" +
                                 parameters["user"] + ", " + descId + ", " + parameters["categ"] + ")"))
     {
-        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::addAuction3]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -439,7 +439,7 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     if(!addAuctionQuery.exec("SELECT id FROM item ORDER BY id DESC LIMIT 1"))
     {
-        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::addAuction4]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -459,7 +459,7 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
                              "fix_price, last_licit_user_id) VALUES (" + itemId + ", " + temp_date + ", " + parameters["ed"] +
                              ", " + parameters["cp"] + ", " + parameters["mins"] + ", " + "0" + ", " + parameters["user"] + ")"))
     {
-        std::cout << "[Database::addAuction]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::addAuction5]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -543,7 +543,7 @@ void Db_server::set_rating_slot(const QString &user, const QString &rater, const
     if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = " + desc +
                             ", rating_date = " + CT.toString(Qt::ISODate).mid(-1,11) + " " +
                             CT.time().toString(Qt::ISODate).mid(-1,6) + ", is_rated = 1 WHERE user_id = " +
-                            user + ", rater_user_id = " + rater))
+                            user + " AND rater_user_id = " + rater))
     {
         std::cout << "[Database::setRating]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
