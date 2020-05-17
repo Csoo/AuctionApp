@@ -17,9 +17,17 @@ Item {
         startDate.text = auctionItem.startDate
         endDate.text = auctionItem.endDate
         price.text = auctionItem.currentPrice + " Ft"
-        bid.placeholderText = auctionItem.minStep
+        bid.placeholderText = "min. " + auctionItem.minStep
         latestUser.text = auctionItem.lastLicitUserName
         latestUser.userId = auctionItem.lastLicitUserId
+    }
+
+    function bidIsValid() {
+        if (bid.text < auctionItem.minStep) {
+            bidButton.enabled = false
+        } else {
+            bidButton.enabled = true
+        }
     }
 
     Title {
@@ -178,25 +186,27 @@ Item {
 
         TextField {
             id: bid
-            y: 247
-            width: 100
-            height: 38
+            y: 294
+            width: 102
+            height: 43
             anchors.left: parent.left
             anchors.leftMargin: 0
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
+            validator: IntValidator {bottom: 1}
+            onTextChanged: auctionView.bidIsValid()
         }
 
         Label {
             id: label8
-            y: 247
+            y: 297
             width: 13
-            height: 38
+            height: 40
             text: qsTr("Ft")
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
+            anchors.bottomMargin: 2
             font.pointSize: 11
             anchors.left: bid.right
             anchors.leftMargin: 2
@@ -214,6 +224,7 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 0
             highlighted: true
+            enabled: false
         }
 
         Label {
@@ -286,3 +297,8 @@ D{i:18;anchors_x:106}D{i:21;anchors_x:37}D{i:23;anchors_y:423}D{i:22;anchors_x:1
 D{i:24;anchors_width:250;anchors_x:"-19";anchors_y:"-11"}D{i:16;anchors_height:200;anchors_width:212;anchors_x:66;anchors_y:204}
 }
 ##^##*/
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/
