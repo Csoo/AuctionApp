@@ -144,6 +144,8 @@ void Db_server::add_user_slot(const QString &email, const QString &user, const Q
 
     addUserQuery.clear();
 
+    std::lock_guard<std::mutex> m(db_m);
+
     if(!addUserQuery.exec("INSERT INTO user (user_permission, user_name, password, full_name, \"e-mail\", address, phone, registration_date, last_login_date)"
                           " VALUES (1,'" + user + "', '" + passw + "', '" + fullName + "', '" + email + "', '" + add + "', '" + phone + "', '" + temp_date + "', 'never')")) {
 
@@ -398,6 +400,8 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     addAuctionQuery.clear();
 
+    std::lock_guard<std::mutex> m(db_m);
+
     if(!addAuctionQuery.exec("INSERT INTO item_description (title, condition_id, color, text) VALUES (" +
                                 parameters["title"] + ", " + parameters["condition"] + ", " + parameters["color"] +
                                 ", " + parameters["description"] + ")"))
@@ -486,6 +490,8 @@ void Db_server::set_bid_slot(const QString &auction, const QString &user, int cu
 
     setBidQuery.clear();
 
+    std::lock_guard<std::mutex> m(db_m);
+
     if(!setBidQuery.exec("UPDATE auction SET current_price = " + QString::number(currentP) +
                             ", last_licit_user_id = " + user + " WHERE id = " + auction))
     {
@@ -499,6 +505,8 @@ void Db_server::add_rating_slot(const QString &id, bool *hasError) {
     *hasError = false;
 
     addRatingQuery.clear();
+
+    std::lock_guard<std::mutex> m(db_m);
 
     if(!addRatingQuery.exec("SELECT user_id, last_licit_user_id FROM auction inner join item on auction.item_id=item.id Where auction.id=" + id))
     {
@@ -528,6 +536,8 @@ void Db_server::set_rating_slot(const QString &user, const QString &rater, const
     setRatingQuery.clear();
 
     QDateTime CT = QDateTime::currentDateTime();
+
+    std::lock_guard<std::mutex> m(db_m);
 
     if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = " + desc +
                             ", rating_date = " + CT.toString(Qt::ISODate).mid(-1,11) + " " +

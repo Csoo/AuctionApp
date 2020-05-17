@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <iostream>
+#include <mutex>
+
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlError>
@@ -14,7 +17,6 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QJsonDocument>
-#include <iostream>
 
 class Db_server: public QThread {
 public:
@@ -48,6 +50,7 @@ public slots:
     void read_closes_slot(QMap<QString,QString> *closes);
 
 protected:
+    std::mutex db_m;
 
     QSqlDatabase db;
     QString connectionName;
