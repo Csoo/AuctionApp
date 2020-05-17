@@ -32,7 +32,16 @@ int main (int argc, char* argv[]) {
         port = 3000;
     }
 
-    Auction_server a_server(ip,port);
+    std::string route;
+
+    while (route.empty()) {
+        std::cout << "Please enter the full path to the database (not has default value)" << std::endl;
+        //"/home/petras/Dokumentumok/AuctionApp/server/src/database.db"
+
+        std::cin >> route;
+    }
+
+    Auction_server a_server(ip,port, route);
 
     return QCoreApplication::exec();
 }

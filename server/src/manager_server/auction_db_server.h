@@ -10,35 +10,56 @@
 #include <QObject>
 
 #include <db_server.h>
+#include <auction_closer.h>
 
 using namespace httplib;
 
 class Auction_db_server :public QObject{
 Q_OBJECT
 public:
-    Auction_db_server();
+    explicit Auction_db_server(const QString &route);
 
     void login(const Request &request, Response &response);
     void userReg(const Request &request, Response &response);
 
     void search(const Request &request, Response &response);
+
+    void addAuction(const Request &request, Response &response);
     void auction(const Request &request, Response &response);
+    void allAuction(const Request &request, Response &response);
 
     void getSelf(const Request &request, Response &response);
     void getOther(const Request &request, Response &response);
+
+    void bid(const Request &request, Response &response);
+    void rate(const Request &request, Response &response);
 
     //void temp(const Request &request, Response &response);
 
 signals:
 
-    void check_login(const QString &user, const QString &passw, bool* ok, bool* hasError);
+    void check_login(const QString &user, const QString &passw, int* id, bool* ok, bool* hasError);
     void check_reg(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
-    //void get_search(QList<int> ints, QList<QString> strings);
+    void get_search(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError);
+    void get_auction(int id, QJsonDocument *resJSON, bool *hasError);
+    void all_auction(QJsonDocument *resJSON, bool *hasError);
+    void get_id(const QString &user, QString *id, bool *hasError);
+    void check_bid(const QString &auction, int currentP, bool *ok, bool *hasError);
+
 
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
+    void add_auction(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
+    void set_bid(const QString &auction, const QString &user, int currentP, bool *hasError);
+    void set_rating(const QString &user, const QString &rater, const QString &positive, const QString &desc, bool *hasError);
+
+    void server_start();
+
+public:
+    QMap<QString,QString> *closes;
 
 private:
-    db_server* db;
+    Db_server* db;
+    Auction_closer* closer;
 };
