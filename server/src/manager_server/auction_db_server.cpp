@@ -199,7 +199,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
     }
     std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
 
-    QString text, category;
+    QString text, category, tag;
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
     QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
@@ -211,6 +211,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
         text = body.value("text").toString();
         category = body.value("category").toString();
         filters = body.value("filters").toJsonDocument();
+        tag = body.value("tags").toString();
 
     }
     catch (...)
@@ -221,10 +222,19 @@ void Auction_db_server::search(const Request &request, Response &response) {
     }
     std::cout << "[Auction_db_server] Log: Search parameters dumped" << std::endl;
 
+    QStringList tags;
+
+    tag = tag.mid(1,tag.length()-2);
+    tags = tag.split(',');
+
+    for (auto &t: tags) {
+        t = t.mid(1,t.length()-2);
+    }
+
     bool hasError;
 
     std::cout << "[Auction_db_server] Log: Request Db_server for search auctions" << std::endl;
-    emit get_search(text, category, filters, &resJSON, &hasError);
+    emit get_search(text, category, filters, tags, &resJSON, &hasError);
 
     if (hasError)
     {

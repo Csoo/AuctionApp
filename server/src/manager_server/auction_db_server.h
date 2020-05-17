@@ -42,7 +42,7 @@ signals:
     void check_reg(const QString &email, const QString &user, bool* ok, bool* hasError);
     void get_self(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_other(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
-    void get_search(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError);
+    void get_search(const QString &text, const QString &category, const QJsonDocument &filters, const QStringList &tags, QJsonDocument *resJSON, bool *hasError);
     void get_auction(int id, QJsonDocument *resJSON, bool *hasError);
     void all_auction(QJsonDocument *resJSON, bool *hasError);
     void get_id(const QString &user, QString *id, bool *hasError);

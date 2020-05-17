@@ -21,7 +21,7 @@ close(closes)
 }
 
 void Auction_closer::server_start_slot() {
-    while (CT.time().toString(Qt::ISODate).mid(2,3) != "00") {
+    while (CT.time().toString(Qt::ISODate).mid(3,2) != "00") {
         this->thread()->sleep(60);
 
         CT = QDateTime::currentDateTime();

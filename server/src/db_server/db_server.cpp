@@ -252,7 +252,7 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     *hasError = true;
 }
 
-void Db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, QJsonDocument *resJSON, bool *hasError) {
+void Db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, const QStringList &tags, QJsonDocument *resJSON, bool *hasError) {
 
     *hasError = false;
 
@@ -289,21 +289,23 @@ void Db_server::get_search_slot(const QString &text, const QString &category, co
         temp += " and " + filterMap.key(filter.toString()) + " = '" + filter.toString() + "'";
     }
 
-    if (!getSearchQuery.exec("select auction.id, item_description.title, item_condition.condition_text, auction.current_price from auction\n"
-                           "inner join item on auction.item_id=item.id\ninner join item_category on item_category.id=item.category_id\n"
-                           "inner join item_description on item.description_id=item_description.id\ninner join item_condition on item_condition.id=item_description.condition_id" + temp))
+    if (!getSearchQuery.exec("select auction.id, item_description.title, item_condition.condition_text, auction.current_price from auction "
+                           "inner join item on auction.item_id=item.id inner join item_category on item_category.id=item.category_id "
+                           "inner join item_description on item.description_id=item_description.id inner join item_condition on item_condition.id=item_description.condition_id" + temp))
     {
         std::cout << "[Database::getSearch]  Error: " << getSearchQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
 
-    QString resTemp = "{\n[\n";
+    QString resTemp = "{[";
 
     while (getSearchQuery.next()) {
-        resTemp += "{\n\"auction_id\" : \"" + getSearchQuery.value(0).toString() + "\",\n\"data\" : [\n \"title\" : \"" + getSearchQuery.value(1).toString() + "\",\n"
-                      "\"condition\" : \"" + getSearchQuery.value(2).toString() + "\",\n\"price\" : \"" + getSearchQuery.value(3).toString() + "\"\n]\n},\n";
+        resTemp += R"({"auction_id" : )" + getSearchQuery.value(0).toString() + R"(,"data" : [ "title" : ")" + getSearchQuery.value(1).toString() +
+                    R"(","condition" : ")" + getSearchQuery.value(2).toString() + R"(","price" : )" + getSearchQuery.value(3).toString() + "}]},";
     }
+
+    resTemp += "]}";
 
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
@@ -438,7 +440,7 @@ void Db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
 
     if(!getAuctionIdQuery.exec("SELECT auction.id FROM item\n"
                                "inner join auction on auction.item_id=item.id inner join user on item.user_id=user.id\n"
-                               "WHERE user.id = " + user + " ORDER BY id DESC LIMIT 1"))
+                               "WHERE user.id = '" + user + "' ORDER BY auction.id DESC LIMIT 1"))
     {
         std::cout << "[Database::getAuctionId]  Error: " << getAuctionIdQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -458,7 +460,7 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
     std::lock_guard<std::mutex> m(db_m);
 
     if(!addAuctionQuery.exec("INSERT INTO item_description (title, condition_id, color, text) VALUES ('" +
-                                parameters["title"] + "', " + parameters["condition"] + ", '" + parameters["color"]
+                                parameters["title"] + "', '" + parameters["condition"] + "', '" + parameters["color"]
                                 + "', '" + parameters["description"] + "')"))
     {
         std::cout << "[Database::addAuction1]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
@@ -481,8 +483,8 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
 
     addAuctionQuery.clear();
 
-    if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES ("
-                                + parameters["user"] + ", " + descId + ", " + parameters["categ"] + ")"))
+    if(!addAuctionQuery.exec("INSERT INTO item (user_id, description_id, category_id) VALUES ('"
+                                + parameters["user"] + "', '" + descId + "', '" + parameters["categ"] + "')"))
     {
         std::cout << "[Database::addAuction3]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -510,8 +512,8 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
     QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
 
     if(!addAuctionQuery.exec("INSERT INTO auction (item_id, start_date, end_date, current_price, min_step, "
-                             "fix_price, last_licit_user_id) VALUES (" + itemId + ", '" + temp_date + "', '" + parameters["ed"] +
-                             "', " + parameters["cp"] + ", " + parameters["mins"] + ", " + "0" + ", " + parameters["user"] + ")"))
+                             "fix_price, last_licit_user_id) VALUES ('" + itemId + "', '" + temp_date + "', '" + parameters["ed"] +
+                             "', '" + parameters["cp"] + "', '" + parameters["mins"] + "', '0', '" + parameters["user"] + "')"))
     {
         std::cout << "[Database::addAuction5]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
