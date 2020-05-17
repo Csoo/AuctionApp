@@ -162,7 +162,7 @@ void Db_server::get_self_slot(int id, QMap<QString,QString> *data, bool* ok, boo
     *ok = false;
 
     checkIdQuery.clear();
-    QString temp = QString::fromStdString(std::to_string(id));
+    QString temp = QString::number(id);
 
     if (!checkIdQuery.exec("SELECT COUNT(*) FROM user WHERE id LIKE " + temp))
     {

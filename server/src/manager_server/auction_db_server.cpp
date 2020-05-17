@@ -333,7 +333,7 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
         return;
     }
 
-    emit get_rate(data["user"], positive, negative, &hasError);
+    emit get_rate(QString::number(id), positive, negative, &hasError);
 
     if (hasError)
     {
@@ -348,7 +348,7 @@ void Auction_db_server::getSelf(const Request &request, Response &response) {
                 + R"(","address":")" + data["address"]
                 + R"(","phone":")" + data["phone"]
                 + R"(","reg":")" + data["reg"]
-                + R"(","pozitive":")" + positive
+                + R"(","positive":")" + positive
                 + R"(","negative":")" + negative
                 + "\"\n}";
 
@@ -399,7 +399,7 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
                    + R"(","fullName":")" + data["fullName"]
                    + R"(","reg":")" + data["reg"]
                    + R"(","last":")" + data["last"]
-                   + R"(","pozitive":")" + positive
+                   + R"(","positive":")" + positive
                    + R"(","negative":")" + negative
                    + "\"\n}";
 
