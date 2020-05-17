@@ -32,6 +32,18 @@ Item {
         }
     }
 
+    function getTags(text) {
+        var arr = text.split(",");
+        arr.map(s => s.trim());
+        return arr;
+    }
+
+    function createAuction(userId, title, description, color, price, bid, category, condition, endDate) {
+        main.isLoading = true;
+        httpRequest.addAuctionRequest(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate);
+        main.isLoading = false;
+    }
+
     FileDialog {
         id: fileDialog
         title: "Please choose a file"
@@ -439,12 +451,6 @@ Item {
 
 
 }
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:2;anchors_x:32;anchors_y:440}
-}
-##^##*/
 
 /*##^## Designer {
     D{i:0;autoSize:true;height:480;width:640}

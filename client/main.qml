@@ -25,6 +25,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         property int loggedinProfileId: 1
+        property int auctionId: 1
         property bool isLoggedIn: false
         property int pageIndex: 0
         property int searchIndex: 0
@@ -93,26 +94,84 @@ ApplicationWindow {
                     Item {
                         id: browser
                         Page{
+                            anchors.fill: parent
                             visible: main.searchIndex === 0
                             SearchView {
+                                anchors.fill: parent
                                 id: searchView
                                 onAuctionClicked: {
+                                    main.auctionId = auctionId
                                     main.searchIndex = 1
-                                    auction.auctionId = auctionId
-                                    auction.auctionTitle = title
+                                    auctionLoader.sourceComponent = auctionComponent
                                 }
                             }
                         }
                         Page {
+                            anchors.fill: parent
                             visible: main.searchIndex === 1
-                            Auction {
-                                id: auction
+                            Loader {
+                                anchors.fill: parent
+                                id: auctionLoader
+                                sourceComponent: undefined
+                                asynchronous: true
+                                visible: status == Loader.Ready
                             }
-
+                            Component {
+                                id: auctionComponent
+                                Auction {
+                                    id: auction
+                                    auctionId: main.auctionId
+                                    onBackPressed: {
+                                        main.searchIndex = 0
+                                        auctionLoader.sourceComponent = undefined
+                                    }
+                                    onUserClicked: {
+                                        searchProfile.profileId = userId
+                                        main.searchIndex = 2
+                                    }
+                                    visible: auctionLoader.status != Loader.Null
+                                }
+                            }
                         }
-                        Page {
-                            visible: main.searchIndex === 2
 
+                        Page {
+                            anchors.fill: parent
+                            visible: main.searchIndex === 2
+                            ProfileView {
+                                anchors.fill: parent
+                                id: searchProfile
+                            }
+                        }
+                        Rectangle {
+                            radius: 30
+                            color: backArea.containsMouse ? applicationWindow.highlightTextColor : "#555555"
+                            anchors.right: parent.right
+                            anchors.rightMargin: 100
+                            anchors.top: parent.top
+                            anchors.topMargin: 32
+                            height: 40
+                            width: 40
+                            visible: main.searchIndex !== 0 && main.pageIndex === 2
+                            Label {
+                                text: ">"
+                                font.weight: Font.ExtraBold
+                                font.pointSize: 14
+                                font.family: "Courier"
+                                font.bold: true
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.fill: parent
+                            }
+                            MouseArea {
+                                id: backArea
+                                hoverEnabled: true
+                                anchors.fill: parent
+                                enabled: main.searchIndex !== 0 && main.pageIndex === 2
+                                onClicked: {
+                                    main.searchIndex = main.searchIndex - 1;
+                                    if (main.searchIndex === 0) auctionLoader.sourceComponent = undefined;
+                                }
+                            }
                         }
                     }
 

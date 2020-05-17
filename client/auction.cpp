@@ -13,17 +13,17 @@ void Auction::getAuction(int id)
 
     qDebug() << json.toJson();
 
-    m_auctionId = obj["auction_id"].toInt();
-    m_ownerUserId = obj["owner_id"].toInt();
+    m_auctionId = obj["auction_id"].toVariant().Int;
+    m_ownerUserId = obj["owner_id"].toVariant().Int;
     m_ownerUserName = obj["owner"].toString();
     m_title = obj["title"].toString();
     m_startDate = obj["start_date"].toString();
     m_endDate = obj["end_date"].toString();
-    m_currentPrice = obj["current_price"].toInt();
-    m_minStep = obj["min_step"].toInt();
-    m_fixPrice = obj["fix_price"].toInt();
+    m_currentPrice = obj["current_price"].toVariant().Int;
+    m_minStep = obj["min_step"].toVariant().Int;
+    m_fixPrice = obj["fix_price"].toVariant().Int;
     m_descriptionText = obj["description_text"].toString();
-    m_color = obj["color"].toString();
+    m_color = obj["description_color"].toString();
     m_conditionText = obj["condition_text"].toString();
 
     QJsonArray jsonArray = obj["user"].toArray();
@@ -39,4 +39,6 @@ void Auction::getAuction(int id)
 
     m_lastLicitUserId = userId.first();
     m_lastLicitUserName = userName.first();
+
+    qDebug() << m_currentPrice << "/n";
 }

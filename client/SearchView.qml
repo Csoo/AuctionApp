@@ -150,8 +150,10 @@ Item {
 
     ListView {
         id: auctionList
-        width: 600
-        height: 340
+        anchors.right: searchBar.right
+        anchors.rightMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
         boundsBehavior: Flickable.StopAtBounds
         cacheBuffer: 100
         clip: true
@@ -225,7 +227,7 @@ Item {
 Designer {
     D{i:0;autoSize:true;height:480;width:640}D{i:6;anchors_height:305;anchors_width:275;anchors_x:140;anchors_y:169}
 D{i:7;anchors_height:35;anchors_width:275;anchors_x:140;anchors_y:156}D{i:8;anchors_height:35;anchors_x:416;anchors_y:156}
-D{i:9;anchors_x:459}D{i:10;anchors_x:459}D{i:13;anchors_height:231}D{i:21;anchors_x:317}
-D{i:22;anchors_x:317}D{i:14;anchors_height:231}
+D{i:9;anchors_x:459}D{i:10;anchors_x:459}D{i:14;anchors_height:231}D{i:21;anchors_x:317}
+D{i:22;anchors_x:317}D{i:13;anchors_height:340;anchors_width:600}
 }
 ##^##*/
