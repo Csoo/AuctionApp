@@ -74,7 +74,7 @@ Item {
         anchors.topMargin: 16
         currentIndex: -1
         displayText: currentIndex == -1 ? "Choose a category..." : currentText
-        model: ["Furniture", "Toy", "Tool", "Electronics", "Cars"]
+        model: ["Car", "Furniture", "Electronics", "Book", "Toy", "Tool"]
     }
     ComboBox {
         id: condition

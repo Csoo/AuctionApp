@@ -9,6 +9,11 @@ AuctionImages::AuctionImages(QObject *parent) : QObject(parent)
 
 }
 
+QByteArray AuctionImages::convertToBase64(int idx)
+{
+    return images.at(idx).toBase64();
+}
+
 void AuctionImages::addImage(const QString &source)
 {
     QString sourceTrimmed = source.mid(8, -1);
