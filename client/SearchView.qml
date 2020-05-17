@@ -20,6 +20,8 @@ Item {
         auctionModel.setAuctions(searchBar.text, category.currentText, itemColor.text, condition.currentText, minPrice.text, maxPrice.text === "100000+ Ft" ? -1 : maxPrice.text, tagList);
         auctionList.model = auctionModel;
         console.log(auctionModel.rowCount());
+        resultCount.text = "Nmber of results: " + auctionModel.rowCount();
+        sortBar.visible = true;
         main.isLoading = false;
     }
 
@@ -152,8 +154,8 @@ Item {
         id: auctionList
         anchors.right: searchBar.right
         anchors.rightMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
+        anchors.bottom: sortBar.top
+        anchors.bottomMargin: -20
         boundsBehavior: Flickable.StopAtBounds
         cacheBuffer: 100
         clip: true
@@ -219,6 +221,109 @@ Item {
             }
         }
     }
+
+    Rectangle {
+        id: sortBar
+        y: 448
+        height: 20
+        color: applicationWindow.isDark ? "#444444" : "#cccccc"
+        anchors.right: auctionList.right
+        anchors.rightMargin: 0
+        anchors.left: auctionList.left
+        anchors.leftMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        visible: false
+        Label {
+            id: resultCount
+            verticalAlignment: Text.AlignVCenter
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+        }
+        Label {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            text: "Sort by: "
+            verticalAlignment: Text.AlignVCenter
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+        }
+        Label {
+            anchors.left: parent.left
+            anchors.leftMargin: 73
+            text: "Price "
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            verticalAlignment: Text.AlignVCenter
+        }
+        Label {
+            y: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 106
+            text: "↑"
+            opacity: area1.containsMouse ? "0.5" : "1"
+            MouseArea {
+                id: area1
+                anchors.fill: parent
+                onClicked: auctionModel.sortBy("price", true)
+            }
+        }
+        Label {
+            y: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 116
+            text: "↓"
+            opacity: area2.containsMouse ? "0.5" : "1"
+            MouseArea {
+                id: area2
+                anchors.fill: parent
+                onClicked: auctionModel.sortBy("price", false)
+            }
+        }
+        Label {
+            anchors.left: parent.left
+            anchors.leftMargin: 141
+            text: "Title "
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            verticalAlignment: Text.AlignVCenter
+        }
+        Label {
+            y: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 172
+            text: "↑"
+            opacity: area3.containsMouse ? "0.5" : "1"
+            MouseArea {
+                id: area3
+                anchors.fill: parent
+                onClicked: auctionModel.sortBy("title", false)
+            }
+        }
+        Label {
+            y: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 182
+            text: "↓"
+            opacity: area51.containsMouse ? "0.5" : "1"
+            MouseArea {
+                id: area51
+                anchors.fill: parent
+                onClicked: auctionModel.sortBy("title", true)
+            }
+        }
+
+    }
 }
 
 
@@ -228,6 +333,6 @@ Designer {
     D{i:0;autoSize:true;height:480;width:640}D{i:6;anchors_height:305;anchors_width:275;anchors_x:140;anchors_y:169}
 D{i:7;anchors_height:35;anchors_width:275;anchors_x:140;anchors_y:156}D{i:8;anchors_height:35;anchors_x:416;anchors_y:156}
 D{i:9;anchors_x:459}D{i:10;anchors_x:459}D{i:14;anchors_height:231}D{i:21;anchors_x:317}
-D{i:22;anchors_x:317}D{i:13;anchors_height:340;anchors_width:600}
+D{i:22;anchors_x:317}D{i:13;anchors_height:340;anchors_width:600}D{i:25;anchors_width:200;anchors_x:70}
 }
 ##^##*/
