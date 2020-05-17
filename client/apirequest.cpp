@@ -63,22 +63,29 @@ bool APIrequest::registerRequest(const QString &name, const QString &pw, const Q
     return reply->readAll() != "bad username or bad email";
 }
 
-int APIrequest::addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QDate endDate)
+int APIrequest::addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QDate endDate, const QList<QByteArray> &images)
 {
-    QJsonObject regJson;
+    QJsonObject addAucJson;
 
-    regJson.insert("user_id", QJsonValue::fromVariant(userId));
-    regJson.insert("title", QJsonValue::fromVariant(title));
-    regJson.insert("description_text", QJsonValue::fromVariant(descriptionText));
-    regJson.insert("color", QJsonValue::fromVariant(color));
-    regJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
-    regJson.insert("min_step", QJsonValue::fromVariant(minStep));
-    regJson.insert("category_id", QJsonValue::fromVariant(categoryId));
-    regJson.insert("condition_id", QJsonValue::fromVariant(conditionId));
-    regJson.insert("tags", QJsonValue::fromVariant(tags));
-    regJson.insert("end_date", QJsonValue::fromVariant(endDate));
+    addAucJson.insert("user_id", QJsonValue::fromVariant(userId));
+    addAucJson.insert("title", QJsonValue::fromVariant(title));
+    addAucJson.insert("description_text", QJsonValue::fromVariant(descriptionText));
+    addAucJson.insert("color", QJsonValue::fromVariant(color));
+    addAucJson.insert("current_price", QJsonValue::fromVariant(currentPrice));
+    addAucJson.insert("min_step", QJsonValue::fromVariant(minStep));
+    addAucJson.insert("category_id", QJsonValue::fromVariant(categoryId));
+    addAucJson.insert("condition_id", QJsonValue::fromVariant(conditionId));
+    addAucJson.insert("tags", QJsonValue::fromVariant(tags));
+    addAucJson.insert("end_date", QJsonValue::fromVariant(endDate));
+    QJsonArray imageArray;
+    QJsonValue img;
+    for (int i = 0; i < images.length(); i++){
+        img = QLatin1String(images.at(i).toBase64());
+        imageArray.push_back(img);
+    }
+    addAucJson.insert("images", QJsonValue::fromVariant(imageArray));
 
-    qDebug() << QJsonDocument(regJson).toJson();
+    qDebug() << QJsonDocument(addAucJson).toJson();
 
     QByteArray res = reply->readAll();
     if (res == "false")

@@ -21,6 +21,7 @@ class Auction : public QObject
     Q_PROPERTY(QString descriptionText MEMBER m_descriptionText NOTIFY descriptionTextChanged)
     Q_PROPERTY(QString color MEMBER m_color NOTIFY colorChanged)
     Q_PROPERTY(QString conditionText MEMBER m_conditionText NOTIFY conditionTextChanged)
+    Q_PROPERTY(QList<QByteArray> images MEMBER m_images NOTIFY imagesChanged)
 public:
     explicit Auction(QObject *parent = nullptr);
     Q_INVOKABLE void getAuction(int id);
@@ -39,6 +40,7 @@ private:
     QString m_descriptionText;
     QString m_color;
     QString m_conditionText;
+    QList<QByteArray> m_images;
 signals:
     void auctionIdChanged();
     void ownerUserIdChanged();
@@ -54,6 +56,7 @@ signals:
     void descriptionTextChanged();
     void colorChanged();
     void conditionTextChanged();
+    void imagesChanged();
 };
 
 #endif // AUCTION_H

@@ -27,9 +27,11 @@ void Auction::getAuction(int id)
     m_conditionText = obj["condition_text"].toString();
 
     QJsonArray jsonArray = obj["user"].toArray();
+    QJsonArray imagesArray = obj["images"].toArray();
 
     QList<int> userId;
     QStringList userName;
+    QList<QByteArray> images;
 
     foreach (const QJsonValue & value, jsonArray) {
         QJsonObject obj = value.toObject();
@@ -37,8 +39,15 @@ void Auction::getAuction(int id)
         userName.append(obj["last_licit_user"].toString());
     }
 
+    foreach (const QJsonValue & value, jsonArray) {
+        images.push_back(value.toString().toLatin1());
+        // auto byteImg = value.toString().toLatin1();
+        // images.push_back(QByteArray::fromBase64(byteImg));
+    }
+
     m_lastLicitUserId = userId.first();
     m_lastLicitUserName = userName.first();
+    m_images = images;
 
     qDebug() << m_currentPrice << "/n";
 }

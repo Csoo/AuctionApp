@@ -280,7 +280,7 @@ Item {
                 displayText: currentIndex == -1 ? "Choose category..." : currentText
                 anchors.right: parent.right
                 anchors.rightMargin: 0
-                model: ["Furniture", "Toy", "Tool", "Electronics", "Cars"]
+                model: ["Car", "Furniture", "Electronics", "Book", "Toy", "Tool"]
                 onCurrentIndexChanged: addAuction.auctionIsValid()
             }
 
