@@ -37,7 +37,7 @@ public slots:
     void get_other_slot(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_search_slot(const QString &text, const QJsonDocument &filters, const QVariantList &tags, QJsonDocument *resJSON, bool *hasError);
     void get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError);
-    void all_auction_slot(QJsonDocument *resJSON, bool *hasError);
+    void all_auction_slot(QString *resString, bool *hasError);
     void get_id_slot(const QString &user, QString *id, bool *hasError);
     void check_bid_slot(const QString &auction, int currentP, bool *ok, bool *hasError);
     void get_close_data_slot(const QString &id, QString &lluser, QString &auuser, QString &currentP, QString &title, bool *hasError);

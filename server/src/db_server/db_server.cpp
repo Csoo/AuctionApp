@@ -326,7 +326,7 @@ void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
                               "from auction "
                               "inner join item on auction.item_id=item.id inner join item_description on item.description_id=item_description.id "
                               "inner join item_condition on item_condition.id=item_description.condition_id inner join user on item.user_id=user.id "
-                              "where auction.id = " + temp))
+                              "where auction.id = '" + temp + "'"))
     {
         std::cout << "[Database::getAuction]  Error: " << getAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -386,7 +386,7 @@ void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
 
-void Db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
+void Db_server::all_auction_slot(QString *resString, bool *hasError) {
     *hasError = false;
 
     allAuctionQuery.clear();
@@ -447,7 +447,7 @@ void Db_server::all_auction_slot(QJsonDocument *resJSON, bool *hasError) {
 
      resTemp += "]}";
 
-    *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
+    *resString = resTemp;
 }
 
 void Db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
@@ -683,9 +683,9 @@ void Db_server::get_rate_slot(const QString &user, QString &p, QString &n, bool 
     *hasError = false;
     getRateQuery.clear();
 
-    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + " AND is_positive=1"))
+    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id='" + user + "' AND is_positive=1"))
     {
-        std::cout << "[Database::getRate]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::getRate1]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -696,9 +696,9 @@ void Db_server::get_rate_slot(const QString &user, QString &p, QString &n, bool 
 
     getRateQuery.clear();
 
-    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id=" + user + " AND is_positive=0"))
+    if(!getRateQuery.exec("SELECT COUNT(*) FROM rating WHERE user_id='" + user + "' AND is_positive=0"))
     {
-        std::cout << "[Database::getRate]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::getRate2]  Error: " << getRateQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }

@@ -285,10 +285,10 @@ void Auction_db_server::auction(const Request &request, Response &response) {
 void Auction_db_server::allAuction(const Request &request, Response &response) {
     std::cout << "[Auction_db_server] Log: Get request for get all auction" << std::endl;
     bool hasError;
-    QJsonDocument resJSON;
+    QString resString;
 
     std::cout << "[Auction_db_server] Log: Request Db_server for get all auctions" << std::endl;
-    emit all_auction(&resJSON, &hasError);
+    emit all_auction(&resString, &hasError);
 
     if (hasError)
     {
@@ -297,14 +297,13 @@ void Auction_db_server::allAuction(const Request &request, Response &response) {
         return;
     }
 
-    if (resJSON.isEmpty())
+    if (resString.isEmpty())
     {
         std::cout << "[Auction_db_server] Error: resJSON is empty from Db_server" << std::endl;
         response.status = 404;
         return;
     }
 
-    QString resString(resJSON.toJson());
     response.set_content(resString.toStdString(),"application/json");
 
     response.status = 200;

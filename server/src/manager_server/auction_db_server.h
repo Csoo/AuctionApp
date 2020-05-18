@@ -46,7 +46,7 @@ signals:
     void get_other(int id, QMap<QString,QString>* data, bool* ok, bool* hasError);
     void get_search(const QString &text, const QJsonDocument &filters, const QVariantList &tags, QJsonDocument *resJSON, bool *hasError);
     void get_auction(int id, QJsonDocument *resJSON, bool *hasError);
-    void all_auction(QJsonDocument *resJSON, bool *hasError);
+    void all_auction(QString *resString, bool *hasError);
     void get_id(const QString &user, QString *id, bool *hasError);
     void check_bid(const QString &auction, int currentP, bool *ok, bool *hasError);
     void get_rate(const QString &user, QString &p, QString &n, bool *hasError);
