@@ -252,7 +252,7 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     *hasError = true;
 }
 
-void Db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, const QVariantList &tags, QJsonDocument *resJSON, bool *hasError) {
+void Db_server::get_search_slot(const QString &text, const QJsonDocument &filters, const QVariantList &tags, QJsonDocument *resJSON, bool *hasError) {
 
     *hasError = false;
 

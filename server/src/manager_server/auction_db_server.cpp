@@ -209,7 +209,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
 
     //QVariantMap body = bodyJson.toVariant().toMap();
 
-    if (bodyJson["text"] == QJsonValue::Undefined || bodyJson["filters"] == QJsonValue::Undefined || bodyJson["category"] == QJsonValue::Undefined || bodyJson["tags"] == QJsonValue::Undefined)
+    if (bodyJson["text"] == QJsonValue::Undefined || bodyJson["filters"] == QJsonValue::Undefined || bodyJson["tags"] == QJsonValue::Undefined)
     {
         std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
         response.status = 400;
@@ -217,7 +217,6 @@ void Auction_db_server::search(const Request &request, Response &response) {
     } else 
     {
         text = bodyJson["text"].toString();
-        category = bodyJson["category"].toString();
         filters = QJsonDocument(bodyJson["filters"].toObject());
         tagsArray = bodyJson["tags"].toArray();
     }
@@ -228,7 +227,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
     bool hasError;
 
     std::cout << "[Auction_db_server] Log: Request Db_server for search auctions" << std::endl;
-    emit get_search(text, category, filters, tags, &resJSON, &hasError);
+    emit get_search(text, filters, tags, &resJSON, &hasError);
 
     if (hasError)
     {
