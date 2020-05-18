@@ -28,7 +28,8 @@ Db_server::Db_server(const QString &driver, QString connectionName, QString dbNa
     readClosesQuery(db),
     getCloseQuery(db),
     getRateQuery(db),
-    getPendingRatingsQuery(db)
+    getPendingRatingsQuery(db),
+    getUserQuery(db)
 {
     std::cout << "[Db_server] Log: Started" << std::endl;
 
@@ -253,7 +254,7 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     *hasError = true;
 }
 
-void Db_server::get_search_slot(const QString &text, const QJsonDocument &filters, const QVariantList &tags, QJsonDocument *resJSON, bool *hasError) {
+void Db_server::get_search_slot(const QString &text, const QJsonDocument &filters, const QVariantList &tags, QString *resString, bool *hasError) {
 
     *hasError = false;
 
@@ -289,12 +290,36 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
         temp += " and " + filterMap.key(filter.toString()) + " = '" + filter.toString() + "'";
     }
 
+    QString tq;
+
+    for (const auto& tag : tags) {
+        if (!tq.isEmpty())
+        {
+            tq += "' OR ";
+        }
+        else
+        {
+            tq += " AND (";
+        }
+        tq += "tag_name = '" + tag.toString();
+    }
+
+    if (!tq.isEmpty())
+    {
+        tq += "')";
+    }
+
     if (!getSearchQuery.exec("select auction.id, item_description.title, item_condition.condition_text, auction.current_price from auction "
-                           "inner join item on auction.item_id=item.id inner join item_category on item_category.id=item.category_id "
-                           "inner join item_description on item.description_id=item_description.id inner join item_condition on item_condition.id=item_description.condition_id" + temp))
+                             "inner join item on auction.item_id=item.id "
+                             "inner join item_category on item_category.id=item.category_id "
+                             "inner join item_description on item.description_id=item_description.id "
+                             "inner join item_condition on item_condition.id=item_description.condition_id "
+                             "inner join tag_item_relation on item.id = tag_item_relation.item_id "
+                             "inner join item_tag on tag_item_relation.tag_id = item_tag.id " + temp
+                              + tq))
     {
         std::cout << "[Database::getSearch]  Error: " << getSearchQuery.lastError().text().toStdString() << std::endl;
-        std::cout << getSearchQuery.lastQuery().toStdString();
+        std::cout << getSearchQuery.lastQuery().toStdString() << std::endl;
         *hasError = true;
         return;
     }
@@ -310,7 +335,7 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
 
     resTemp.remove(resTemp.length()-2, 1);
 
-    *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
+    *resString = resTemp;
 }
 
 void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError) {
@@ -406,44 +431,54 @@ void Db_server::all_auction_slot(QString *resString, bool *hasError) {
     QString oid, on, title, s_date, e_date, cp, ms, fp, llid, lln, dt, color, ct, id;
     QString resTemp = "{[";
 
-     while (allAuctionQuery.next()) {
-         if (resTemp.size() != 2)
-         {
-             resTemp += ",";
-         }
-         oid = allAuctionQuery.value(0).toString();
-         on = allAuctionQuery.value(1).toString();
-         title = allAuctionQuery.value(2).toString();
-         s_date = allAuctionQuery.value(3).toString();
-         e_date = allAuctionQuery.value(4).toString();
-         cp = allAuctionQuery.value(5).toString();
-         ms = allAuctionQuery.value(6).toString();
-         fp = allAuctionQuery.value(7).toString();
-         llid = allAuctionQuery.value(8).toString();
-         dt = allAuctionQuery.value(9).toString();
-         color = allAuctionQuery.value(10).toString();
-         ct = allAuctionQuery.value(11).toString();
-         id = allAuctionQuery.value(12).toString();
+    while (allAuctionQuery.next()) {
+        if (resTemp.size() != 2)
+        {
+            resTemp += ",";
+        }
+        oid = allAuctionQuery.value(0).toString();
+        on = allAuctionQuery.value(1).toString();
+        title = allAuctionQuery.value(2).toString();
+        s_date = allAuctionQuery.value(3).toString();
+        e_date = allAuctionQuery.value(4).toString();
+        cp = allAuctionQuery.value(5).toString();
+        ms = allAuctionQuery.value(6).toString();
+        fp = allAuctionQuery.value(7).toString();
+        llid = allAuctionQuery.value(8).toString();
+        dt = allAuctionQuery.value(9).toString();
+        color = allAuctionQuery.value(10).toString();
+        ct = allAuctionQuery.value(11).toString();
+        id = allAuctionQuery.value(12).toString();
 
-         allAuctionQuery.clear();
+        if (!llid.isNull())
+        {
+            getUserQuery.clear();
 
-         if (!allAuctionQuery.exec("select user.user_name from user where id = " + llid))
-         {
-             std::cout << "[Database::getAuction]  Error: " << allAuctionQuery.lastError().text().toStdString() << std::endl;
-             *hasError = true;
-             return;
-         }
+            if (!getUserQuery.exec("select user.user_name from user where id = " + llid))
+            {
+                std::cout << "[Database::getAuction]  Error: " << getUserQuery.lastError().text().toStdString() << std::endl;
+                *hasError = true;
+                return;
+            }
 
-         allAuctionQuery.next();
+            getUserQuery.next();
 
-         lln = allAuctionQuery.value(0).toString();
+            lln = getUserQuery.value(0).toString();
 
-         resTemp += R"({"auction_id" : ")" + id + R"(","owner_id" : ")" + oid + R"(","owner" : ")" + on + R"(","title" : ")" + title +
-                           R"(","start_date" : ")" + s_date + R"(","end_date" : ")" + e_date + R"(","current_price" : ")" + cp + R"(","min_step" : ")" + ms +
-                           R"(","fix_price" : ")" + fp +
-                           "\",\"user\" : [{\n\"last_licit_user_id\" : \"" + llid + R"(","last_licit_user" : ")" + lln + R"("}],"description_text" : ")" + dt +
-                           R"(","description_color" : ")" + color + R"(","condition_text" : ")" + ct + "\"}";
-     }
+
+        }
+        else
+        {
+            lln = "";
+            llid = "";
+        }
+
+        resTemp += R"({"auction_id" : ")" + id + R"(","owner_id" : ")" + oid + R"(","owner" : ")" + on + R"(","title" : ")" + title +
+                   R"(","start_date" : ")" + s_date + R"(","end_date" : ")" + e_date + R"(","current_price" : ")" + cp + R"(","min_step" : ")" + ms +
+                   R"(","fix_price" : ")" + fp +
+                   "\",\"user\" : [{\n\"last_licit_user_id\" : \"" + llid + R"(","last_licit_user" : ")" + lln + R"("}],"description_text" : ")" + dt +
+                   R"(","description_color" : ")" + color + R"(","condition_text" : ")" + ct + "\"}";
+    }
 
      resTemp += "]}";
 

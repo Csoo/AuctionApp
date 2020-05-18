@@ -203,10 +203,10 @@ void Auction_db_server::search(const Request &request, Response &response) {
     }
     std::cout << "[Auction_db_server] Log: Request body Content-Type - OK" << std::endl;
 
-    QString text, category, tag;
+    QString text, category, tag, resString;
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
-    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
+    QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters;
     QJsonArray tagsArray;
 
     //QVariantMap body = bodyJson.toVariant().toMap();
@@ -229,7 +229,7 @@ void Auction_db_server::search(const Request &request, Response &response) {
     bool hasError;
 
     std::cout << "[Auction_db_server] Log: Request Db_server for search auctions" << std::endl;
-    emit get_search(text, filters, tags, &resJSON, &hasError);
+    emit get_search(text, filters, tags, &resString, &hasError);
 
     if (hasError)
     {
@@ -238,14 +238,14 @@ void Auction_db_server::search(const Request &request, Response &response) {
         return;
     }
 
-    if (resJSON.isEmpty())
+    if (resString.isEmpty())
     {
         std::cout << "[Auction_db_server] Error: resJSON is empty from Db_server" << std::endl;
         response.status = 404;
         return;
     }
 
-    QString resString(resJSON.toJson());
+
     response.set_content(resString.toStdString(),"application/json");
 
     response.status = 200;
