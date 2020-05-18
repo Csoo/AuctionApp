@@ -17,6 +17,9 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonObject>
 
 class Db_server: public QThread {
 public:
@@ -47,6 +50,8 @@ public slots:
     void add_rating_slot(const QString &id, bool *hasError);
     void set_rating_slot(const QString &user, const QString &rater, const QString &positive, const QString &desc, bool *hasError);
 
+    void get_pending_ratings_slot(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
+
     void read_closes_slot(QMap<QString,QString> *closes);
 
 protected:
@@ -69,6 +74,7 @@ protected:
     QSqlQuery readClosesQuery;
     QSqlQuery getCloseQuery;
     QSqlQuery getRateQuery;
+    QSqlQuery getPendingRatingsQuery;
 
     QSqlQuery addUserQuery;
     QSqlQuery addAuctionQuery;

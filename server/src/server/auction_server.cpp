@@ -16,6 +16,7 @@ Auction_server::Auction_server(const std::string &ip, int port, const std::strin
     server.Get(R"(/user/self/(\d+))",[&](const Request& req, Response& res) {db.getSelf(req,res);});
     server.Get(R"(/user/(\d+))",[&](const Request& req, Response& res) {db.getOther(req,res);});
     server.Get(R"(/shutDown)", [&](const Request& req, Response& res) {for (const auto &h: req.headers) {if (h.first == "pet_server" && h. second == "petras") { std::cout << "Good bye MFs!\n"; db.deleteLater();server.stop();}}});
+    server.Get(R"(/pending/(\d+))", [&](const Request& req, Response& res){db.getPendingRatings(req, res);});
 
     server.Post(R"(/login)",[&](const Request& req, Response& res) {db.login(req,res);});
     server.Post(R"(/reg)",[&](const Request& req, Response& res) {db.userReg(req,res);});

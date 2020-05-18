@@ -40,6 +40,7 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(closer, &Auction_closer::get_close_data, db, &Db_server::get_close_data_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(closer, &Auction_closer::get_email, db, &Db_server::get_email_slot, Qt::ConnectionType::BlockingQueuedConnection);
     QObject::connect(this, &Auction_db_server::get_rate, db, &Db_server::get_rate_slot, Qt::ConnectionType::BlockingQueuedConnection);
+    QObject::connect(this, &Auction_db_server::get_pending_ratings, db, &Db_server::get_pending_ratings_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
     closer->start();
@@ -490,6 +491,37 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
 
     response.set_content(id.toStdString(),"application/json");
     response.status = 200;
+}
+
+void Auction_db_server::getPendingRatings(const Request &request, Response &response) {
+    std::cout << "[Auction_db_server] Log: Get pending ratings request" << std::endl;
+    QString userId = QString::fromStdString(request.matches[1].str());
+
+    int id = userId.toInt();
+
+    bool ok, hasError;
+    QJsonDocument resJson;
+
+    std::cout << "[Auction_db_server] Log: Request Db_server for get pending ratings for id: "<< userId.toStdString() << " user" << std::endl;
+    emit get_pending_ratings(id, &resJson, &ok, &hasError);
+
+    if (hasError)
+    {
+        std::cout << "[Auction_db_server] Error: From Db_server" << std::endl;
+        response.status = 500;
+        return;
+    }
+
+    if (!ok)
+    {
+        std::cout << "[Auction_db_server] Error: User " + QString::number(id).toStdString() + " not found" << std::endl;
+        response.status = 404;
+        return;
+    }
+
+    response.set_content(resJson.toJson().toStdString(),"application/json");
+    response.status = 200;
+
 }
 
 void Auction_db_server::bid(const Request &request, Response &response) {
