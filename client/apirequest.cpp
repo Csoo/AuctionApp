@@ -31,12 +31,27 @@ int APIrequest::loginRequest(const QString &name, const QString &pw)
 
     QByteArray res = reply->readAll();
     qDebug() << res;
-    if (res != "false" && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200) {
-        if (res.isEmpty()) {
-            return -1;
+
+    if (res != "false") {
+        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200) {
+            if (res.isEmpty()) {
+                return -1;
+            }
+            return res.toInt();
+        } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == NULL) {
+            if (res.isEmpty()) {
+                return -2;
+            }
+            return res.toInt();
         }
-        return res.toInt();
     }
+
+//    if (res != "false" && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200) {
+//        if (res.isEmpty()) {
+//            return -1;
+//        }
+//        return res.toInt();
+//    }
     return -1;
 }
 

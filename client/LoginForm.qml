@@ -18,9 +18,11 @@ Item {
         main.isLoading = false;
         userName.text = "";
         password.text = "";
-        if(responseId === -1) {
+        if (responseId === -1) {
             wrongLogin.open();
-        }else {
+        } else if (responseId === -2) {
+            serverError.open();
+        } else {
             main.loggedinProfileId = responseId;
             login.loginAccepted();
         }
@@ -46,6 +48,25 @@ Item {
             id: wrongLoginText
             color: "#dfdfdf"
             text: qsTr("Sorry, wrong username or password.")
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+
+    Popup {
+        id: serverError
+        x: parent.width/2-100
+        y: parent.height*0.65
+        width: 200
+        height: 24
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: serverErrorText
+            color: "#dfdfdf"
+            text: qsTr("Server error.")
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
         }
