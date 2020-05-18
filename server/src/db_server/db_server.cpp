@@ -636,12 +636,13 @@ void Db_server::read_closes_slot(QMap<QString, QString> *closes, const QString &
 
     while (readClosesQuery.next()) {
 
-        if (date > readClosesQuery.value(1).toString())
+        if (date < readClosesQuery.value(1).toString())
         {
             //id, end_date
             closes->insert(readClosesQuery.value(0).toString(), readClosesQuery.value(1).toString());
+            std::cout << readClosesQuery.value(0).toString().toStdString() << " " << readClosesQuery.value(1).toString().toStdString() << std::endl;
         }
-        std::cout << readClosesQuery.value(0).toString().toStdString() << readClosesQuery.value(1).toString().toStdString() << std::endl;
+
 
     }
     std::cout << "db_read end" << std::endl;

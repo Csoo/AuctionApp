@@ -559,6 +559,7 @@ void Auction_db_server::bid(const Request &request, Response &response) {
     //check auction close
     if (!closes->contains(auction))
     {
+        std::cout << "[Auction_db_server] Error: Requested auction not in active status" << std::endl;
         response.status = 404;
         return;
     }
