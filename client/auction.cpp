@@ -26,28 +26,35 @@ void Auction::getAuction(int id)
     m_color = obj["description_color"].toString();
     m_conditionText = obj["condition_text"].toString();
 
-    QJsonArray jsonArray = obj["user"].toArray();
     QJsonArray imagesArray = obj["images"].toArray();
 
-    QList<int> userId;
-    QStringList userName;
-    QList<QByteArray> images;
-
-    foreach (const QJsonValue & value, jsonArray) {
-        QJsonObject obj = value.toObject();
-        userId.append(obj["last_licit_user_id"].toString().toInt());
-        userName.append(obj["last_licit_user"].toString());
+    if (!obj["user"].isNull()) {
+        QJsonArray userArray = obj["user"].toArray();
+        QList<int> userId;
+        QStringList userName;
+        foreach (const QJsonValue & value, userArray) {
+            QJsonObject obj = value.toObject();
+            userId.append(obj["last_licit_user_id"].toString().toInt());
+            userName.append(obj["last_licit_user"].toString());
+        }
+        m_lastLicitUserId = userId.first();
+        m_lastLicitUserName = userName.first();
+        qDebug() << m_lastLicitUserId << m_lastLicitUserName;
+    } else {
+        m_lastLicitUserId = -1;
+        m_lastLicitUserName = "";
+        qDebug() << m_lastLicitUserId << m_lastLicitUserName;
     }
 
+    QList<QByteArray> images;
+
     images.clear();
-    foreach (const QJsonValue & value, jsonArray) {
+    foreach (const QJsonValue & value, imagesArray) {
         images.push_back(value.toString().toLatin1());
         // auto byteImg = value.toString().toLatin1();
         // images.push_back(QByteArray::fromBase64(byteImg));
     }
 
-    m_lastLicitUserId = userId.first();
-    m_lastLicitUserName = userName.first();
     m_images = images;
 
     qDebug() << m_currentPrice << "/n";
