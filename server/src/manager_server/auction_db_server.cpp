@@ -429,7 +429,8 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
     QVariantMap body = bodyJson.toVariant().toMap();
 
     QMap<QString,QString> p;
-    QString tag;
+    QVariantList tags = bodyJson.object()["tags"].toArray().toVariantList();
+    QVariantList images = bodyJson.object()["images"].toArray().toVariantList();
 
     try
     {
@@ -441,7 +442,6 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
         p["mins"] = body.value("min_step").toString();
         p["categ"] = body.value("category_id").toString();
         p["condition"] = body.value("condition_id").toString();
-        tag = body.value("tags").toString();
         p["ed"] = body.value("end_date").toString();
     }
     catch (...)
@@ -453,19 +453,10 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
     }
     std::cout << "[Auction_db_server] Log: Registration parameters dumped" << std::endl;
 
-    QStringList tags;
-
-    tag = tag.mid(1,tag.length()-2);
-    tags = tag.split(',');
-
-    for (auto &t: tags) {
-        t = t.mid(1,t.length()-2);
-    }
-
     bool hasError;
 
     std::cout << "[Auction_db_server] Log: Request Db_server for add auction" << std::endl;
-    emit add_auction(p, tags, &hasError);
+    emit add_auction(p, tags, images, &hasError);
 
     if (hasError)
     {

@@ -45,7 +45,7 @@ public slots:
     void get_rate_slot(const QString &user, QString &p, QString &n, bool *hasError);
 
     void add_user_slot(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
-    void add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError);
+    void add_auction_slot(const QMap<QString,QString> &parameters, const QVariantList &tags, const QVariantList &images, bool *hasError);
     void set_bid_slot(const QString &auction, const QString &user, int currentP, bool *hasError);
     void add_rating_slot(const QString &id, bool *hasError);
     void set_rating_slot(const QString &user, const QString &rater, const QString &positive, const QString &desc, bool *hasError);

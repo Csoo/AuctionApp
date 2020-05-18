@@ -290,7 +290,7 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
         temp += " and " + filterMap.key(filter.toString()) + " = '" + filter.toString() + "'";
     }
 
-    temp += " and (item_description.title like '%botond%' or item_description.text like '%megviselt%') ";
+    temp += " and (item_description.title like '%" + text + "%' or item_description.text like '%" + text + "%') ";
 
     QString tq;
 
@@ -508,7 +508,7 @@ void Db_server::get_id_slot(const QString &user, QString *id, bool *hasError) {
     *id = getAuctionIdQuery.value(0).toString();
 }
 
-void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const QStringList &tags, bool *hasError){
+void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const QVariantList &tags, const QVariantList &images, bool *hasError){
     *hasError = false;
 
     addAuctionQuery.clear();
@@ -574,6 +574,16 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
         std::cout << "[Database::addAuction5]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
+    }
+
+    addAuctionQuery.clear();
+    foreach(QVariant image, images) {
+        if(!addAuctionQuery.exec("INSERT INTO image (content, item_id) values ('" + image.toString() + "', '" + itemId + "')"))
+        {
+            std::cout << "[Database::addAuction6]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+            *hasError = true;
+            return;
+        }        
     }
 }
 
