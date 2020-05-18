@@ -6,6 +6,8 @@
 #include <QJsonArray>
 #include <iostream>
 #include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonObject>
 
 #include "auction_db_server.h"
 
@@ -190,7 +192,7 @@ void Auction_db_server::userReg(const Request &request, Response &response) {
 
 void Auction_db_server::search(const Request &request, Response &response) {
     std::cout << "[Auction_db_server] Log: Get search request" << std::endl;
-    response.headers = request.headers;
+    //response.headers = request.headers;
 
     if (request.headers.find("Content-Type") == request.headers.end())
     {
@@ -203,33 +205,25 @@ void Auction_db_server::search(const Request &request, Response &response) {
 
     QByteArray bodyStr = QString::fromStdString(request.body).toUtf8();
     QJsonDocument bodyJson = QJsonDocument::fromJson(bodyStr), filters, resJSON;
+    QJsonArray tagsArray;
 
-    QVariantMap body = bodyJson.toVariant().toMap();
+    //QVariantMap body = bodyJson.toVariant().toMap();
 
-    try
-    {
-        text = body.value("text").toString();
-        category = body.value("category").toString();
-        filters = body.value("filters").toJsonDocument();
-        tag = body.value("tags").toString();
-
-    }
-    catch (...)
+    if (bodyJson["text"] == QJsonValue::Undefined || bodyJson["filters"] == QJsonValue::Undefined || bodyJson["category"] == QJsonValue::Undefined || bodyJson["tags"] == QJsonValue::Undefined)
     {
         std::cout << "[Auction_db_server] Error: Too few argument for request" << std::endl;
         response.status = 400;
         return;
+    } else 
+    {
+        text = bodyJson["text"].toString();
+        category = bodyJson["category"].toString();
+        filters = QJsonDocument(bodyJson["filters"].toObject());
+        tagsArray = bodyJson["tags"].toArray();
     }
     std::cout << "[Auction_db_server] Log: Search parameters dumped" << std::endl;
 
-    QStringList tags;
-
-    tag = tag.mid(1,tag.length()-2);
-    tags = tag.split(',');
-
-    for (auto &t: tags) {
-        t = t.mid(1,t.length()-2);
-    }
+    QVariantList tags = tagsArray.toVariantList();
 
     bool hasError;
 

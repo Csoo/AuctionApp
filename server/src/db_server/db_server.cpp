@@ -252,7 +252,7 @@ void Db_server::get_other_slot(int id, QMap<QString, QString> *data, bool* ok, b
     *hasError = true;
 }
 
-void Db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, const QStringList &tags, QJsonDocument *resJSON, bool *hasError) {
+void Db_server::get_search_slot(const QString &text, const QString &category, const QJsonDocument &filters, const QVariantList &tags, QJsonDocument *resJSON, bool *hasError) {
 
     *hasError = false;
 
@@ -266,19 +266,19 @@ void Db_server::get_search_slot(const QString &text, const QString &category, co
     {
         if (filterMap.contains("maxPrice"))
         {
-            temp = "where (auction.current_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + " or "
+            temp = " where (auction.current_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + " or "
                               "auction.fix_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + ")";
         }
         else
         {
-            temp = "where (auction.current_price > " + filterMap["minPrice"].toString() + " or auction.fix_price > " + filterMap["minPrice"].toString() + ")";
+            temp = " where (auction.current_price > " + filterMap["minPrice"].toString() + " or auction.fix_price > " + filterMap["minPrice"].toString() + ")";
         }
     }
     else
     {
         if (filterMap.contains("maxPrice"))
         {
-            temp = "where (auction.current_price < " + filterMap["maxPrice"].toString() + " or auction.fix_price < " + filterMap["maxPrice"].toString() + ")";
+            temp = " where (auction.current_price < " + filterMap["maxPrice"].toString() + " or auction.fix_price < " + filterMap["maxPrice"].toString() + ")";
         }
     }
 
@@ -294,18 +294,21 @@ void Db_server::get_search_slot(const QString &text, const QString &category, co
                            "inner join item_description on item.description_id=item_description.id inner join item_condition on item_condition.id=item_description.condition_id" + temp))
     {
         std::cout << "[Database::getSearch]  Error: " << getSearchQuery.lastError().text().toStdString() << std::endl;
+        std::cout << getSearchQuery.lastQuery().toStdString();
         *hasError = true;
         return;
     }
 
-    QString resTemp = "{[";
+    QString resTemp = "[";
 
     while (getSearchQuery.next()) {
-        resTemp += R"({"auction_id" : )" + getSearchQuery.value(0).toString() + R"(,"data" : [ "title" : ")" + getSearchQuery.value(1).toString() +
+        resTemp += R"({"auction_id" : )" + getSearchQuery.value(0).toString() + R"(,"data" : [{ "title" : ")" + getSearchQuery.value(1).toString() +
                     R"(","condition" : ")" + getSearchQuery.value(2).toString() + R"(","price" : )" + getSearchQuery.value(3).toString() + "}]},";
     }
 
-    resTemp += "]}";
+    resTemp += "]";
+
+    resTemp.remove(resTemp.length()-2, 1);
 
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
