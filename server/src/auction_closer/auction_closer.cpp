@@ -17,19 +17,19 @@ close(closes)
 }
 
 void Auction_closer::server_start_slot() {
-    do {
+    while (CT.time().toString(Qt::ISODate).mid(3,2) != "00") {
         this->thread()->sleep(60);
 
         CT = QDateTime::currentDateTime();
         std::cout << "[Auction_closer] Log: Sync minutes" << std::endl;
-    } while (CT.time().toString(Qt::ISODate).mid(3,2) != "00");
+    }
 
-    do {
+    while (CT.time().toString(Qt::ISODate).mid(-1,3) != "00") {
         this->thread()->sleep(3600);
 
         CT = QDateTime::currentDateTime();
         std::cout << "[Auction_closer] Log: Sync hours" << std::endl;
-    } while (CT.time().toString(Qt::ISODate).mid(-1,3) != "00");
+    }
 
     //'YYYY-MM-DD HH:MM' - date format in string -- Qt::ISODate (0-10) + Qt::ISODate (0-5)
     CTS = CT.toString(Qt::ISODate).mid(-1,11) + " " + CT.time().toString(Qt::ISODate).mid(-1,6);

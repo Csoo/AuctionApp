@@ -290,6 +290,8 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
         temp += " and " + filterMap.key(filter.toString()) + " = '" + filter.toString() + "'";
     }
 
+    temp += " and (item_description.title like '%botond%' or item_description.text like '%megviselt%') ";
+
     QString tq;
 
     for (const auto& tag : tags) {
