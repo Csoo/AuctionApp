@@ -438,7 +438,7 @@ void Auction_db_server::addAuction(const Request &request, Response &response) {
         p["color"] = body.value("color").toString();
         p["cp"] = body.value("current_price").toString();
         p["mins"] = body.value("min_step").toString();
-        p["categ"] = body.value("category").toString();
+        p["categ"] = body.value("category_id").toString();
         p["condition"] = body.value("condition_id").toString();
         tag = body.value("tags").toString();
         p["ed"] = body.value("end_date").toString();

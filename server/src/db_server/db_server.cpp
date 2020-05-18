@@ -515,8 +515,8 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
     QString temp_date = now.toString(Qt::ISODate).mid(-1,11) + " " + now.time().toString(Qt::ISODate).mid(-1,6);
 
     if(!addAuctionQuery.exec("INSERT INTO auction (item_id, start_date, end_date, current_price, min_step, "
-                             "fix_price, last_licit_user_id) VALUES ('" + itemId + "', '" + temp_date + "', '" + parameters["ed"] +
-                             "', '" + parameters["cp"] + "', '" + parameters["mins"] + "', '0', '" + parameters["user"] + "')"))
+                             "fix_price) VALUES ('" + itemId + "', '" + temp_date + "', '" + parameters["ed"] +
+                             "', '" + parameters["cp"] + "', '" + parameters["mins"] + "', '0')"))
     {
         std::cout << "[Database::addAuction5]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
