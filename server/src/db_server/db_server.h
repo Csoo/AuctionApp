@@ -52,7 +52,7 @@ public slots:
 
     void get_pending_ratings_slot(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
 
-    void read_closes_slot(QMap<QString,QString> *closes);
+    void read_closes_slot(QMap<QString,QString> *closes, const QString &date);
 
 protected:
     std::mutex db_m;

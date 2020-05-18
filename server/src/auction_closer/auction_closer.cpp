@@ -13,10 +13,6 @@ close(closes)
 
     std::cout << "[Auction_closer] Log: Started" << std::endl;
 
-    emit read_closes(closes);
-
-    std::cout << "[Auction_closer] Log: Closes read" << std::endl;
-
     moveToThread(this);
 }
 
@@ -102,4 +98,10 @@ void Auction_closer::closeAuction(const QString &id) {
     //Nyertesnek, feladónak aukció címe, végső ára, ki volt az aukció készítő
 
     close->remove(id);
+}
+
+void Auction_closer::init() {
+    emit read_closes(close,CT.toString(Qt::ISODate).mid(-1,11) + " " + CT.time().toString(Qt::ISODate).mid(-1,6));
+
+    std::cout << "[Auction_closer] Log: Closes read" << std::endl;
 }

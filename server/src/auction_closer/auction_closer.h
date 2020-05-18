@@ -18,6 +18,8 @@ public:
     explicit Auction_closer(QMap<QString,QString> *closes);
     ~Auction_closer() override;
 
+    void init();
+
     void closeAuction(const QString &id);
 
 
@@ -27,7 +29,7 @@ public slots:
 signals:
     void recursion();
     void add_rating(const QString &id, bool *hasError);
-    void read_closes(QMap<QString,QString> *closes);
+    void read_closes(QMap<QString,QString> *closes, const QString &date);
     void get_close_data(const QString &id, QString &lluser, QString &auuser, QString &currentP, QString &title, bool *hasError);
     void get_email(const QString &user, QString &email, bool *hasError);
 

@@ -43,6 +43,7 @@ Auction_db_server::Auction_db_server(const QString &route) {
     QObject::connect(this, &Auction_db_server::get_pending_ratings, db, &Db_server::get_pending_ratings_slot, Qt::ConnectionType::BlockingQueuedConnection);
 
     db->start();
+    closer->init();
     closer->start();
 
     emit server_start();

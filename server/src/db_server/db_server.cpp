@@ -624,10 +624,10 @@ void Db_server::set_rating_slot(const QString &user, const QString &rater, const
     }
 }
 
-void Db_server::read_closes_slot(QMap<QString, QString> *closes) {
+void Db_server::read_closes_slot(QMap<QString, QString> *closes, const QString &date) {
 
     readClosesQuery.clear();
-
+    std::cout << "db_read" << std::endl;
     if(!readClosesQuery.exec("select id, end_date from auction"))
     {
         std::cout << "[Database::readCloses]  Error: " << readClosesQuery.lastError().text().toStdString() << std::endl;
@@ -636,10 +636,15 @@ void Db_server::read_closes_slot(QMap<QString, QString> *closes) {
 
     while (readClosesQuery.next()) {
 
-        //id, end_date
-        closes->insert(readClosesQuery.value(0).toString(), readClosesQuery.value(1).toString());
-    }
+        if (date > readClosesQuery.value(1).toString())
+        {
+            //id, end_date
+            closes->insert(readClosesQuery.value(0).toString(), readClosesQuery.value(1).toString());
+        }
+        std::cout << readClosesQuery.value(0).toString().toStdString() << readClosesQuery.value(1).toString().toStdString() << std::endl;
 
+    }
+    std::cout << "db_read end" << std::endl;
 }
 
 void Db_server::get_close_data_slot(const QString &id, QString &lluser, QString &auuser, QString &currentP, QString &title, bool *hasError) {
