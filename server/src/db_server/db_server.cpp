@@ -272,14 +272,14 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
         }
         else
         {
-            temp = " where (auction.current_price > " + filterMap["minPrice"].toString() + " or auction.fix_price > " + filterMap["minPrice"].toString() + ")";
+            temp = " where (auction.current_price > " + filterMap["minPrice"].toString() + ")";
         }
     }
     else
     {
         if (filterMap.contains("maxPrice"))
         {
-            temp = " where (auction.current_price < " + filterMap["maxPrice"].toString() + " or auction.fix_price < " + filterMap["maxPrice"].toString() + ")";
+            temp = " where (auction.current_price < " + filterMap["maxPrice"].toString() + ")";
         }
     }
 
@@ -301,7 +301,7 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
         {
             tq += " AND (";
         }
-        tq += "tag_name = '" + tag.toString();
+        tq += "tag_name LIKE '" + tag.toString();
     }
 
     if (!tq.isEmpty())
@@ -323,6 +323,8 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
         *hasError = true;
         return;
     }
+
+    std::cout << getSearchQuery.lastQuery().toStdString() << std::endl;
 
     QString resTemp = "[";
 
