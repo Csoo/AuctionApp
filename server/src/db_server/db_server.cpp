@@ -317,7 +317,7 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
 void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError) {
     *hasError = false;
 
-    QString temp = QString::number(id);
+    QString temp = QString::fromStdString(std::to_string(id));
 
     getAuctionQuery.clear();
 
@@ -353,22 +353,36 @@ void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
 
     getAuctionQuery.clear();
 
-    if (!getAuctionQuery.exec("select user.user_name from user where id = " + llid))
+    QString resTemp;
+
+    if (!llid.isNull()) 
     {
-        std::cout << "[Database::getAuction]  Error: " << getAuctionQuery.lastError().text().toStdString() << std::endl;
-        *hasError = true;
-        return;
+        if (!getAuctionQuery.exec("select user.user_name from user where id = " + llid))
+        {
+            std::cout << "[Database::getAuction]  Error: " << getAuctionQuery.lastError().text().toStdString() << std::endl;
+            *hasError = true;
+            return;
+        }
+
+        getAuctionQuery.next();
+
+        lln = getAuctionQuery.value(0).toString();
+
+        resTemp = R"({"auction_id" : ")" + QString::number(id) + R"(","owner_id" : ")" + oid + R"(","owner" : ")" + on + R"(","title" : ")" + title +
+                        R"(","start_date" : ")" + s_date + R"(","end_date" : ")" + e_date + R"(","current_price" : ")" + cp + R"(","min_step" : ")" + ms +
+                        R"(","fix_price" : ")" + fp +
+                        "\",\"user\" : [{\n\"last_licit_user_id\" : \"" + llid + R"(","last_licit_user" : ")" + lln + R"("}],"description_text" : ")" + dt +
+                        R"(","description_color" : ")" + color + R"(","condition_text" : ")" + ct + "\"}";
+    } 
+    else
+    {
+        resTemp = R"({"auction_id" : ")" + QString::number(id) + R"(","owner_id" : ")" + oid + R"(","owner" : ")" + on + R"(","title" : ")" + title +
+                        R"(","start_date" : ")" + s_date + R"(","end_date" : ")" + e_date + R"(","current_price" : ")" + cp + R"(","min_step" : ")" + ms +
+                        R"(","fix_price" : ")" + fp +
+                        R"(","description_text" : ")" + dt +
+                        R"(","description_color" : ")" + color + R"(","condition_text" : ")" + ct + "\"}";
+
     }
-
-    getAuctionQuery.next();
-
-    lln = getAuctionQuery.value(0).toString();
-
-    QString resTemp = R"({"auction_id" : ")" + QString::number(id) + R"(","owner_id" : ")" + oid + R"(","owner" : ")" + on + R"(","title" : ")" + title +
-                      R"(","start_date" : ")" + s_date + R"(","end_date" : ")" + e_date + R"(","current_price" : ")" + cp + R"(","min_step" : ")" + ms +
-                      R"(","fix_price" : ")" + fp +
-                      "\",\"user\" : [{\n\"last_licit_user_id\" : \"" + llid + R"(","last_licit_user" : ")" + lln + R"("}],"description_text" : ")" + dt +
-                      R"(","description_color" : ")" + color + R"(","condition_text" : ")" + ct + "\"}";
 
     *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
 }
