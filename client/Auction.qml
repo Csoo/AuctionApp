@@ -40,12 +40,12 @@ Item {
 
     Item {
         id: frame
-        width: 279
+        width: 252
         height: 313
         anchors.top: frame2.top
         anchors.topMargin: 0
         anchors.left: frame2.right
-        anchors.leftMargin: 22
+        anchors.leftMargin: 74
 
         Item {
             id: element2

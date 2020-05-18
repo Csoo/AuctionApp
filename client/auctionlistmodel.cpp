@@ -60,8 +60,10 @@ void AuctionListModel::sortBy(const QString &by, bool asc)
     endResetModel();
 }
 
-void AuctionListModel::setAuctions(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags)
+void AuctionListModel::setAuctions(const QString &searchText, int category_id, const QString &color, int condition_id, int minPrice, int maxPrice, const QStringList &tags)
 {
+    beginResetModel();
     APIrequest req;
-    auctions = req.searchRequest(searchText, category, color, condition, minPrice, maxPrice, tags);
+    auctions = req.searchRequest(searchText, category_id, color, condition_id, minPrice, maxPrice, tags);
+    endResetModel();
 }

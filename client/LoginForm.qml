@@ -16,6 +16,8 @@ Item {
         var responseId = httpRequest.loginRequest(userName.text, password.text);
         console.log(responseId);
         main.isLoading = false;
+        userName.text = "";
+        password.text = "";
         if(responseId === -1) {
             wrongLogin.open();
         }else {

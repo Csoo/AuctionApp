@@ -39,6 +39,7 @@ void Auction::getAuction(int id)
         userName.append(obj["last_licit_user"].toString());
     }
 
+    images.clear();
     foreach (const QJsonValue & value, jsonArray) {
         images.push_back(value.toString().toLatin1());
         // auto byteImg = value.toString().toLatin1();

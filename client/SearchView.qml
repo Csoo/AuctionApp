@@ -17,10 +17,9 @@ Item {
     function search() {
         main.isLoading = true;
         var tagList = searchView.getTags(tags.text);
-        auctionModel.setAuctions(searchBar.text, category.currentText, itemColor.text, condition.currentText, minPrice.text, maxPrice.text === "100000+ Ft" ? -1 : maxPrice.text, tagList);
+        auctionModel.setAuctions(searchBar.text, category.currentIndex+1, itemColor.text, condition.currentIndex+1, priceSlider.first.value, maxPrice.text === "100000+ Ft" ? -1 : priceSlider.second.value, tagList);
         auctionList.model = auctionModel;
-        console.log(auctionModel.rowCount());
-        resultCount.text = "Nmber of results: " + auctionModel.rowCount();
+        resultCount.text = "Number of results: " + auctionModel.rowCount();
         sortBar.visible = true;
         main.isLoading = false;
     }
@@ -61,7 +60,7 @@ Item {
                 id: searchArea
                 hoverEnabled: true
                 anchors.fill: parent
-                onClicked: auctionModel.sortBy() //searchView.search()
+                onClicked: searchView.search()
             }
         }
     }
@@ -155,7 +154,7 @@ Item {
         anchors.right: searchBar.right
         anchors.rightMargin: 0
         anchors.bottom: sortBar.top
-        anchors.bottomMargin: -20
+        anchors.bottomMargin: 0
         boundsBehavior: Flickable.StopAtBounds
         cacheBuffer: 100
         clip: true
@@ -193,11 +192,12 @@ Item {
                         text: condition
                     }
                 }
-                Label {
-                    text: price
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
+            }
+            Label {
+                text: price
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 30
             }
             MouseArea {
                 id: hightlightArea
@@ -265,25 +265,42 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
         Label {
-            y: 0
             anchors.left: parent.left
             anchors.leftMargin: 106
             text: "↑"
+            font.bold: true
+            font.pointSize: 9
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
             opacity: area1.containsMouse ? "0.5" : "1"
             MouseArea {
                 id: area1
+                hoverEnabled: true
+                anchors.topMargin: 0
                 anchors.fill: parent
                 onClicked: auctionModel.sortBy("price", true)
             }
         }
         Label {
-            y: 0
             anchors.left: parent.left
             anchors.leftMargin: 116
             text: "↓"
+            font.bold: true
+            font.pointSize: 9
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             opacity: area2.containsMouse ? "0.5" : "1"
             MouseArea {
                 id: area2
+                hoverEnabled: true
                 anchors.fill: parent
                 onClicked: auctionModel.sortBy("price", false)
             }
@@ -299,25 +316,41 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
         Label {
-            y: 0
             anchors.left: parent.left
             anchors.leftMargin: 172
             text: "↑"
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.top: parent.top
+            font.bold: true
+            font.pointSize: 9
+            anchors.topMargin: 0
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             opacity: area3.containsMouse ? "0.5" : "1"
             MouseArea {
                 id: area3
+                hoverEnabled: true
                 anchors.fill: parent
                 onClicked: auctionModel.sortBy("title", false)
             }
         }
         Label {
-            y: 0
             anchors.left: parent.left
             anchors.leftMargin: 182
             text: "↓"
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            font.bold: true
+            font.pointSize: 9
+            anchors.topMargin: 0
+            anchors.bottomMargin: 0
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             opacity: area51.containsMouse ? "0.5" : "1"
             MouseArea {
                 id: area51
+                hoverEnabled: true
                 anchors.fill: parent
                 onClicked: auctionModel.sortBy("title", true)
             }
@@ -332,7 +365,8 @@ Item {
 Designer {
     D{i:0;autoSize:true;height:480;width:640}D{i:6;anchors_height:305;anchors_width:275;anchors_x:140;anchors_y:169}
 D{i:7;anchors_height:35;anchors_width:275;anchors_x:140;anchors_y:156}D{i:8;anchors_height:35;anchors_x:416;anchors_y:156}
-D{i:9;anchors_x:459}D{i:10;anchors_x:459}D{i:14;anchors_height:231}D{i:21;anchors_x:317}
-D{i:22;anchors_x:317}D{i:13;anchors_height:340;anchors_width:600}D{i:25;anchors_width:200;anchors_x:70}
+D{i:9;anchors_x:459}D{i:10;anchors_x:459}D{i:14;anchors_height:231}D{i:13;anchors_height:340;anchors_width:600}
+D{i:28;anchors_y:0}D{i:29;anchors_y:0}D{i:31;anchors_y:0}D{i:33;anchors_y:0}D{i:34;anchors_y:0}
+D{i:36;anchors_y:0}D{i:25;anchors_width:200;anchors_x:70}
 }
 ##^##*/

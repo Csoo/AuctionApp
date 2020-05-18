@@ -103,7 +103,7 @@ Item {
         y: 40
         color: "#000000"
         visible: true
-        opacity: 0.64
+        opacity: 0.74
         border.width: 0
         anchors.fill: parent
     }

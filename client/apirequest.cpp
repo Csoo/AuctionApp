@@ -11,6 +11,7 @@ APIrequest::APIrequest(QObject *parent) :
 
 int APIrequest::loginRequest(const QString &name, const QString &pw)
 {
+    qDebug("Sending login request.");
     url.setPath("/login");
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -41,6 +42,7 @@ int APIrequest::loginRequest(const QString &name, const QString &pw)
 
 bool APIrequest::registerRequest(const QString &name, const QString &pw, const QString &email, const QString &fullName, const QString &address, const QString &phone)
 {
+    qDebug("Sending registration request.");
     url.setPath("/reg");
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -65,6 +67,7 @@ bool APIrequest::registerRequest(const QString &name, const QString &pw, const Q
 
 int APIrequest::addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QDate endDate, const QList<QByteArray> &images)
 {
+    qDebug("Sending addAuction request.");
     QJsonObject addAucJson;
 
     addAucJson.insert("user_id", QJsonValue::fromVariant(userId));
@@ -83,18 +86,27 @@ int APIrequest::addAuctionRequest(int userId, const QString &title, const QStrin
         img = QLatin1String(images.at(i).toBase64());
         imageArray.push_back(img);
     }
-    addAucJson.insert("images", QJsonValue::fromVariant(imageArray));
+    //addAucJson.insert("images", QJsonValue::fromVariant(imageArray));
 
-    qDebug() << QJsonDocument(addAucJson).toJson();
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->post(request, QJsonDocument(addAucJson).toJson());
+    loop.exec();
+
+    qDebug() << "search status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
     QByteArray res = reply->readAll();
     if (res == "false")
         return -1;
-    return res.toInt();
+    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
+        return res.toInt();
+    return -1;
 }
 
 int APIrequest::bidRequest(int auctionId, int licitUserId, int currentPrice, int bid)
 {
+    qDebug("Sending bid request.");
     url.setPath("/bid");
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -114,11 +126,15 @@ int APIrequest::bidRequest(int auctionId, int licitUserId, int currentPrice, int
     reply = manager->post(request, QJsonDocument(bidJson).toJson());
     loop.exec();
 
+
+    qDebug() << "search status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+
     return reply->readAll().toInt();
 }
 
 int APIrequest::rateUserRequest(int userIdFrom, int userIdTo, bool isPositive, const QString &message)
 {
+    qDebug("Sending rate request.");
     url.setPath("/rate");
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -130,13 +146,14 @@ int APIrequest::rateUserRequest(int userIdFrom, int userIdTo, bool isPositive, c
     rateJson.insert("positive", QJsonValue::fromVariant(isPositive)); //bool?
     rateJson.insert("message", QJsonValue::fromVariant(message));
 
-    qDebug() << QJsonDocument(rateJson).toJson();
-
     QEventLoop loop;
     connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
 
     reply = manager->post(request, QJsonDocument(rateJson).toJson());
     loop.exec();
+
+
+    qDebug() << "rate status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
     QByteArray res = reply->readAll();
     if (res == "false")
@@ -149,10 +166,9 @@ bool APIrequest::allAuctionRequest()
 
 }
 
-QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const QString &category, const QString &color, const QString &condition, int minPrice, int maxPrice, const QStringList &tags)
+QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, int category_id, const QString &color, int condition_id, int minPrice, int maxPrice, const QStringList &tags)
 {
-    QVector<AuctionItem> test = {AuctionItem(1, "kutya", "new", 2120), AuctionItem(2, "macska", "bad", 212), AuctionItem(3, "kiskutya", "new", 21200), AuctionItem(4, "nagykutya", "bad", 123), AuctionItem(5, "körte", "cool", 34), AuctionItem(6, "kutya", "new", 2120), AuctionItem(7, "kutya", "newW", 120), AuctionItem(8, "alma", "new", 210)};
-    return test;
+    qDebug("Sending search request.");
 
     url.setPath("/search");
     request.setUrl(url);
@@ -161,10 +177,10 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const 
     QJsonObject searchJson;
 
     searchJson.insert("text", QJsonValue::fromVariant(searchText));
-    searchJson.insert("category", QJsonValue::fromVariant(category));
     QJsonObject filterObject;
-    if (color != "") searchJson.insert("color", QJsonValue::fromVariant(color));
-    if (condition != "") filterObject.insert("state", QJsonValue::fromVariant(condition));
+    if (category_id != 0) filterObject.insert("category_id", QJsonValue::fromVariant(category_id));
+    if (color != "") filterObject.insert("color", QJsonValue::fromVariant(color));
+    if (condition_id != 0) filterObject.insert("condition_id", QJsonValue::fromVariant(condition_id));
     filterObject.insert("minPrice", QJsonValue::fromVariant(minPrice));
     if (maxPrice != -1) filterObject.insert("maxPrice", QJsonValue::fromVariant(maxPrice));
     searchJson.insert("filters", filterObject);
@@ -181,7 +197,6 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const 
     QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
 
     QJsonArray arr = json.array();
-    qDebug() << json.toJson();
 
     int r_auctionId;
     QString r_title;
@@ -194,9 +209,9 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const 
         //qDebug() << element["auction_id"].toInt();
         r_title = element["data"][0]["title"].toString();
         //qDebug() << element["data"][0]["title"].toString();
-        r_condition = element["data"][1]["condition"].toString();
+        r_condition = element["data"][0]["condition"].toString();
         //qDebug() << element["data"][1]["condition"].toString();
-        r_price = element["data"][2]["price"].toInt();
+        r_price = element["data"][0]["price"].toInt();
         //qDebug() << element["data"][2]["price"].toInt();
         auctionItemVector.append(AuctionItem(r_auctionId, r_title, r_condition, r_price));
     }
@@ -206,6 +221,7 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, const 
 
 QJsonDocument APIrequest::ownProfileRequest(int id)
 {
+     qDebug("Sending selfProfile request.");
      url.setPath("/user/self/" + QString::number(id));
      request.setUrl(url);
 
@@ -215,11 +231,15 @@ QJsonDocument APIrequest::ownProfileRequest(int id)
      reply = manager->get(request);
      loop.exec();
 
+
+     qDebug() << "search selfProfile:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+
      return QJsonDocument::fromJson(reply->readAll());
 }
 
 QJsonDocument APIrequest::profileRequest(int id)
 {
+    qDebug("Sending getUserProfile request.");
     url.setPath("/user/" + QString::number(id));
     request.setUrl(url);
 
@@ -229,11 +249,14 @@ QJsonDocument APIrequest::profileRequest(int id)
     reply = manager->get(request);
     loop.exec();
 
+    qDebug() << "profile status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+
     return QJsonDocument::fromJson(reply->readAll());
 }
 
 QJsonDocument APIrequest::auctionRequest(int id)
 {
+    qDebug("Sending getAuction request.");
     url.setPath("/auction/" + QString::number(id));
     request.setUrl(url);
 
@@ -242,6 +265,8 @@ QJsonDocument APIrequest::auctionRequest(int id)
 
     reply = manager->get(request);
     loop.exec();
+
+    qDebug() << "auction status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
     return QJsonDocument::fromJson(reply->readAll());
 }

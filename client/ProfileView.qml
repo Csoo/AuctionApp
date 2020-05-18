@@ -8,12 +8,11 @@ Item {
     y: 0
     width: 1080
     height: 690
-    visible: false
 
-    property int profileId: 1
+    property int profileId: 0
 
-    Component.onCompleted: {
-        myProfile.getOwnProfile(profile.profileId)
+    onProfileIdChanged: {
+        profile.profileId === main.loggedinProfileId ? myProfile.getOwnProfile(profile.profileId) : myProfile.getOtherProfile(profile.Id)
         if (profile.profileId === main.loggedinProfileId) {
             username.text = myProfile.userName
             fullname.text = myProfile.name
@@ -28,12 +27,6 @@ Item {
         }
         address.visible = profile.profileId === main.loggedinProfileId
         address_tag.visible = profile.profileId === main.loggedinProfileId
-        username.visible = profile.profileId === main.loggedinProfileId
-        username_tag.visible = profile.profileId === main.loggedinProfileId
-        fullname.visible = profile.profileId === main.loggedinProfileId
-        fullname_tag.visible = profile.profileId === main.loggedinProfileId
-        createtime.visible = profile.profileId === main.loggedinProfileId
-        createtime_tag.visible = profile.profileId === main.loggedinProfileId
         phone.visible = profile.profileId === main.loggedinProfileId
         phone_tag.visible = profile.profileId === main.loggedinProfileId
         email.visible = profile.profileId === main.loggedinProfileId
@@ -41,7 +34,6 @@ Item {
         lastlogin.visible = profile.profileId !== main.loggedinProfileId
         lastlogin_tag.visible = profile.profileId !== main.loggedinProfileId
 
-        profile.visible = true
     }
 
     Title {

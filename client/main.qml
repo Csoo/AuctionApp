@@ -140,7 +140,7 @@ ApplicationWindow {
                         }
                         Rectangle {
                             radius: 30
-                            color: backArea.containsMouse ? applicationWindow.highlightTextColor : "#555555"
+                            color: backArea.containsMouse ? applicationWindow.highlightTextColor : applicationWindow.isDark? "#555555" : "#a1a1a1"
                             anchors.right: parent.right
                             anchors.rightMargin: 100
                             anchors.top: parent.top

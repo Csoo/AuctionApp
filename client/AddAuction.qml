@@ -38,9 +38,9 @@ Item {
         return arr;
     }
 
-    function createAuction(userId, title, description, color, price, bid, category, condition, endDate) {
+    function createAuction(userId, title, description, color, price, bid, category, condition, endDate, images) {
         main.isLoading = true;
-        httpRequest.addAuctionRequest(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate);
+        httpRequest.addAuctionRequest(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate, images);
         main.isLoading = false;
     }
 
@@ -87,7 +87,7 @@ Item {
         anchors.topMargin: 27
         highlighted: true
         enabled: false
-        onClicked: addAuction.createAuction(main.loggedinProfileId, name.text, desctiption.text, itemColor.color, price.text, bid.text, category.currentIndex, condition.currentIndex, endDate)
+        onClicked: addAuction.createAuction(main.loggedinProfileId, name.text, desctiption.text, itemColor.color, price.text, bid.text, category.currentIndex, condition.currentIndex, endDate, ["",""])
     }
 
     Item {
