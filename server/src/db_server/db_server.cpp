@@ -267,8 +267,7 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
     {
         if (filterMap.contains("maxPrice"))
         {
-            temp = " where (auction.current_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + " or "
-                              "auction.fix_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + ")";
+            temp = " where (auction.current_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + ")";
         }
         else
         {
