@@ -9,17 +9,19 @@ Item {
     function wordfilter(str) {
         var wordsStr = "fasz, buzi, geci, kurva, faszfej, bazdmeg, basszameg, bazeg, baszameg, fuck, shit, faggot, nigger, retard, basz, pöcs, bitch, slut";
         var wordsArray = wordsStr.split(", ");
-        console.log(wordsArray);
         var isInclude = wordsArray.some(word => str.includes(word));
         return isInclude;
     }
 
     function sendRating() {
-        if (wordfilter(textArea.text) === false) {
-            httpRequest.rateUserRequest();
-            console.log("false");
+        if (textArea.text !== "") {
+            if (wordfilter(textArea.text) === false) {
+                httpRequest.rateUserRequest(element.rateId, isPositive.checked, textArea.text);
+            } else {
+                warning.open();
+            }
         } else {
-            warning.open();
+            httpRequest.rateUserRequest(element.rateId, isPositive.checked, textArea.text);
         }
     }
 
@@ -86,7 +88,7 @@ Item {
         highlighted: true
         anchors.top: textArea.bottom
         anchors.topMargin: 20
-        anchors.right: textInput.right
+        anchors.right: textArea.right
         anchors.rightMargin: 0
         onClicked: sendRating()
     }
