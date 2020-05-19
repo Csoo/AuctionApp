@@ -35,6 +35,7 @@ public:
     void rate(const Request &request, Response &response);
 
     void getPendingRatings(const Request &request, Response &response);
+    void getAllRatings(const Request &request, Response &response);
 
     //void temp(const Request &request, Response &response);
 
@@ -51,6 +52,7 @@ signals:
     void check_bid(const QString &auction, int currentP, bool *ok, bool *hasError);
     void get_rate(const QString &user, QString &p, QString &n, bool *hasError);
     void get_pending_ratings(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
+    void get_all_ratings(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
 
     void add_user(const QString &email, const QString &user, const QString &fullName, const QString &passw, const QString &add, const QString &phone, bool* hasError);
     void add_auction(const QMap<QString,QString> &parameters, const QVariantList &tags, const QVariantList &images, bool *hasError);

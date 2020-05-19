@@ -51,6 +51,7 @@ public slots:
     void set_rating_slot(const QString &user, const QString &rater, const QString &positive, const QString &desc, bool *hasError);
 
     void get_pending_ratings_slot(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
+    void get_all_ratings_slot(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
 
     void read_closes_slot(QMap<QString,QString> *closes, const QString &date);
 
@@ -75,6 +76,7 @@ protected:
     QSqlQuery getCloseQuery;
     QSqlQuery getRateQuery;
     QSqlQuery getPendingRatingsQuery;
+    QSqlQuery getAllRatingsQuery;
     QSqlQuery getUserQuery;
 
     QSqlQuery addUserQuery;

@@ -29,6 +29,7 @@ Db_server::Db_server(const QString &driver, QString connectionName, QString dbNa
     getCloseQuery(db),
     getRateQuery(db),
     getPendingRatingsQuery(db),
+    getAllRatingsQuery(db),
     getUserQuery(db)
 {
     std::cout << "[Db_server] Log: Started" << std::endl;
@@ -297,18 +298,18 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
     for (const auto& tag : tags) {
         if (!tq.isEmpty())
         {
-            tq += "' OR ";
+            tq += "%' OR ";
         }
         else
         {
             tq += " AND (";
         }
-        tq += "tag_name LIKE '" + tag.toString();
+        tq += "tag_name LIKE '%" + tag.toString();
     }
 
     if (!tq.isEmpty())
     {
-        tq += "')";
+        tq += "%')";
     }
 
     if (!getSearchQuery.exec("select auction.id, item_description.title, item_condition.condition_text, auction.current_price from auction "
@@ -815,6 +816,59 @@ void Db_server::get_pending_ratings_slot(int id, QJsonDocument* resJson, bool* o
         return;
     }
     std::cout << "[Database::getPendingRatings]  Error: count > 1\n";
+    std::cout << "SELECT COUNT(*) FROM user WHERE id LIKE :id\n";
+    *hasError = true;
+}
+
+void Db_server::get_all_ratings_slot(int id, QJsonDocument* resJson, bool* ok, bool* hasError) {
+      *hasError = false;
+    *ok = false;
+
+    checkIdQuery.clear();
+    QString temp = QString::fromStdString(std::to_string(id));
+
+    if (!checkIdQuery.exec("SELECT COUNT(*) FROM user WHERE id LIKE " + temp))
+    {
+        std::cout << "[Database::checkId]  Error: " << checkIdQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    checkIdQuery.next();
+    if (checkIdQuery.value(0).toInt() == 1)
+    {
+        getAllRatingsQuery.clear();
+
+        if (!getAllRatingsQuery.exec("select user.user_name, rater_user_id, is_positive, description, rating_date from rating "
+                                        "inner join user on user.id=rating.rater_user_id "
+                                        "where user_id = "+ temp +" and is_rated = 1"))
+        {
+            std::cout << "[Database::getAllRatings]  Error: " << getPendingRatingsQuery.lastError().text().toStdString() << std::endl;
+            *hasError = true;
+            return;
+        }
+
+        QJsonArray ratings;
+        while (getAllRatingsQuery.next()) {
+            QJsonObject rating;
+            rating.insert("rater_username", QJsonValue(getAllRatingsQuery.value(0).toString()));
+            rating.insert("rater_id", QJsonValue(getAllRatingsQuery.value(1).toString()));
+            rating.insert("is_positive", QJsonValue(getAllRatingsQuery.value(2).toString()));
+            rating.insert("description", QJsonValue(getAllRatingsQuery.value(3).toString()));
+            rating.insert("rating_date", QJsonValue(getAllRatingsQuery.value(4).toString()));
+            ratings.append(QJsonValue(rating));
+        }
+
+        resJson->setArray(ratings);
+
+        *ok = true;
+        return;
+    }
+    if (!checkIdQuery.value(0).toInt())
+    {
+        return;
+    }
+    std::cout << "[Database::getAllRatings]  Error: count > 1\n";
     std::cout << "SELECT COUNT(*) FROM user WHERE id LIKE :id\n";
     *hasError = true;
 }
