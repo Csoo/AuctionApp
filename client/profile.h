@@ -21,6 +21,7 @@ class Profile : public QObject
     Q_PROPERTY(QString lastDate MEMBER m_lastDate NOTIFY lastDateChanged)
     Q_PROPERTY(int positive MEMBER m_positive NOTIFY positiveChanged)
     Q_PROPERTY(int negative MEMBER m_negative NOTIFY negativeChanged)
+
 public:
     explicit Profile(QObject *parent = nullptr);
 
