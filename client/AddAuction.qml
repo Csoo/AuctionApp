@@ -127,7 +127,7 @@ Item {
         anchors.topMargin: 27
         highlighted: true
         enabled: false
-        onClicked: addAuction.createAuction(main.loggedinProfileId, name.text, desctiption.text, itemColor.text ? itemColor.text : "", price.text, bid.text, category.currentIndex, condition.currentIndex, endDate, ["",""])
+        onClicked: addAuction.createAuction(main.loggedinProfileId, name.text, desctiption.text, itemColor.text ? itemColor.text : "", price.text, bid.text, category.currentIndex + 1, condition.currentIndex + 1, endDate, ["",""])
     }
 
     Item {

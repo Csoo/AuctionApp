@@ -11,8 +11,6 @@ void Auction::getAuction(int id)
     QJsonDocument json = req.auctionRequest(id);
     QJsonObject obj = json.object();
 
-    qDebug() << json.toJson();
-
     m_auctionId = obj["auction_id"].toString().toInt();
     m_ownerUserId = obj["owner_id"].toString().toInt();
     m_ownerUserName = obj["owner"].toString();
@@ -39,23 +37,27 @@ void Auction::getAuction(int id)
         }
         m_lastLicitUserId = userId.first();
         m_lastLicitUserName = userName.first();
-        qDebug() << m_lastLicitUserId << m_lastLicitUserName;
     } else {
         m_lastLicitUserId = -1;
         m_lastLicitUserName = "";
-        qDebug() << m_lastLicitUserId << m_lastLicitUserName;
     }
 
-    QList<QByteArray> images;
-
-    images.clear();
+    m_images.clear();
     foreach (const QJsonValue & value, imagesArray) {
-        images.push_back(value.toString().toLatin1());
+        m_images.push_back(value.toString().toLatin1());
         // auto byteImg = value.toString().toLatin1();
         // images.push_back(QByteArray::fromBase64(byteImg));
     }
+}
 
-    m_images = images;
+QByteArray Auction::getImage(int id)
+{
+    if (id > m_images.size() - 1)
+        return "";
+    return m_images[id];
+}
 
-    qDebug() << m_currentPrice << "/n";
+int Auction::getImageCount()
+{
+    return m_images.size();
 }

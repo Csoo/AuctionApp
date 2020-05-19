@@ -206,7 +206,7 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, int ca
     filterObject.insert("minPrice", QJsonValue::fromVariant(minPrice));
     if (maxPrice != -1) filterObject.insert("maxPrice", QJsonValue::fromVariant(maxPrice));
     searchJson.insert("filters", filterObject);
-    searchJson.insert("tags", QJsonValue::fromVariant(tags));
+    tags[0].isEmpty() ? searchJson.insert("tags", QJsonValue("[]")) : searchJson.insert("tags", QJsonValue::fromVariant(tags));
 
     QEventLoop loop;
     connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));

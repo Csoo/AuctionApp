@@ -25,6 +25,8 @@ class Auction : public QObject
 public:
     explicit Auction(QObject *parent = nullptr);
     Q_INVOKABLE void getAuction(int id);
+    Q_INVOKABLE QByteArray getImage(int id);
+    Q_INVOKABLE int getImageCount();
 private:
     int m_auctionId;
     int m_ownerUserId;
