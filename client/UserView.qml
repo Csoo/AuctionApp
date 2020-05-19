@@ -6,15 +6,41 @@ Item {
     id: element
     property int rateId: 0
 
-    function sendRating() {
-        httpRequest.rateUserRequest()
+    function wordfilter(str) {
+        var wordsStr = "fasz, buzi, geci, kurva, faszfej, bazdmeg, basszameg, bazeg, baszameg, fuck, shit, faggot, nigger, retard, basz, pöcs, bitch, slut";
+        var wordsArray = wordsStr.split(", ");
+        console.log(wordsArray);
+        var isInclude = wordsArray.some(word => str.includes(word));
+        return isInclude;
     }
 
-    function wordfilter(str){
-        var fs = require('fs');
-        var words = fs.readFileSync('words.txt').toString().split("\r\n");
-        var isInclude = words.some(word => str.includes(word));
-        return isInclude;
+    function sendRating() {
+        if (wordfilter(textArea.text) === false) {
+            httpRequest.rateUserRequest();
+            console.log("false");
+        } else {
+            warning.open();
+        }
+    }
+
+
+    Popup {
+        id: warning
+        x: parent.width/2-100
+        y: parent.height*0.65
+        width: 300
+        height: 24
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: warningText
+            color: "#dfdfdf"
+            text: qsTr("This is a relaxed environment, do not be offensive.")
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
     }
 
     Title {
@@ -25,25 +51,40 @@ Item {
         title: qsTr("Rate User")
     }
 
-    TextInput {
-        id: textInput
+    TextArea {
+        id: textArea
         y: 184
         width: 336
-        height: 112
-        text: qsTr("Text Input")
+        height: 200
+        text: qsTr("")
+        placeholderText: "Your opinion goes here"
+        wrapMode: Text.WordWrap
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 184
         anchors.left: parent.left
         anchors.leftMargin: 152
-        font.pixelSize: 12
     }
+
+    Label {
+        id: label2
+        x: 152
+        y: 148
+        width: 82
+        height: 30
+        text: qsTr("Description")
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 390
+        anchors.left: parent.left
+        anchors.leftMargin: 152
+    }
+
 
     Button {
         id: button
         x: 390
         text: qsTr("Send")
         highlighted: true
-        anchors.top: textInput.bottom
+        anchors.top: textArea.bottom
         anchors.topMargin: 20
         anchors.right: textInput.right
         anchors.rightMargin: 0
@@ -54,7 +95,7 @@ Item {
         id: isPositive
         x: 213
         text: qsTr("")
-        anchors.top: textInput.bottom
+        anchors.top: textArea.bottom
         anchors.topMargin: 20
         checked: true
         display: AbstractButton.IconOnly
@@ -67,7 +108,7 @@ Item {
         anchors.verticalCenter: isPositive.verticalCenter
         anchors.left: isPositive.right
         anchors.leftMargin: 10
-        color: isPositive.checked ? "44ff22" : ""
+        color: isPositive.checked ? "#44ff22" : label2.color
     }
 
     Label {
@@ -79,6 +120,6 @@ Item {
         anchors.right: isPositive.left
         anchors.rightMargin: 10
         anchors.verticalCenter: isPositive.verticalCenter
-        color: isPositive.checked ? "" : "#aa4422"
+        color: isPositive.checked ? label2.color : "#aa4422"
     }
 }

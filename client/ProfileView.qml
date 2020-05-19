@@ -28,6 +28,8 @@ Item {
             fullname.text = myProfile.name
             createtime.text = myProfile.regDate
             lastlogin.text = myProfile.lastDate
+            label1.visible = false
+            pendingList.visible = false
         }
 
         address.visible = profile.profileId === main.loggedinProfileId
