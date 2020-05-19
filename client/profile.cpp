@@ -18,6 +18,8 @@ void Profile::getOwnProfile(int id)
     m_address = obj["address"].toString();
     m_phone = obj["phone"].toString();
     m_regDate = obj["reg"].toString();
+    m_positive = obj["positive"].toString().toInt();
+    m_negative = obj["negative"].toString().toInt();
 }
 
 void Profile::getOtherProfile(int id)
@@ -30,4 +32,6 @@ void Profile::getOtherProfile(int id)
     m_name = obj["fullName"].toString();
     m_regDate = obj["reg"].toString();
     m_lastDate = obj["last"].toString();
+    m_positive = obj["positive"].toString().toInt();
+    m_negative = obj["negative"].toString().toInt();
 }
