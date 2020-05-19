@@ -671,19 +671,6 @@ void Db_server::set_rating_slot(int rateId, int positive, const QString &msg, bo
         *hasError = true;
         return;
     }
-
-    setRatingQuery.clear();
-
-    if(!setRatingQuery.exec("SELECT user_id FROM rating WHERE id = " + id))
-    {
-        std::cout << "[Database::setRating2]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
-        *hasError = true;
-        return;
-    }
-
-    setRatingQuery.next();
-
-    *to = setRatingQuery.value(0).toString();
 }
 
 void Db_server::read_closes_slot(QMap<QString, QString> *closes, const QString &date) {
