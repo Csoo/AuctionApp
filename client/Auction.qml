@@ -9,6 +9,26 @@ Item {
     signal userClicked(int userId)
 
     Component.onCompleted: {
+        auctionView.load()
+        auctionView.dateCheck()
+    }
+
+    function dateCheck() {
+        var endDate = new Date(auctionItem.endDate);
+        var currentDate = new Date();
+
+        console.log(endDate);
+        console.log(currentDate);
+
+        if (endDate < currentDate) {
+            bidButton.visible = false;
+            bid.visible = false;
+            label8.visible = false;
+            label10.text = "Winner: ";
+        }
+    }
+
+    function load() {
         auctionItem.getAuction(auctionId);
         title.title = auctionItem.title
         desc.text = auctionItem.descriptionText
@@ -16,10 +36,10 @@ Item {
         itemColor.text = auctionItem.color
         startDate.text = auctionItem.startDate
         endDate.text = auctionItem.endDate
-        price.text = auctionItem.currentPrice + " Ft"
+        price.currentPrice = auctionItem.currentPrice
         bid.placeholderText = "min. " + auctionItem.minStep
-        latestUser.text = auctionItem.lastLicitUserName
         latestUser.userId = auctionItem.lastLicitUserId
+        latestUser.text = latestUser.userId !== -1 ? auctionItem.lastLicitUserName : "Nobody bidded."
         owner.text = auctionItem.ownerUserName
         owner.userId = auctionItem.ownerUserId
     }
@@ -29,6 +49,37 @@ Item {
             bidButton.enabled = false
         } else {
             bidButton.enabled = bid.text >= auctionItem.minStep
+        }
+    }
+
+    function sendBid(auctionId, licitUserId, currentPriceId, bid) {
+        main.isLoading = true;
+        var result = httpRequest.bidRequest(auctionId, licitUserId, currentPriceId, bid);
+        if (result !== auctionItem.currentPrice) {
+            auctionView.load()
+        } else {
+            bidError.open();
+        }
+
+        main.isLoading = false;
+    }
+
+    Popup {
+        id: bidError
+        x: parent.width/2-100
+        y: parent.height*0.65
+        width: 200
+        height: 24
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: bidErrorText
+            color: "#dfdfdf"
+            text: qsTr("Bid error.")
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 
@@ -89,12 +140,14 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 0
                 color: applicationWindow.highlightTextColor
+                visible: itemColor.text !== "" ? true : false
             }
 
             Label {
                 id: itemColor
                 anchors.left: label2.right
                 anchors.leftMargin: 40
+                visible: itemColor.text !== "" ? true : false
             }
             anchors.right: parent.right
             anchors.leftMargin: 0
@@ -258,13 +311,15 @@ Item {
             anchors.rightMargin: 0
             highlighted: true
             enabled: false
+            onClicked: auctionView.sendBid(auctionId, main.loggedinProfileId, price.currentPrice, bid.text)
         }
 
         Label {
             id: price
+            property int currentPrice: 0
             x: 56
             y: 202
-            text: qsTr("Label")
+            text: currentPrice + " Ft"
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight
             font.pointSize: 11
@@ -300,9 +355,10 @@ Item {
             opacity: latestUserArea.containsMouse ? "0.5" : "1.0"
             MouseArea {
                 id: latestUserArea
-                hoverEnabled: true
+                hoverEnabled: latestUser.userId !== -1
                 anchors.fill: parent
                 onClicked: userClicked(latestUser.userId)
+                enabled: latestUser.userId !== -1
             }
         }
 
