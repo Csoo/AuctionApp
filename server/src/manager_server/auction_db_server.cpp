@@ -635,12 +635,10 @@ void Auction_db_server::rate(const Request &request, Response &response) {
 
     QVariantMap body = bodyJson.toVariant().toMap();
 
-    QString ms, from, to, p;
-
+    QString ms, id, p, to;
     try
     {
-        from = body.value("user_id_from").toString();
-        to = body.value("user_id_to").toString();
+        id = body.value("rating_id").toString();
         p = body.value("positive").toString();
         ms = body.value("message").toString();
     }
@@ -654,7 +652,7 @@ void Auction_db_server::rate(const Request &request, Response &response) {
 
     bool hasError;
 
-    emit set_rating(to, from, p, ms, &hasError);
+    emit set_rating(id, p, ms, &to, &hasError);
 
     if (hasError)
     {

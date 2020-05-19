@@ -654,7 +654,7 @@ void Db_server::add_rating_slot(const QString &id, bool *hasError) {
     }
 }
 
-void Db_server::set_rating_slot(const QString &user, const QString &rater, const QString &positive, const QString &desc, bool *hasError) {
+void Db_server::set_rating_slot(const QString &id, const QString &positive, const QString &desc, QString *to, bool *hasError) {
     *hasError = false;
 
     setRatingQuery.clear();
@@ -665,13 +665,26 @@ void Db_server::set_rating_slot(const QString &user, const QString &rater, const
 
     if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = '" + desc +
                             "', rating_date = '" + CT.toString(Qt::ISODate).mid(-1,11) + " " +
-                            CT.time().toString(Qt::ISODate).mid(-1,6) + "', is_rated = 1 WHERE user_id = " +
-                            user + " AND rater_user_id = " + rater))
+                            CT.time().toString(Qt::ISODate).mid(-1,6) + "', is_rated = 1 WHERE id = " +
+                            id))
     {
-        std::cout << "[Database::setRating]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
+        std::cout << "[Database::setRating1]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
         return;
     }
+
+    setRatingQuery.clear();
+
+    if(!setRatingQuery.exec("SELECT user_id FROM rating WHERE id = " + id))
+    {
+        std::cout << "[Database::setRating2]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    setRatingQuery.next();
+
+    *to = setRatingQuery.value(0).toString();
 }
 
 void Db_server::read_closes_slot(QMap<QString, QString> *closes, const QString &date) {
