@@ -30,6 +30,7 @@ ApplicationWindow {
         property int pageIndex: 0
         property int searchIndex: 0
         property bool isLoading: false
+        property int rateId: 0
 
         Page {
             anchors.fill: parent
@@ -74,6 +75,48 @@ ApplicationWindow {
                 }
             }
 
+            Loader {
+                anchors.fill: parent
+                id: loader
+                sourceComponent: undefined
+                asynchronous: true
+                visible: status == Loader.Ready
+            }
+            Component {
+                id: rater
+                UserView {
+                    rateId: main.rateId
+                }
+            }
+            Rectangle {
+                radius: 30
+                color: backArea2.containsMouse ? applicationWindow.highlightTextColor : applicationWindow.isDark? "#555555" : "#a1a1a1"
+                anchors.right: parent.right
+                anchors.rightMargin: 100
+                anchors.top: parent.top
+                anchors.topMargin: 32
+                height: 40
+                width: 40
+                visible: loader.status !== Loader.Null
+                Label {
+                    text: "<"
+                    font.weight: Font.ExtraBold
+                    font.pointSize: 14
+                    font.family: "Courier"
+                    font.bold: true
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.fill: parent
+                }
+                MouseArea {
+                    id: backArea2
+                    hoverEnabled: true
+                    anchors.fill: parent
+                    enabled: loader.status !== Loader.Null
+                    onClicked: loader.sourceComponent = undefined;
+                }
+            }
+
             Component {
                 id: loggedIn
 
@@ -85,6 +128,16 @@ ApplicationWindow {
                     ProfileView {
                         id: profileView
                         profileId: main.loggedinProfileId
+                        visible: loader.status === Loader.Null
+
+                        onAuctionClicked:{
+                            main.auctionId = auctionId
+                            loader.sourceComponent = auctionComponent
+                        }
+                        onRatingClicked: {
+                            main.rateId = ratingId
+                            loader.sourceComponent = rater
+                        }
                     }
 
                     AddAuction {
@@ -130,7 +183,7 @@ ApplicationWindow {
                                         console.log(userId)
                                         main.searchIndex = 2
                                     }
-                                    visible: auctionLoader.status != Loader.Null
+                                    visible: auctionLoader.status != Loader.Null || loader.status != Loader.Null
                                 }
                             }
                         }

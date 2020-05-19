@@ -5,6 +5,11 @@ PendingItem::PendingItem()
 
 }
 
+PendingItem::~PendingItem()
+{
+
+}
+
 PendingItem::PendingItem(int ratingId, int userId, const QString &username, int auctionId, const QString &auctionTitle):
     ratingId(ratingId),
     userId(userId),

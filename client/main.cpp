@@ -7,6 +7,8 @@
 #include <auctionlistmodel.h>
 #include <profile.h>
 #include <auction.h>
+#include <pendingitemlistmodel.h>
+#include <ratinglistmodel.h>
 
 int main(int argc, char *argv[])
 {
@@ -24,11 +26,15 @@ int main(int argc, char *argv[])
     Profile profile;
     AuctionListModel model;
     Auction auction;
+    PendingItemListModel pendingModel;
+    RatingListModel rateModel;
     engine.rootContext()->setContextProperty("httpRequest", &req);
     engine.rootContext()->setContextProperty("images", &imgs);
     engine.rootContext()->setContextProperty("myProfile", &profile);
     engine.rootContext()->setContextProperty("auctionModel", &model);
     engine.rootContext()->setContextProperty("auctionItem", &auction);
+    engine.rootContext()->setContextProperty("pendingModel", &pendingModel);
+    engine.rootContext()->setContextProperty("ratingModel", &rateModel);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -155,7 +155,7 @@ int APIrequest::bidRequest(int auctionId, int licitUserId, int currentPrice, int
     return reply->readAll().toInt();
 }
 
-int APIrequest::rateUserRequest(int userIdFrom, int userIdTo, bool isPositive, const QString &message)
+int APIrequest::rateUserRequest(int rateId, bool isPositive, const QString &message)
 {
     qDebug("Sending rate request.");
     url.setPath("/rate");
@@ -164,8 +164,7 @@ int APIrequest::rateUserRequest(int userIdFrom, int userIdTo, bool isPositive, c
 
     QJsonObject rateJson;
 
-    rateJson.insert("user_id_from", QJsonValue::fromVariant(userIdFrom));
-    rateJson.insert("user_id_to", QJsonValue::fromVariant(userIdTo));
+    rateJson.insert("rateId", QJsonValue::fromVariant(rateId));
     rateJson.insert("positive", QJsonValue::fromVariant(isPositive)); //bool?
     rateJson.insert("message", QJsonValue::fromVariant(message));
 
