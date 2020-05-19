@@ -4,7 +4,7 @@
 APIrequest::APIrequest(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
-    url(QUrl("http://81.183.216.27:3000"))
+    url(QUrl("http://localhost:3000"))
 {
 
 }
@@ -200,9 +200,9 @@ QVector<AuctionItem> APIrequest::searchRequest(const QString &searchText, int ca
 
     searchJson.insert("text", QJsonValue::fromVariant(searchText));
     QJsonObject filterObject;
-    if (category_id != 0) filterObject.insert("category_id", QJsonValue::fromVariant(category_id));
+    if (category_id > 0) filterObject.insert("category_id", QJsonValue::fromVariant(category_id));
     if (color != "") filterObject.insert("color", QJsonValue::fromVariant(color));
-    if (condition_id != 0) filterObject.insert("condition_id", QJsonValue::fromVariant(condition_id));
+    if (condition_id > 0) filterObject.insert("condition_id", QJsonValue::fromVariant(condition_id));
     filterObject.insert("minPrice", QJsonValue::fromVariant(minPrice));
     if (maxPrice != -1) filterObject.insert("maxPrice", QJsonValue::fromVariant(maxPrice));
     searchJson.insert("filters", filterObject);

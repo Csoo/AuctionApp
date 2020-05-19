@@ -270,7 +270,7 @@ Item {
         width: 307
         height: 397
         anchors.left: parent.left
-        anchors.leftMargin: 128
+        anchors.leftMargin: 141
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 88
 
@@ -366,6 +366,18 @@ Item {
             }
         }
 
+        Rectangle {
+            height: 236
+            anchors.right: parent.right
+            anchors.rightMargin: 20
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            opacity: 0.4
+            color: "#343434"
+        }
+
         SwipeView {
             id: swipe
             property int imageCount: 1
@@ -377,6 +389,7 @@ Item {
             anchors.leftMargin: 0
             anchors.top: parent.top
             anchors.topMargin: 0
+            visible: imageCount > 0
             Image {
                 id: image1
                 fillMode: Image.PreserveAspectFit
@@ -403,6 +416,7 @@ Item {
             anchors.horizontalCenter: swipe.horizontalCenter
         }
         Label {
+            visible: swipe.imageCount > 0
             id: next
             text: ">"
             font.bold: true
@@ -421,6 +435,7 @@ Item {
             }
         }
         Label {
+            visible: swipe.imageCount > 0
             id: prev
             text: "<"
             font.bold: true

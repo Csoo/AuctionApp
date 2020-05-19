@@ -17,7 +17,7 @@ Item {
     function search() {
         main.isLoading = true;
         var tagList = searchView.getTags(tags.text);
-        auctionModel.setAuctions(searchBar.text, category.currentIndex+1, itemColor.text, condition.currentIndex+1, priceSlider.first.value, maxPrice.text === "100000+ Ft" ? -1 : priceSlider.second.value, tagList);
+        auctionModel.setAuctions(searchBar.text, category.currentIndex, itemColor.text, condition.currentIndex, priceSlider.first.value, maxPrice.text === "100000+ Ft" ? -1 : priceSlider.second.value, tagList);
         auctionList.model = auctionModel;
         resultCount.text = "Number of results: " + auctionModel.rowCount();
         sortBar.visible = true;
@@ -75,7 +75,7 @@ Item {
         anchors.topMargin: 16
         currentIndex: -1
         displayText: currentIndex == -1 ? "Choose a category..." : currentText
-        model: ["Car", "Furniture", "Electronics", "Book", "Toy", "Tool"]
+        model: ["All","Car", "Furniture", "Electronics", "Book", "Toy", "Tool"]
     }
     ComboBox {
         id: condition
@@ -87,7 +87,7 @@ Item {
         anchors.topMargin: 9
         currentIndex: -1
         displayText: currentIndex == -1 ? "Choose a condition..." : currentText
-        model: ["new", "used", "bad"]
+        model: ["All","New", "Used", "Bad"]
     }
 
     TextField {
@@ -332,7 +332,7 @@ Item {
                 id: area3
                 hoverEnabled: true
                 anchors.fill: parent
-                onClicked: auctionModel.sortBy("title", false)
+                onClicked: auctionModel.sortBy("title", true)
             }
         }
         Label {
@@ -352,7 +352,7 @@ Item {
                 id: area51
                 hoverEnabled: true
                 anchors.fill: parent
-                onClicked: auctionModel.sortBy("title", true)
+                onClicked: auctionModel.sortBy("title", false)
             }
         }
 

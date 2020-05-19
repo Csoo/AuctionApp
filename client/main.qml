@@ -143,9 +143,10 @@ ApplicationWindow {
 
                     AddAuction {
                         id: addAuction
+                        visible: loader.status === Loader.Null
                         onAuctionCreated: {
                             main.auctionId = auctionId
-                            auctionLoader.sourceComponent = auctionComponent
+                            loader.sourceComponent = auctionComponent
                         }
                     }
 
