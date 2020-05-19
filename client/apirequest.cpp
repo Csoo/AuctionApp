@@ -293,3 +293,77 @@ QJsonDocument APIrequest::auctionRequest(int id)
 
     return QJsonDocument::fromJson(reply->readAll());
 }
+
+QVector<PendingItem> APIrequest::getPendingRequest(int id)
+{
+    qDebug("Sending getPendingRequest request.");
+    url.setPath("/pending/" + QString::number(id));
+    request.setUrl(url);
+
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->get(request);
+    loop.exec();
+
+    qDebug() << "pending rating status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+
+
+    QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
+    QJsonArray arr = json.array();
+
+    int r_ratingId;
+    int r_userId;
+    QString r_username;
+    int r_auctionId;
+    QString r_auctionTitle;
+    QVector<PendingItem> pendingItemVector;
+
+    foreach (QJsonValue element, arr) {
+        r_ratingId = element["ratingId"].toString().toInt();
+        r_userId = element["userId"].toString().toInt();
+        r_username = element["userName"].toString();
+        r_auctionId = element["auctionId"].toString().toInt();
+        r_auctionTitle = element["auctionTitle"].toString();
+        pendingItemVector.append(PendingItem(r_ratingId, r_userId, r_username, r_auctionId, r_auctionTitle));
+    }
+
+    return pendingItemVector;
+}
+
+QVector<RatingItem> APIrequest::getAllRatingsRequest(int id)
+{
+    qDebug("Sending getAllRatings request.");
+    url.setPath("/ratings/" + QString::number(id));
+    request.setUrl(url);
+
+
+    QEventLoop loop;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
+
+    reply = manager->get(request);
+    loop.exec();
+
+    qDebug() << "rating status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+
+    QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
+    QJsonArray arr = json.array();
+
+    int r_raterId;
+    QString r_raterUsername;
+    int r_isPositive;
+    QString r_description;
+    QString r_ratingDate;
+    QVector<RatingItem> ratingItemVector;
+
+    foreach (QJsonValue element, arr) {
+        r_raterId = element["rater_id"].toString().toInt();
+        r_raterUsername = element["rater_username"].toString();
+        r_isPositive = element["is_positive"].toString().toInt();
+        r_description = element["description"].toString();
+        r_ratingDate = element["rating_date"].toString();
+        ratingItemVector.append(RatingItem(r_raterId, r_raterUsername, r_isPositive, r_description, r_ratingDate));
+    }
+
+    return ratingItemVector;
+}

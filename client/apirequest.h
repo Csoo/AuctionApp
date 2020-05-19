@@ -11,6 +11,8 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <auctionitem.h>
+#include <ratingitem.h>
+#include <pendingitem.h>
 
 class APIrequest : public QObject
 {
@@ -34,6 +36,8 @@ public:
     QJsonDocument ownProfileRequest(int id);
     QJsonDocument profileRequest(int id);
     QJsonDocument auctionRequest(int id);
+    QVector<PendingItem> getPendingRequest(int id);
+    QVector<RatingItem> getAllRatingsRequest(int id);
 
 signals:
 };
