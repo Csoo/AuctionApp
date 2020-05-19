@@ -654,7 +654,7 @@ void Db_server::add_rating_slot(const QString &id, bool *hasError) {
     }
 }
 
-void Db_server::set_rating_slot(const QString &id, const QString &positive, const QString &desc, QString *to, bool *hasError) {
+void Db_server::set_rating_slot(int rateId, int positive, const QString &msg, bool *hasError) {
     *hasError = false;
 
     setRatingQuery.clear();
@@ -663,10 +663,9 @@ void Db_server::set_rating_slot(const QString &id, const QString &positive, cons
 
     std::lock_guard<std::mutex> m(db_m);
 
-    if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + positive + ", description = '" + desc +
+    if(!setRatingQuery.exec("UPDATE rating SET is_positive = " + QString::number(positive) + ", description = '" + msg +
                             "', rating_date = '" + CT.toString(Qt::ISODate).mid(-1,11) + " " +
-                            CT.time().toString(Qt::ISODate).mid(-1,6) + "', is_rated = 1 WHERE id = " +
-                            id))
+                            CT.time().toString(Qt::ISODate).mid(-1,6) + "', is_rated = 1 WHERE id = " + QString::number(rateId)))
     {
         std::cout << "[Database::setRating1]  Error: " << setRatingQuery.lastError().text().toStdString() << std::endl;
         *hasError = true;
@@ -796,12 +795,12 @@ void Db_server::get_pending_ratings_slot(int id, QJsonDocument* resJson, bool* o
     {
         getPendingRatingsQuery.clear();
 
-        if (!getPendingRatingsQuery.exec("select rating.id, rating.user_id, user.user_name, rating.auction_id, item_description.title from rating"
-                                            " inner join auction on auction.id=rating.auction_id"
-                                            " inner join item on item.id=auction.item_id"
-                                            " inner join item_description on item.description_id = item_description.id"
-                                            " inner join user on item.user_id = user.id"
-                                            " where rating.rater_user_id = " + temp + " and rating.is_rated = 0"))
+        if (!getPendingRatingsQuery.exec("select rating.id, rating.user_id, user.user_name, rating.auction_id, item_description.title from rating "
+                                            "inner join auction on auction.id=rating.auction_id "
+                                            "inner join item on item.id=auction.item_id "
+                                            "inner join item_description on item.description_id = item_description.id "
+                                            "inner join user on rating.user_id = user.id "
+                                            "where rating.rater_user_id = " + temp + " and rating.is_rated = 0"))
         {
             std::cout << "[Database::getPendingRatings]  Error: " << getPendingRatingsQuery.lastError().text().toStdString() << std::endl;
             *hasError = true;

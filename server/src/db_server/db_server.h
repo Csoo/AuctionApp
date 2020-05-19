@@ -50,7 +50,10 @@ public slots:
     void add_auction_slot(const QMap<QString,QString> &parameters, const QVariantList &tags, const QVariantList &images, bool *hasError);
     void set_bid_slot(const QString &auction, const QString &user, int currentP, bool *hasError);
     void add_rating_slot(const QString &id, bool *hasError);
-    void set_rating_slot(const QString &id, const QString &positive, const QString &desc, QString *to, bool *hasError);
+    void set_rating_slot(int rateId, int positive, const QString &msg, bool *hasError);
+
+    void get_pending_ratings_slot(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
+    void get_all_ratings_slot(int id, QJsonDocument* resJSON, bool* ok, bool* hasError);
 
     void read_closes_slot(QMap<QString,QString> *closes, const QString &date);
 

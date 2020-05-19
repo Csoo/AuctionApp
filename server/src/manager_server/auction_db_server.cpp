@@ -635,12 +635,14 @@ void Auction_db_server::rate(const Request &request, Response &response) {
 
     QVariantMap body = bodyJson.toVariant().toMap();
 
-    QString ms, id, p, to;
+    QString msg;
+    int rateId, p;
+
     try
     {
-        id = body.value("rating_id").toString();
-        p = body.value("positive").toString();
-        ms = body.value("message").toString();
+        rateId = body.value("rateId").toInt();
+        p = body.value("positive").toInt();
+        msg = body.value("message").toString();
     }
     catch (...)
     {
@@ -652,7 +654,7 @@ void Auction_db_server::rate(const Request &request, Response &response) {
 
     bool hasError;
 
-    emit set_rating(id, p, ms, &to, &hasError);
+    emit set_rating(rateId, p, msg, &hasError);
 
     if (hasError)
     {
@@ -661,6 +663,6 @@ void Auction_db_server::rate(const Request &request, Response &response) {
         return;
     }
 
-    response.set_content(to.toStdString(),"application/json");
+    response.set_content("ok","application/json");
     response.status = 200;
 }
