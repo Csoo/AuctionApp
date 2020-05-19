@@ -89,6 +89,10 @@ ApplicationWindow {
 
                     AddAuction {
                         id: addAuction
+                        onAuctionCreated: {
+                            main.auctionId = auctionId
+                            auctionLoader.sourceComponent = auctionComponent
+                        }
                     }
 
                     Item {

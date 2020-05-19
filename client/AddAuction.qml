@@ -9,6 +9,8 @@ Item {
 
     property date endDate: currentDate
 
+    signal auctionCreated(int auctionId)
+
     function setEndDate(days) {
         var endDate = new Date();
         endDate.setDate(endDate.getDate() + (days*1));
@@ -40,8 +42,34 @@ Item {
 
     function createAuction(userId, title, description, color, price, bid, category, condition, endDate, images) {
         main.isLoading = true;
-        httpRequest.addAuctionRequest(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate, images);
+        var responseId = httpRequest.addAuctionRequest(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate, images);
         main.isLoading = false;
+        console.log(responseId);
+        if (responseId === -1 || responseId === Null) {
+            createError.open();
+        } else {
+            main.auctionId = responseId;
+
+        }
+    }
+
+    Popup {
+        id: createError
+        x: parent.width/2-100
+        y: parent.height*0.65
+        width: 200
+        height: 24
+        clip: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Text {
+            id: createErrorText
+            color: "#dfdfdf"
+            text: qsTr("Error.")
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
     }
 
     FileDialog {
