@@ -49,7 +49,7 @@ Item {
             createError.open();
         } else {
             main.auctionId = responseId;
-
+            addAuction.auctionCreated(respondeId);
         }
     }
 

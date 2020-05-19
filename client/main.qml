@@ -125,6 +125,7 @@ ApplicationWindow {
                     interactive: false
                     orientation: Qt.Vertical
                     currentIndex: main.pageIndex
+                    onCurrentIndexChanged: loader.sourceComponent = undefined
                     ProfileView {
                         id: profileView
                         profileId: main.loggedinProfileId
