@@ -3,46 +3,43 @@
 #include <QString>
 #include <QBuffer>
 #include <QDebug>
+#include <apirequest.h>
+
+QList<QByteArray> AuctionImages::getImages() const
+{
+    return images;
+}
+
+QByteArray AuctionImages::convertToBase64(int i)
+{
+
+}
 
 AuctionImages::AuctionImages(QObject *parent) : QObject(parent)
 {
 
 }
 
-QByteArray AuctionImages::convertToBase64(int idx)
-{
-    return images.at(idx).toBase64();
-}
-
 void AuctionImages::addImage(const QString &source)
 {
     QString sourceTrimmed = source.mid(8, -1);
     QPixmap pixmap(sourceTrimmed);
-    pixmap = pixmap.scaled(750, 750, Qt::KeepAspectRatio);
+    pixmap = pixmap.scaled(1000, 1000, Qt::KeepAspectRatio);
     QByteArray bytes;
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::WriteOnly);
-    pixmap.save(&buffer, "PNG", 100); //min 80
+    pixmap.save(&buffer, "JPG", 100); //min 80
     bytes.toBase64();
 
     qDebug() << bytes.size() << endl;
 
     images.push_front(bytes);
-
-    getImage();
 }
 
-void AuctionImages::getImage()
+void AuctionImages::sendImage(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QString endDate)
 {
-    QByteArray bytes = images.first();
-    QPixmap p;
-    p.loadFromData(bytes, "PNG");
-    QString name = "name";
-    QString source = "C:\\Users\\Csongor\\Desktop\\images\\" + name + ".png";
-    qDebug() << p.save(source, "PNG", 80);
-}
+    APIrequest req;
+    req.addAuctionRequest(userId, title, descriptionText, color, currentPrice, minStep, categoryId, conditionId, tags, endDate, images);
 
-void AuctionImages::sendImage()
-{
-
+    images.clear();
 }

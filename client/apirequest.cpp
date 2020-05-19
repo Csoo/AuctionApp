@@ -80,9 +80,12 @@ bool APIrequest::registerRequest(const QString &name, const QString &pw, const Q
     return reply->readAll() != "bad username or bad email";
 }
 
-int APIrequest::addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QDate endDate, const QList<QByteArray> &images)
+int APIrequest::addAuctionRequest(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QString endDate, const QList<QByteArray> &images)
 {
     qDebug("Sending addAuction request.");
+    url.setPath("/auction");
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     QJsonObject addAucJson;
 
     addAucJson.insert("user_id", QJsonValue::fromVariant(userId));
@@ -93,15 +96,20 @@ int APIrequest::addAuctionRequest(int userId, const QString &title, const QStrin
     addAucJson.insert("min_step", QJsonValue::fromVariant(minStep));
     addAucJson.insert("category_id", QJsonValue::fromVariant(categoryId));
     addAucJson.insert("condition_id", QJsonValue::fromVariant(conditionId));
-    addAucJson.insert("tags", QJsonValue::fromVariant(tags));
     addAucJson.insert("end_date", QJsonValue::fromVariant(endDate));
+    QJsonArray tagsArray;
+    foreach (QString tag, tags) {
+        tagsArray.push_back(QJsonValue(tag));
+    }
+    addAucJson.insert("tags",QJsonValue(tagsArray));
     QJsonArray imageArray;
     QJsonValue img;
     for (int i = 0; i < images.length(); i++){
-        img = QLatin1String(images.at(i).toBase64());
+        img = QLatin1String(images[i].toBase64());
         imageArray.push_back(img);
     }
-    //addAucJson.insert("images", QJsonValue::fromVariant(imageArray));
+    addAucJson.insert("images", QJsonValue(imageArray));
+
 
     QEventLoop loop;
     connect(manager, SIGNAL(finished(QNetworkReply*)),&loop, SLOT(quit()));
@@ -109,7 +117,7 @@ int APIrequest::addAuctionRequest(int userId, const QString &title, const QStrin
     reply = manager->post(request, QJsonDocument(addAucJson).toJson());
     loop.exec();
 
-    qDebug() << "search status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+    qDebug() << "add auction status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
     QByteArray res = reply->readAll();
     if (res == "false")

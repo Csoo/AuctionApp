@@ -14,20 +14,20 @@ Item {
     function setEndDate(days) {
         var endDate = new Date();
         endDate.setDate(endDate.getDate() + (days*1));
-        endDate.setHours(endDateHour.value-1);
-        if (endDate <= currentDate) { //TODO: min duration
+        endDate.setHours(endDateHour.value);
+        if (endDate < currentDate) {
             endDateLabel.color = "red";
             createButton.enabled = false;
-        } else {
+        } else{
             endDateLabel.color = applicationWindow.highlightTextColor;
             addAuction.auctionIsValid()
         }
-        console.log(endDate.toLocaleString());
+        console.log(endDate.toLocaleString(Qt.locale(), "yyyy-MM-dd hh:mm"));
         return endDate;
     }
 
     function auctionIsValid() {
-        if (name.text.length == 0 || desctiption.text.length == 0 || price.text.length == 0 || bid.text.length == 0 || category.currentIndex == -1 || condition.currentIndex == -1 || endDateTextField.length == 0) {
+        if (name.text.length == 0 || desctiption.text.length == 0 || price.text.length == 0 || bid.text.length == 0 || category.currentIndex == -1 || condition.currentIndex == -1) {
             createButton.enabled = false;
         } else {
             createButton.enabled = true;
@@ -40,9 +40,9 @@ Item {
         return arr;
     }
 
-    function createAuction(userId, title, description, color, price, bid, category, condition, endDate, images) {
+    function createAuction(userId, title, description, color, price, bid, category, condition, endDate) {
         main.isLoading = true;
-        var responseId = httpRequest.addAuctionRequest(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate, images);
+        var responseId = images.sendImage(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate.toLocaleString(Qt.locale(), "yyyy-MM-dd hh:mm"));
         main.isLoading = false;
         console.log(responseId);
         if (responseId === -1 || responseId === Null) {
@@ -75,9 +75,11 @@ Item {
     FileDialog {
         id: fileDialog
         title: "Please choose a file"
+        nameFilters: "Image files (*.jpg *.png *.jpeg)"
         onAccepted: {
             console.log(fileDialog.fileUrl)
             images.addImage(fileDialog.fileUrl)
+            imageCounter.count ++
         }
         onRejected: {
             console.log("Canceled")
@@ -93,6 +95,16 @@ Item {
         anchors.top: createButton.top
         anchors.topMargin: 0
         onClicked: fileDialog.open()
+    }
+
+    Label {
+        id: imageCounter
+        property int count: 0
+        anchors.left: imageButton.right
+        anchors.verticalCenter: imageButton.verticalCenter
+        anchors.leftMargin: 10
+        color: applicationWindow.highlightTextColor
+        text: count > 0 ? count + " image uploaded" : ""
     }
 
     Title {

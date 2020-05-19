@@ -20,13 +20,15 @@ Item {
         bid.placeholderText = "min. " + auctionItem.minStep
         latestUser.text = auctionItem.lastLicitUserName
         latestUser.userId = auctionItem.lastLicitUserId
+        owner.text = auctionItem.ownerUserName
+        owner.userId = auctionItem.ownerUserId
     }
 
     function bidIsValid() {
-        if (bid.text < auctionItem.minStep) {
+        if (main.loggedinProfileId === owner.userId) {
             bidButton.enabled = false
         } else {
-            bidButton.enabled = true
+            bidButton.enabled = bid.text >= auctionItem.minStep
         }
     }
 
@@ -115,6 +117,37 @@ Item {
             readOnly: true
             font.pixelSize: 12
             color: condition.color
+        }
+
+        Label {
+            id: ownerLabel
+            y: 174
+            text: qsTr("Auction owner:")
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            verticalAlignment: Text.AlignTop
+            anchors.bottom: element5.top
+            anchors.bottomMargin: 20
+            color: applicationWindow.highlightTextColor
+        }
+
+        Label {
+            id: owner
+            property int userId: 0
+            y: 183
+            text: qsTr("Label")
+            font.bold: true
+            anchors.bottom: ownerLabel.bottom
+            anchors.bottomMargin: 0
+            anchors.left: ownerLabel.right
+            anchors.leftMargin: 12
+            opacity: ownerArea.containsMouse ? "0.5" : "1.0"
+            MouseArea {
+                id: ownerArea
+                hoverEnabled: true
+                anchors.fill: parent
+                onClicked: userClicked(owner.userId)
+            }
         }
 
         Item {
@@ -292,9 +325,10 @@ Item {
 /*##^##
 Designer {
     D{i:0;autoSize:true;height:480;width:640}D{i:3;anchors_width:200}D{i:6;anchors_width:200}
-D{i:9;anchors_width:279}D{i:10;anchors_width:200}D{i:13;anchors_width:200}D{i:2;anchors_x:312;anchors_y:116}
-D{i:18;anchors_x:106}D{i:21;anchors_x:37}D{i:23;anchors_y:423}D{i:22;anchors_x:112}
-D{i:24;anchors_width:250;anchors_x:"-19";anchors_y:"-11"}D{i:16;anchors_height:200;anchors_width:212;anchors_x:66;anchors_y:204}
+D{i:9;anchors_width:279}D{i:2;anchors_x:312;anchors_y:116}D{i:21;anchors_x:106}D{i:22;anchors_x:106}
+D{i:24;anchors_x:37}D{i:25;anchors_x:112}D{i:27;anchors_width:250;anchors_x:"-19";anchors_y:"-11"}
+D{i:26;anchors_x:112;anchors_y:423}D{i:28;anchors_width:250;anchors_x:"-19";anchors_y:"-11"}
+D{i:19;anchors_height:200;anchors_width:212;anchors_x:66;anchors_y:204}
 }
 ##^##*/
 
