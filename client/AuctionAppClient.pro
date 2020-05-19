@@ -20,7 +20,11 @@ SOURCES += \
         auctionitem.cpp \
         auctionlistmodel.cpp \
         main.cpp \
-        profile.cpp
+        pendingitem.cpp \
+        pendingitemlistmodel.cpp \
+        profile.cpp \
+        ratingitem.cpp \
+        ratinglistmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -46,6 +50,10 @@ HEADERS += \
     auctionimages.h \
     auctionitem.h \
     auctionlistmodel.h \
-    profile.h
+    pendingitem.h \
+    pendingitemlistmodel.h \
+    profile.h \
+    ratingitem.h \
+    ratinglistmodel.h
 
 DISTFILES +=
