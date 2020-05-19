@@ -127,6 +127,7 @@ ApplicationWindow {
                                     auctionId: main.auctionId
                                     onUserClicked: {
                                         searchProfile.profileId = userId
+                                        console.log(userId)
                                         main.searchIndex = 2
                                     }
                                     visible: auctionLoader.status != Loader.Null

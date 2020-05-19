@@ -12,7 +12,7 @@ Item {
     property int profileId: 0
 
     onProfileIdChanged: {
-        profile.profileId === main.loggedinProfileId ? myProfile.getOwnProfile(profile.profileId) : myProfile.getOtherProfile(profile.Id)
+        profile.profileId === main.loggedinProfileId ? myProfile.getOwnProfile(profile.profileId) : myProfile.getOtherProfile(profileId)
         if (profile.profileId === main.loggedinProfileId) {
             username.text = myProfile.userName
             fullname.text = myProfile.name
@@ -24,6 +24,7 @@ Item {
             username.text = myProfile.userName
             fullname.text = myProfile.name
             createtime.text = myProfile.regDate
+            lastlogin.text = myProfile.lastDate
         }
         address.visible = profile.profileId === main.loggedinProfileId
         address_tag.visible = profile.profileId === main.loggedinProfileId

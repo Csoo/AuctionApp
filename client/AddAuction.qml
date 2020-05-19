@@ -45,7 +45,7 @@ Item {
         var responseId = images.sendImage(userId, title, description, color, price, bid, category, condition, getTags(tags.text), endDate.toLocaleString(Qt.locale(), "yyyy-MM-dd hh:mm"));
         main.isLoading = false;
         console.log(responseId);
-        if (responseId === -1 || responseId === Null) {
+        if (responseId === -1) {
             createError.open();
         } else {
             main.auctionId = responseId;

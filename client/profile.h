@@ -18,6 +18,7 @@ class Profile : public QObject
     Q_PROPERTY(QString address MEMBER m_address NOTIFY addressChanged)
     Q_PROPERTY(QString phone MEMBER m_phone NOTIFY phoneChanged)
     Q_PROPERTY(QString regDate MEMBER m_regDate NOTIFY regDateChanged)
+    Q_PROPERTY(QString lastDate MEMBER m_lastDate NOTIFY lastDateChanged)
 
 public:
     explicit Profile(QObject *parent = nullptr);
@@ -30,6 +31,7 @@ signals:
     void addressChanged();
     void phoneChanged();
     void regDateChanged();
+    void lastDateChanged();
     void nameChanged();
 private:
     QString m_userName;
