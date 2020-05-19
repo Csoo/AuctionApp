@@ -36,10 +36,12 @@ void AuctionImages::addImage(const QString &source)
     images.push_front(bytes);
 }
 
-void AuctionImages::sendImage(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QString endDate)
+int AuctionImages::sendImage(int userId, const QString &title, const QString &descriptionText, const QString &color, int currentPrice, int minStep, int categoryId, int conditionId, QStringList tags, QString endDate)
 {
+    int response;
     APIrequest req;
-    req.addAuctionRequest(userId, title, descriptionText, color, currentPrice, minStep, categoryId, conditionId, tags, endDate, images);
+    response = req.addAuctionRequest(userId, title, descriptionText, color, currentPrice, minStep, categoryId, conditionId, tags, endDate, images);
 
     images.clear();
+    return response;
 }
