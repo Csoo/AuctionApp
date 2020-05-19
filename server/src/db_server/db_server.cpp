@@ -263,24 +263,48 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
 
     QVariantMap filterMap = filters.toVariant().toMap();
 
-    QString temp;
+    QString temp = "";
+    QString tq;
+
+    if (tags.size() != 0) 
+    {
+        temp += " inner join tag_item_relation on item.id = tag_item_relation.item_id "
+                "inner join item_tag on tag_item_relation.tag_id = item_tag.id ";
+        for (const auto& tag : tags) {
+            if (!tq.isEmpty())
+            {
+                tq += "' OR ";
+            }
+            else
+            {
+                tq += " AND (";
+            }
+            tq += "tag_name LIKE '" + tag.toString();
+        }
+
+        if (!tq.isEmpty())
+        {
+            tq += "')";
+        }
+    }
+    
 
     if (filterMap.contains("minPrice"))
     {
         if (filterMap.contains("maxPrice"))
         {
-            temp = " where (auction.current_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + ")";
+            temp += " where (auction.current_price between " + filterMap["minPrice"].toString() + " and " + filterMap["maxPrice"].toString() + ")";
         }
         else
         {
-            temp = " where (auction.current_price > " + filterMap["minPrice"].toString() + ")";
+            temp += " where (auction.current_price > " + filterMap["minPrice"].toString() + ")";
         }
     }
     else
     {
         if (filterMap.contains("maxPrice"))
         {
-            temp = " where (auction.current_price < " + filterMap["maxPrice"].toString() + ")";
+            temp += " where (auction.current_price < " + filterMap["maxPrice"].toString() + ")";
         }
     }
 
@@ -288,38 +312,20 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
     filterMap.erase(filterMap.find("minPrice"));
 
     for (const auto &filter : filterMap) {
-        temp += " and " + filterMap.key(filter.toString()) + " = '" + filter.toString() + "'";
+        if (filterMap.key(filter.toString()) == "category_id")
+            temp += " and item.category_id = '" + filter.toString() + "'"; 
+        else
+            temp += " and " + filterMap.key(filter.toString()) + " = '" + filter.toString() + "'";
     }
 
     temp += " and (item_description.title like '%" + text + "%' or item_description.text like '%" + text + "%') ";
-
-    QString tq;
-
-    for (const auto& tag : tags) {
-        if (!tq.isEmpty())
-        {
-            tq += "%' OR ";
-        }
-        else
-        {
-            tq += " AND (";
-        }
-        tq += "tag_name LIKE '%" + tag.toString();
-    }
-
-    if (!tq.isEmpty())
-    {
-        tq += "%')";
-    }
 
     if (!getSearchQuery.exec("select auction.id, item_description.title, item_condition.condition_text, auction.current_price from auction "
                              "inner join item on auction.item_id=item.id "
                              "inner join item_category on item_category.id=item.category_id "
                              "inner join item_description on item.description_id=item_description.id "
                              "inner join item_condition on item_condition.id=item_description.condition_id "
-                             "inner join tag_item_relation on item.id = tag_item_relation.item_id "
-                             "inner join item_tag on tag_item_relation.tag_id = item_tag.id " + temp
-                              + tq))
+                              + temp + tq))
     {
         std::cout << "[Database::getSearch]  Error: " << getSearchQuery.lastError().text().toStdString() << std::endl;
         std::cout << getSearchQuery.lastQuery().toStdString() << std::endl;
@@ -331,14 +337,16 @@ void Db_server::get_search_slot(const QString &text, const QJsonDocument &filter
 
     QString resTemp = "[";
 
+    int results = 0;
     while (getSearchQuery.next()) {
+        results++;
         resTemp += R"({"auction_id" : )" + getSearchQuery.value(0).toString() + R"(,"data" : [{ "title" : ")" + getSearchQuery.value(1).toString() +
                     R"(","condition" : ")" + getSearchQuery.value(2).toString() + R"(","price" : )" + getSearchQuery.value(3).toString() + "}]},";
     }
 
     resTemp += "]";
 
-    resTemp.remove(resTemp.length()-2, 1);
+    if (results != 0) resTemp.remove(resTemp.length()-2, 1);
 
     *resString = resTemp;
 }
@@ -413,7 +421,30 @@ void Db_server::get_auction_slot(int id, QJsonDocument *resJSON, bool *hasError)
 
     }
 
-    *resJSON = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
+    getAuctionQuery.clear();
+
+    if (!getAuctionQuery.exec("select image.content "
+                                    "from auction inner join item on item.id=auction.item_id "
+                                    "inner join image on image.item_id=item.id "
+                                    "where auction.id = " + temp))
+    {
+        std::cout << "[Database::getAuction]  Error: " << getAuctionQuery.lastError().text().toStdString() << std::endl;
+        *hasError = true;
+        return;
+    }
+
+    QJsonArray images;
+
+    while (getAuctionQuery.next())
+    {
+        images.append(getAuctionQuery.value(0).toJsonValue());
+    }
+
+    QJsonDocument json = QJsonDocument::fromJson(QByteArray(resTemp.toUtf8()));
+    QJsonObject obj = json.object();
+    obj.insert("images", QJsonValue(images));
+
+    *resJSON = QJsonDocument(obj);
 }
 
 void Db_server::all_auction_slot(QString *resString, bool *hasError) {
