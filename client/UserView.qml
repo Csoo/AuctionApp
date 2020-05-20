@@ -6,6 +6,8 @@ Item {
     id: element
     property int rateId: 0
 
+    signal sendClicked()
+
     function wordfilter(str) {
         var wordsStr = "fasz, buzi, geci, kurva, faszfej, bazdmeg, basszameg, bazeg, baszameg, fuck, shit, faggot, nigger, retard, basz, pöcs, bitch, slut";
         var wordsArray = wordsStr.split(", ");
@@ -17,11 +19,13 @@ Item {
         if (textArea.text !== "") {
             if (wordfilter(textArea.text) === false) {
                 httpRequest.rateUserRequest(element.rateId, isPositive.checked, textArea.text);
+                sendClicked();
             } else {
                 warning.open();
             }
         } else {
             httpRequest.rateUserRequest(element.rateId, isPositive.checked, textArea.text);
+            sendClicked();
         }
     }
 

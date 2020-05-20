@@ -177,10 +177,6 @@ Item {
                 id: row
                 width: parent.width
                 spacing: 100
-                Rectangle {
-                    height: 40; width: 40;
-                    color: "blue"
-                }
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
                     Label {

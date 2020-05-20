@@ -54,7 +54,9 @@ QHash<int, QByteArray> PendingItemListModel::roleNames() const
 
 void PendingItemListModel::setPendings(int id)
 {
+    beginResetModel();
     APIrequest req;
     pendings = req.getPendingRequest(id);
     qDebug() << pendings.size();
+    endResetModel();
 }

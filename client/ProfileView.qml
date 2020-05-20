@@ -256,6 +256,9 @@ Item {
         anchors.topMargin: 218
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
+        ScrollBar.vertical: ScrollBar {
+            active: true
+        }
         Rectangle {
             color: "#000000"
             anchors.fill: parent
@@ -343,6 +346,7 @@ Item {
         id: pendingList
         y: 4
         width: 291
+        clip: true
         anchors.left: parent.left
         anchors.leftMargin: 161
         anchors.bottom: parent.bottom
@@ -386,9 +390,11 @@ Item {
             Button {
                 id: rateButton
                 text: "Rate"
+                focusPolicy: Qt.NoFocus
                 anchors.verticalCenter: row2.verticalCenter
+                anchors.verticalCenterOffset: 5
                 anchors.left: row2.right
-                anchors.leftMargin: -100
+                anchors.leftMargin: -75
                 highlighted: true
                 onClicked: profileView.ratingClicked(ratingId)
             }
@@ -409,6 +415,7 @@ Item {
             color: "#000000"
             anchors.fill: parent
             opacity: 0.2
+            z: 0
         }
     }
 
@@ -433,7 +440,7 @@ Item {
 /*##^##
 Designer {
     D{i:4;anchors_x:830}D{i:17;anchors_height:160;anchors_y:80}D{i:18;anchors_height:160;anchors_y:80}
-D{i:30;anchors_x:998}D{i:31;anchors_x:1037}D{i:41;anchors_x:830}D{i:32;anchors_x:826}
-D{i:42;anchors_x:830}
+D{i:31;anchors_x:998}D{i:32;anchors_x:1037}D{i:42;anchors_x:830}D{i:33;anchors_x:826}
+D{i:43;anchors_x:830}
 }
 ##^##*/

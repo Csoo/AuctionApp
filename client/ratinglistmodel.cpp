@@ -54,6 +54,8 @@ QHash<int, QByteArray> RatingListModel::roleNames() const
 
 void RatingListModel::setRatings(int id)
 {
+    beginResetModel();
     APIrequest req;
     ratings = req.getAllRatingsRequest(id);
+    endResetModel();
 }

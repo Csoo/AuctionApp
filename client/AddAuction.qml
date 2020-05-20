@@ -37,8 +37,7 @@ Item {
     function getTags(text) {
         var arr = []
         arr = text.split(",");
-        //arr.map(s => s.trim());
-        for(var i = 0; i < arr.length(); i++) {
+        for(var i = 0; i < arr.length; i++) {
             arr[i] = arr[i].trim();
         }
         console.log(arr);
@@ -55,6 +54,15 @@ Item {
         } else {
             main.auctionId = responseId;
             addAuction.auctionCreated(responseId);
+            imageCounter.count = 0;
+            name.text = "";
+            description.text = "";
+            itemColor.text = "";
+            price.text = "";
+            bid.text = "";
+            category.currentIndex = -1;
+            condition.currentIndex = -1;
+            tags.text = "";
         }
     }
 

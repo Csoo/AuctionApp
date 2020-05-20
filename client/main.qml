@@ -86,6 +86,11 @@ ApplicationWindow {
                 id: rater
                 UserView {
                     rateId: main.rateId
+                    onSendClicked: {
+                        main.loggedinProfileId = main.loggedinProfileId + 1
+                        main.loggedinProfileId = main.loggedinProfileId - 1
+                        loader.sourceComponent = undefined
+                    }
                 }
             }
             Rectangle {
