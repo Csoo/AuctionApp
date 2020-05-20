@@ -35,8 +35,13 @@ Item {
     }
 
     function getTags(text) {
-        var arr = text.split(",");
-        arr.map(s => s.trim());
+        var arr = []
+        arr = text.split(",");
+        //arr.map(s => s.trim());
+        for(var i = 0; i < arr.length(); i++) {
+            arr[i] = arr[i].trim();
+        }
+        console.log(arr);
         return arr;
     }
 
