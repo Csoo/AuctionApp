@@ -48,6 +48,10 @@ ApplicationWindow {
                     loginStack.pop();
                     main.isLoggedIn = false;
                 }
+                function loggingOut() {
+                    loginStack.pop();
+                    main.isLoggedIn = false;
+                }
             }
 
             Component {

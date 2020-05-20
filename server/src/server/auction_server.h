@@ -12,8 +12,5 @@ using namespace httplib;
 
 class Auction_server {
 public:
-        Auction_server(const std::string &ip, int port);
-private:
-    Server server;
-    Auction_db_server db;
+        Auction_server(const std::string &ip, int port, const std::string &route);
 };

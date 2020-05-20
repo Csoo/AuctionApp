@@ -43,6 +43,10 @@ Item {
                 target: logout
                 opacity: 1.0
             }
+            PropertyChanges {
+                target: logout
+                opacity: 1.0
+            }
         },
         State {
             name: "loggedOut"
@@ -69,6 +73,10 @@ Item {
             PropertyChanges {
                 target: searchArea
                 enabled: false
+            }
+            PropertyChanges {
+                target: logout
+                opacity: 0.0
             }
             PropertyChanges {
                 target: logout
