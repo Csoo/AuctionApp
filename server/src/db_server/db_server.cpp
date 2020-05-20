@@ -617,6 +617,34 @@ void Db_server::add_auction_slot(const QMap<QString,QString> &parameters, const 
             return;
         }        
     }
+
+    QString tagId;
+    foreach(QVariant tag, tags) {
+        if(!addAuctionQuery.exec("INSERT INTO item_tag (tag_name) values ('" + tag.toString() + "')"))
+        {
+            std::cout << "[Database::addAuction7]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+            *hasError = true;
+            return;
+        }   
+        addAuctionQuery.clear();
+        if(!addAuctionQuery.exec("SELECT id FROM item_tag ORDER BY id DESC LIMIT 1"))
+        {
+            std::cout << "[Database::addAuction8]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+            *hasError = true;
+            return;
+        }  
+        addAuctionQuery.next();
+        tagId = addAuctionQuery.value(0).toString();
+        std::cout << "tag: "<< tagId.toStdString() << "item" << itemId.toStdString() <<std::endl;
+        addAuctionQuery.clear();
+        if(!addAuctionQuery.exec("INSERT INTO tag_item_relation (tag_id, item_id) values ('" + tagId + "', '" + itemId + "')"))
+        {
+            std::cout << "[Database::addAuction9]  Error: " << addAuctionQuery.lastError().text().toStdString() << std::endl;
+            *hasError = true;
+            return;
+        }   
+        addAuctionQuery.clear(); 
+    }
 }
 
 void Db_server::check_bid_slot(const QString &auction, int currentP, bool *ok, bool *hasError) {

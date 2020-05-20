@@ -391,7 +391,7 @@ void Auction_db_server::getOther(const Request &request, Response &response) {
         return;
     }
 
-    emit get_rate(data["user"], positive, negative, &hasError);
+    emit get_rate(QString::number(id), positive, negative, &hasError);
 
     if (hasError)
     {
